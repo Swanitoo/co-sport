@@ -1,0 +1,54 @@
+# Dossiers et fichiers à ignorer
+
+# Dossiers générés par des outils
+node_modules/
+dist/
+build/
+out/
+
+# Fichiers spécifiques à certains éditeurs
+.vscode/
+.idea/
+
+# Fichiers de configuration
+.env
+.env.local
+.env.*.local
+
+# Fichiers de logs et de sauvegarde
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log
+# logs
+*.log
+logs
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm
+.pnpm-debug.log
+node_modules
+# testing
+coverage
+.nyc_output
+*.seed
+*.log
+*.csv
+# misc
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+.env
+.build/
+.next/
+.cache/
+out/
+.idea/
+.DS_Store
+.history
