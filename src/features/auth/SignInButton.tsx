@@ -5,6 +5,8 @@ export const SignInButton = () => {
     return (
         <form>
             <Button
+            variant="secondary"
+            size="sm"
                 formAction={async () => {
                     "use server";
                     await signIn();
