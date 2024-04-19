@@ -8,6 +8,9 @@ const prisma = new PrismaClient()
  
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  theme: {
+    logo: "/icon.png"
+  },
   providers: [
     Google({ 
       clientId: env.GOOGLE_CLIENT_ID, 
