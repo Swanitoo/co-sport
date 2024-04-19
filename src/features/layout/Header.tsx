@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { LoggedInButton } from "../auth/LoggedInButton";
 import { Layout } from "@/components/layout";
+import { ModeToggle } from "../theme/ModeToggle";
 
 export const Header = async () => {
     return (
@@ -12,7 +13,8 @@ export const Header = async () => {
                         height={42} 
                         alt="co-sport logo" />
                 </div>
-                <div>
+                <div className="flex items-center gap-2">
+                    <ModeToggle />
                     <LoggedInButton />
                 </div>
             </Layout>
