@@ -58,7 +58,7 @@ export const ProductForm = (props: ProductFormProps) => {
         >
           <FormField
             control={form.control}
-            name="name"
+            name="backgroundColor"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Backgound Color</FormLabel>
@@ -69,10 +69,15 @@ export const ProductForm = (props: ProductFormProps) => {
                     </SelectTrigger>
                     <SelectContent>
                       {GRADIENTS_CLASSES.map((gradient) => (
-                        <SelectItem value={gradient} key={gradient}>
-                          <span
-                            className={cn(gradient, "w-full h-8 rounded-md")}
-                          ></span>
+                        <SelectItem 
+                          value={gradient} 
+                          key={gradient}>
+                          <div
+                            className={cn(
+                              gradient, 
+                              "block w-80 h-8 flex-1 rounded-md"
+                              )}
+                          ></div>
                         </SelectItem>
                       ))}
                     </SelectContent>

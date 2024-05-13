@@ -9,12 +9,11 @@ import Link from "next/link";
 
 export default async function RoutePage(props: PageParams<{}>) {
     const user = await requieredCurrentUser()
-
     const products = await prisma.product.findMany({
         where: {
             userId: user.id
-        }
-    })
+        },
+    });
   return (
     <Layout>
         <LayoutTitle>Products</LayoutTitle>

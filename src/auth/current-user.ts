@@ -11,7 +11,7 @@ export const  currentUser = async () => {
     const user = session.user as User;
 
     return user;
-}
+};
 
 export const requieredCurrentUser = async () => {
     const user = await currentUser();
@@ -21,4 +21,4 @@ export const requieredCurrentUser = async () => {
     }
 
     return user;
-}
+};
