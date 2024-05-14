@@ -27,12 +27,12 @@ export type ProductFormProps = {
 };
 
 export const ProductForm = (props: ProductFormProps) => {
+  const router = useRouter();
   const form = useZodForm({
     schema: ProductSchema,
     defaultValues: props.defaultValues,
   });
   const isCreate = !Boolean(props.defaultValues);
-  const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: async (values: ProductType) => {
@@ -44,7 +44,7 @@ export const ProductForm = (props: ProductFormProps) => {
       }
 
       toast.success("Product created");
-      router.push(`/products/${data.id}`);
+      router.push(`/products/${data!.id}`);
     },
   });
 
@@ -94,7 +94,7 @@ export const ProductForm = (props: ProductFormProps) => {
                       onChange={(e) => {
                         const value = e.target.value
                         .replaceAll(" ", "-")
-                        .toLocaleLowerCase();
+                        .toLowerCase();
 
                         field.onChange(value);
                       }} />
@@ -113,7 +113,7 @@ export const ProductForm = (props: ProductFormProps) => {
               <FormItem>
                 <FormLabel>Backgound Color</FormLabel>
                 <FormControl>
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select value={field.value ?? ""} onValueChange={field.onChange}>
                     <SelectTrigger>
                       <SelectValue></SelectValue>
                     </SelectTrigger>
@@ -134,7 +134,7 @@ export const ProductForm = (props: ProductFormProps) => {
                       ))}
                     </SelectContent>
                   </Select>
-                  <Input placeholder="Background color" {...field} />
+                  <Input placeholder="Background color" {...field} value={field.value || ''} />
                 </FormControl>
                 <FormDescription>
                   The review page background color

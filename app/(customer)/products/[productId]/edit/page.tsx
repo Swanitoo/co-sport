@@ -1,7 +1,7 @@
 import { Layout, LayoutTitle } from "@/components/layout";
 import type { PageParams } from "@/types/next";
 import { ProductForm } from "./ProductForm";
-import { currentUser, requieredCurrentUser } from "@/auth/current-user";
+import { requieredCurrentUser } from "@/auth/current-user";
 import { prisma } from "@/prisma";
 import { notFound } from "next/navigation";
 
