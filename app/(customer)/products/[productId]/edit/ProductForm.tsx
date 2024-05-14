@@ -17,6 +17,10 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, useZodForm } from "@/components/ui/form";
+import { useMutation } from "@tanstack/react-query";
+import { createProductAction } from "./product.action";
+import { toast } from "sonner";
+import { useRouter } from "next/router";
 
 export type ProductFormProps = {
   defaultValues?: ProductType;
@@ -27,8 +31,22 @@ export const ProductForm = (props: ProductFormProps) => {
     schema: ProductSchema,
     defaultValues: props.defaultValues,
   });
-
   const isCreate = !Boolean(props.defaultValues);
+  const router = useRouter();
+
+  const mutation = useMutation({
+    mutationFn: async (values: ProductType) => {
+      const { data, serverError } = await createProductAction(values);
+
+      if (serverError) {
+        throw new Error(serverError);
+        return;
+      }
+
+      toast.success("Product created");
+      router.push(`/products/${data.id}`);
+    },
+  });
 
   return (
     <Card>
@@ -44,7 +62,7 @@ export const ProductForm = (props: ProductFormProps) => {
           className="flex flex-col gap-4"
           form={form}
           onSubmit={async (values) => {
-            console.log(values);
+            await mutation.mutateAsync(values);
           }}
         >
           <FormField
@@ -63,7 +81,32 @@ export const ProductForm = (props: ProductFormProps) => {
               </FormItem>
             )}
           />
-          {/* <FormField
+          <FormField
+            control={form.control}
+            name="slug"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Slug</FormLabel>
+                <FormControl>
+                    <Input 
+                      placeholder="Sceance avec patoche" 
+                      {...field} 
+                      onChange={(e) => {
+                        const value = e.target.value
+                        .replaceAll(" ", "-")
+                        .toLocaleLowerCase();
+
+                        field.onChange(value);
+                      }} />
+                </FormControl>
+                <FormDescription>
+                  The slug is used in the URL of the review page
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
             control={form.control}
             name="backgroundColor"
             render={({ field }) => (
@@ -99,7 +142,7 @@ export const ProductForm = (props: ProductFormProps) => {
                 <FormMessage />
               </FormItem>
             )}
-          /> */}
+          />
           <Button>{isCreate ? "Create product" : "Save product"}</Button>
         </Form>
       </CardContent>
