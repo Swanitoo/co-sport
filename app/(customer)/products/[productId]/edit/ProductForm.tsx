@@ -20,31 +20,31 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { useMutation } from "@tanstack/react-query";
 import { createProductAction } from "./product.action";
 import { toast } from "sonner";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export type ProductFormProps = {
   defaultValues?: ProductType;
 };
 
 export const ProductForm = (props: ProductFormProps) => {
-  const router = useRouter();
   const form = useZodForm({
     schema: ProductSchema,
     defaultValues: props.defaultValues,
   });
   const isCreate = !Boolean(props.defaultValues);
+  const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: async (values: ProductType) => {
       const { data, serverError } = await createProductAction(values);
 
-      if (serverError) {
+      if (serverError || !data) {
         throw new Error(serverError);
         return;
       }
 
       toast.success("Product created");
-      router.push(`/products/${data!.id}`);
+      router.push(`/products/${data.id}`);
     },
   });
 
@@ -106,7 +106,7 @@ export const ProductForm = (props: ProductFormProps) => {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="backgroundColor"
             render={({ field }) => (
@@ -142,7 +142,7 @@ export const ProductForm = (props: ProductFormProps) => {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <Button>{isCreate ? "Create product" : "Save product"}</Button>
         </Form>
       </CardContent>
