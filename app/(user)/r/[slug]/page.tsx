@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { prisma } from "@/prisma";
 import { PageParams } from "@/types/next";
 import { notFound } from "next/navigation";
@@ -13,5 +14,7 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
         notFound();
     }
 
-    return <div>{product.name}</div>;
+    return <div className={cn("h-full w-full", product.backgroundColor)}>
+        {product.name}
+    </div>;
 }

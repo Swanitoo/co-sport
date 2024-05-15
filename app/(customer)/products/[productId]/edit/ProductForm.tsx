@@ -89,6 +89,38 @@ export const ProductForm = (props: ProductFormProps) => {
           />
           <FormField
             control={form.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Image</FormLabel>
+                <FormControl>
+                    <Input type="file" placeholder="Sceance avec patoche" onChange={e => {
+                      const file = e.target.files?.[0];
+
+                      if (!file) {
+                        return;
+                      }
+
+                      if (file.size > 1024 * 1024) {
+                        toast.error("File is too big");
+                        return;
+                      }
+
+                      if (!file.type.includes("image")) {
+                        toast.error("File is not an image");
+                        return;
+                      }
+                    }} />
+                </FormControl>
+                <FormDescription>
+                  The name of the product ro review
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="slug"
             render={({ field }) => (
               <FormItem>
