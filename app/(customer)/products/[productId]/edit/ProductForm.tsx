@@ -18,12 +18,13 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, useZodForm } from "@/components/ui/form";
 import { useMutation } from "@tanstack/react-query";
-import { createProductAction } from "./product.action";
+import { createProductAction, updateProductAction } from "./product.action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export type ProductFormProps = {
   defaultValues?: ProductType;
+  productId?: string;
 };
 
 export const ProductForm = (props: ProductFormProps) => {
@@ -36,7 +37,12 @@ export const ProductForm = (props: ProductFormProps) => {
 
   const mutation = useMutation({
     mutationFn: async (values: ProductType) => {
-      const { data, serverError } = await createProductAction(values);
+      const { data, serverError } = isCreate 
+      ? await createProductAction(values) : 
+      await updateProductAction({
+        id: props.productId ?? "-",
+        data: values,
+      });
 
       if (serverError || !data) {
         throw new Error(serverError);
