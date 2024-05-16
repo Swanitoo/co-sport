@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { prisma } from "@/prisma";
 import { PageParams } from "@/types/next";
 import { notFound } from "next/navigation";
+import { ReviewStep } from "./ReviewStep";
 
 export default async function RoutePage(props: PageParams<{ slug: string }>) {
     const product = await prisma.product.findFirst({
@@ -14,7 +15,20 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
         notFound();
     }
 
-    return <div className={cn("h-full w-full", product.backgroundColor)}>
-        {product.name}
-    </div>;
+    return (
+        <div className={cn("h-full w-full flex flex-col items-center py-4",
+            product.backgroundColor
+        )}
+        >
+        <div className="flex items-center gap-2">
+            {product.image ? (
+                <img className="size-8" src={product.image} alt={product.name} />
+            ) : null}
+            <h1 className="text-lg font-bold">{product.name}</h1>
+        </div>
+        <div className="flex-1">
+            <ReviewStep product={product}/>
+        </div>
+
+    </div>)
 }
