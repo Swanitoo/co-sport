@@ -62,7 +62,7 @@ export const ReviewStep = ({ product } : { product: Product }) => {
                             className="flex h-full flex-col items-center justify-center"
                         >
                         <h2 className="text-lg font-bold">
-                            {product.noteText ?? `How much did you like ${product.name}?`}
+                            {product.informationText ?? `How much did you like ${product.name}?`}
                         </h2>
                         <ReviewSelector 
                             onSelect={(review) => {
