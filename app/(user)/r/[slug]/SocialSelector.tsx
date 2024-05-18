@@ -29,7 +29,7 @@ export const SocialSelector = () => {
                 <Button>
                     <Check size={16} />
                 </Button>
-            </div>a
+            </div>
             <p className="text-sm font-light text-muted-foreground">
                 Add a link to your Instagram or you FaceBook
             </p>
