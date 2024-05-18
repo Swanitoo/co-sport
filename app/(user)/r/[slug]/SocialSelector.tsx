@@ -8,7 +8,7 @@ export const SocialSelector = () => {
     const [name, setName] = useState("");
 
     const onSubmit = () => {
-        
+
     }
 
     return (
@@ -29,7 +29,7 @@ export const SocialSelector = () => {
                 <Button>
                     <Check size={16} />
                 </Button>
-            </div>
+            </div>a
             <p className="text-sm font-light text-muted-foreground">
                 Add a link to your Instagram or you FaceBook
             </p>
