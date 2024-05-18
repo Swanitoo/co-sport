@@ -4,6 +4,7 @@ import { Product } from "@prisma/client";
 import { useState } from "react";
 import ReviewSelector from "./ReviewSelector";
 import { motion, AnimatePresence } from "framer-motion";
+import { SocialSelector } from "./SocialSelector";
 
 type Data = {
     review: null | number;
@@ -59,12 +60,12 @@ export const ReviewStep = ({ product } : { product: Product }) => {
                             opacity: 1,
                             x: 0,
                         }}
-                            className="flex h-full flex-col items-center justify-center"
+                            className="flex h-full flex-col items-center justify-center gap-4"
                         >
                         <h2 className="text-lg font-bold">
                             {product.informationText ?? `I need more information about you! ${product.name}?`}
                         </h2>
-                        <ReviewSelector 
+                        <SocialSelector 
                             onSelect={(review) => {
                                 setStep(1);
                                 setData({ review });
