@@ -7,6 +7,10 @@ export const SocialSelector = () => {
     const [url, setUrl] = useState("");
     const [name, setName] = useState("");
 
+    const onSubmit = () => {
+        
+    }
+
     return (
         <div className="flex flex-col gap-2">
             <div className="flex flex-col items-center gap-2">
