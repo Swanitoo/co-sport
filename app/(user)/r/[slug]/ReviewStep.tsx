@@ -65,7 +65,7 @@ export const ReviewStep = ({ product } : { product: Product }) => {
                         <h2 className="text-lg font-bold">
                             {product.informationText ?? `I need more information about you! ${product.name}?`}
                         </h2>
-                        <SocialSelector d
+                        <SocialSelector 
                             onSelect={(review) => {
                                 setStep(1);
                                 setData({ review });
