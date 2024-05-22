@@ -24,6 +24,7 @@ export const ReviewStep = ({ product } : { product: Product }) => {
     };
 
         return (
+            
             <AnimatePresence mode="wait">
                 {step === 0 && (
                     <motion.div
