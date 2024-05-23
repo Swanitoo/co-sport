@@ -72,7 +72,10 @@ export const ReviewStep = ({ product } : { product: Product }) => {
                         <SocialSelector 
                             onSelect={(name, url) => {
                                 setStep(2);
-                                updateData({ review });
+                                updateData({ 
+                                    name: name,
+                                    socialLink: url,
+                                 });
                         }}
                     />
                     </motion.div>

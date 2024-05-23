@@ -4,7 +4,11 @@ import { Check } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export const SocialSelector = () => {
+export const SocialSelector = ({
+    onSelect,
+}: {
+    onSelect: (name: string, url: string) => void;
+}) => {
     const [url, setUrl] = useState("");
     const [name, setName] = useState("");
 
@@ -46,7 +50,7 @@ export const SocialSelector = () => {
                     className="bg-background/50" 
                     placeholder="https://www.instagram.com/yourinstagram/"
                 />
-                <Button>
+                <Button onClick={onSubmit} className="w-full">
                     <Check size={16} />
                 </Button>
             </div>
