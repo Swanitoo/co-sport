@@ -8,12 +8,16 @@ import { SocialSelector } from "./SocialSelector";
 
 type Data = {
     review: null | number;
+    name: string;
+    socialLink: string;
 }
 
 export const ReviewStep = ({ product } : { product: Product }) => {
     const [step, setStep] = useState(0);
     const [data, setData] = useState<Data>({
         review: null,
+        name: "",
+        socialLink: "",
     });
 
     const updateData = (partial: Partial<Data>) => {
@@ -66,9 +70,9 @@ export const ReviewStep = ({ product } : { product: Product }) => {
                             {product.informationText ?? `I need more information about you! ${product.name}?`}
                         </h2>
                         <SocialSelector 
-                            onSelect={(review) => {
-                                setStep(1);
-                                setData({ review });
+                            onSelect={(name, url) => {
+                                setStep(2);
+                                updateData({ review });
                         }}
                     />
                     </motion.div>

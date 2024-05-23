@@ -2,13 +2,33 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Check } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export const SocialSelector = () => {
     const [url, setUrl] = useState("");
     const [name, setName] = useState("");
 
     const onSubmit = () => {
-        
+        const [url, setUrl] = useState("");
+        const [name, SetName] = useState(""); 
+
+        const onSubmit = () => {
+            if (!url) {
+                toast.error("Please enter a valid URL");
+                return;
+            }
+
+            if (!name) {
+                toast.error("Please enter a name");
+                return;
+            }
+
+            if (!url.match(/https?:\/\/(www\.)?(instagram\.com\/[a-zA-Z0-9._-]+\/?|facebook\.com\/[a-zA-Z0-9.]+\/?)$/)) {
+                toast.error("Please enter a valid instagram or facebook URL");
+                return;
+            }
+
+            onSelect(name, url);
     }
 
     return (
