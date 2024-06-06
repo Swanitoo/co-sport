@@ -44,7 +44,7 @@ export const ReviewStep = ({ product } : { product: Product }) => {
                         <ReviewSelector 
                             onSelect={(review) => {
                                 setStep(1);
-                                setData({ review });
+                                updateData({ review });
                         }}
                     />
                     </motion.div>
