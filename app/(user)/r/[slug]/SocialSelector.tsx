@@ -24,7 +24,7 @@ export const SocialSelector = ({
         }
 
         if (!url.match(/https?:\/\/(www\.)?(instagram\.com\/[a-zA-Z0-9._-]+\/?|facebook\.com\/[a-zA-Z0-9.]+\/?)$/)) {
-            toast.error("Please enter a valid instagram or facebook URL");
+            toast.error("Please enter a valid instagram or facebook/instagram URL");
             return;
         }
 

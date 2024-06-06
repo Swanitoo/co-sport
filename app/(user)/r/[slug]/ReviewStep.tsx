@@ -5,6 +5,7 @@ import { useState } from "react";
 import ReviewSelector from "./ReviewSelector";
 import { motion, AnimatePresence } from "framer-motion";
 import { SocialSelector } from "./SocialSelector";
+import { ReviewTextSelector } from "./ReviewTextSelector";
 
 type Data = {
     review: null | number;
@@ -67,7 +68,7 @@ export const ReviewStep = ({ product } : { product: Product }) => {
                             className="flex h-full flex-col items-center justify-center gap-4"
                         >
                         <h2 className="text-lg font-bold">
-                            {product.informationText ?? `I need more information about you! ${product.name}?`}
+                            {product.informationText ?? `I need more information about you!`}
                         </h2>
                         <SocialSelector 
                             onSelect={(name, url) => {
@@ -78,6 +79,29 @@ export const ReviewStep = ({ product } : { product: Product }) => {
                                  });
                         }}
                     />
+                    </motion.div>
+                )}
+                {step === 2 && (
+                    <motion.div
+                        key="step-1"
+                        exit={{
+                            opacity: 0,
+                            x: -100,
+                        }}
+                        initial={{
+                            opacity: 0,
+                            x: 100,
+                        }}
+                        animate={{
+                            opacity: 1,
+                            x: 0,
+                        }}
+                            className="flex h-full flex-col items-center justify-center gap-4"
+                        >
+                        <h2 className="text-lg font-bold">
+                            {product.reviewText ?? `Tell me what you liked and what you disliked`}
+                        </h2>
+                        <ReviewTextSelector />
                     </motion.div>
                 )}
             </AnimatePresence>
