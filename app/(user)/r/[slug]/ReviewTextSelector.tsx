@@ -1,18 +1,13 @@
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-  } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 
 export type ReviewTextSelectorProps = {};
 
 export const ReviewTextSelector = (props: ReviewTextSelectorProps) => {
     return (
-        <Tabs>
-            <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="text">Text</TabsTrigger>
-            </TabsList>
-        </Tabs>
-    )
+        <div className="grid w-full gap-2">
+          <Textarea placeholder="Type your message here." />
+          <Button>Send message</Button>
+        </div>
+      )
 }

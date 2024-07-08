@@ -154,7 +154,7 @@ export const ProductForm = (props: ProductFormProps) => {
                 <FormLabel>Slug</FormLabel>
                 <FormControl>
                     <Input 
-                      placeholder="Sceance avec patoche" 
+                      placeholder="sceance-avec-patoche" 
                       {...field} 
                       onChange={(e) => {
                         const value = e.target.value
