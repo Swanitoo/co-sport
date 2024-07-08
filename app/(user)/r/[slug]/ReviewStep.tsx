@@ -6,6 +6,7 @@ import ReviewSelector from "./ReviewSelector";
 import { motion, AnimatePresence } from "framer-motion";
 import { SocialSelector } from "./SocialSelector";
 import { ReviewTextSelector } from "./ReviewTextSelector";
+import { useLocalStorage } from "react-use";
 
 type Data = {
     review: null | number;
@@ -14,6 +15,8 @@ type Data = {
 }
 
 export const ReviewStep = ({ product } : { product: Product }) => {
+    const [value, setValue, remove] = useLocalStorage("review-id", null)
+;
     const [step, setStep] = useState(0);
     const [data, setData] = useState<Data>({
         review: null,
