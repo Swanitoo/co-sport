@@ -53,15 +53,19 @@ export default async function RoutePage(
           <CardContent>
             <Table>
               <TableHeader>
-                <TableHead>Name</TableHead>
-                <TableHead>Text</TableHead>
+                <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Text</TableHead>
+                </TableRow>
               </TableHeader>
               <TableBody>
                 {product.reviews.map((review) => (
                   <TableRow key={product.id}>
-                    <Link href={`/reviews/${product.id}`} key={product.id}>
-                      <TableCell>{product.name}</TableCell>
-                    </Link>
+                    <TableCell>
+                        <Link href={`/reviews/${product.id}`} key={product.id}>
+                        {product.name}
+                        </Link>
+                    </TableCell>
                     <TableCell>{review.text}</TableCell>
                   </TableRow>
                 ))}

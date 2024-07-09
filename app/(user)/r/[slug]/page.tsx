@@ -30,5 +30,5 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
             <ProcessReviewStep product={product}/>
         </div>
 
-    </div>)
+    </div>);
 }
