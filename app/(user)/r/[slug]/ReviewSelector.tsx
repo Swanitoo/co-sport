@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
 import { useState } from "react";
 
-const ReviewSelector = ({onSelect}: {
+const RatingSelector = ({onSelect}: {
     onSelect: (rating: number) => void;
 }) => {
     const [rating, setRating] = useState<number | null>(null);
@@ -64,4 +64,4 @@ const ReviewSelector = ({onSelect}: {
     );
 };
 
-export default ReviewSelector;
+export default RatingSelector;
