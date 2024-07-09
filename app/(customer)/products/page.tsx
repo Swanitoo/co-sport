@@ -34,7 +34,8 @@ export default async function RoutePage(props: PageParams<{}>) {
                         </TableRow>
                     ))}
                 </TableBody>
-            </Table>) : (
+            </Table>
+            ) : (
                 <Link href="/products/new" 
                 className="border-2 flex items-center justify-center transition-colors hover:bg-accent/40 border-dashed border-primary p-8 lg:p-12 w-full rounded-md">
                     Create product
