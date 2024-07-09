@@ -12,6 +12,7 @@ import { getReviewAction, updateReviewAction } from "./reviews.action";
 import { ReviewType } from "./review.schema";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 
 
 const getCurrentStep = (data?: Review) => {
@@ -144,7 +145,7 @@ export const ProcessReviewStep = ({ product } : { product: Product }) => {
                     )}
                     {step === 2 && (
                         <motion.div
-                            key="step-1"
+                            key="step-2"
                             exit={{
                                 opacity: 0,
                                 x: -100,
@@ -162,7 +163,44 @@ export const ProcessReviewStep = ({ product } : { product: Product }) => {
                             <h2 className="text-lg font-bold">
                                 {product.reviewText ?? `Tell me what you liked and what you disliked`}
                             </h2>
-                            <ReviewTextSelector />
+                            <ReviewTextSelector 
+                                onInputSend={(i) =>{
+                                    updateData({
+                                        text: i,
+                                    });
+                                }} 
+                                productId={product.id} 
+                            />
+                        </motion.div>
+                    )}
+                    {step === 3 && (
+                        <motion.div
+                            key="step-3"
+                            exit={{
+                                opacity: 0,
+                                x: -100,
+                            }}
+                            initial={{
+                                opacity: 0,
+                                x: 100,
+                            }}
+                            animate={{
+                                opacity: 1,
+                                x: 0,
+                            }}
+                                className="flex h-full flex-col items-center justify-center gap-4 max-w-lg"
+                            >
+                            <h2 className="text-lg font-bold">
+                                {product.thanksText ?? 
+                                    `Thanks for your review!`}
+                            </h2>
+                            <Card>
+                                <CardHeader>
+                                    <CardDescription>
+                                        <p>Your Review : {reviewData.data?.text}</p>
+                                    </CardDescription>
+                                </CardHeader>
+                            </Card>
                         </motion.div>
                     )}
                 </AnimatePresence>
