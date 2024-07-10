@@ -1,22 +1,32 @@
 import type { PageParams } from "@/types/next";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { requieredCurrentUser } from "@/auth/current-user";
-import { Prisma } from "@prisma/client";
 import { prisma } from "@/prisma";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
 
 export default async function RoutePage(props: PageParams<{}>) {
-    const user = await requieredCurrentUser()
+    const user = await requieredCurrentUser();
+
     const products = await prisma.product.findMany({
         where: {
             userId: user.id
         },
     });
+
   return (
     <Layout>
-        <LayoutTitle>Products</LayoutTitle>
+        <div className="flex justify-between">
+            <LayoutTitle>Products</LayoutTitle>
+            <Link
+                href={`/products/new`}
+                className={buttonVariants({ size: "sm", variant: "secondary" })}
+                >
+                Create
+            </Link>
+        </div>
         <Card className="p-4">
             {products.length ? (
             <Table>

@@ -171,43 +171,45 @@ export const ProductForm = (props: ProductFormProps) => {
               </FormItem>
             )}
           />
-          {/* <FormField
-            control={form.control}
-            name="backgroundColor"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Backgound Color</FormLabel>
-                <FormControl>
-                  <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue></SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {GRADIENTS_CLASSES.map((gradient) => (
-                        <SelectItem 
-                          value={gradient} 
-                          key={gradient}
-                          className="flex"
-                        >
-                          <div
-                            className={cn(
-                              gradient,
-                              "block w-80 h-8 flex-1 rounded-md"
-                            )}
-                          ></div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Input placeholder="Background color" {...field} value={field.value || ''} />
-                </FormControl>
-                <FormDescription>
-                  The review page background color
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
+              <FormField
+                control={form.control}
+                name="backgroundColor"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Background color</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value ?? ""}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue></SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {GRADIENTS_CLASSES.map((gradient) => (
+                            <SelectItem
+                              value={gradient}
+                              key={gradient}
+                              className="flex"
+                            >
+                              <div
+                                className={cn(
+                                  gradient,
+                                  "block w-80 h-8 rounded-md flex-1"
+                                )}
+                              ></div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormDescription>
+                      The review page background color
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
           <Button>{isCreate ? "Create product" : "Save product"}</Button>
         </Form>
       </CardContent>
