@@ -48,7 +48,7 @@ export const PricingSection = async () => {
         </PricingCard>
         <PricingCard
           title="Premium"
-          price={39}
+          price={15}
           description="For business that want to grow with the best review experience"
           items={[
             "Create infinite product",
