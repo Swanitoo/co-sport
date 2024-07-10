@@ -4,6 +4,7 @@ import { ProductForm } from "../[productId]/edit/ProductForm";
 import { requieredCurrentUser } from "@/auth/current-user";
 import { prisma } from "@/prisma";
 import { AlertTriangle } from "lucide-react";
+import { PricingSection } from "@/features/landing/PricingSection";
 
 export default async function RoutePage(props: PageParams<{}>) {
 
@@ -26,6 +27,7 @@ export default async function RoutePage(props: PageParams<{}>) {
                     <AlertTriangle className="inline" />
                     Sorry, you need to upgrade to our premium plan to create more products.
                 </p>
+                <PricingSection />
             </Layout>
         )
     }
