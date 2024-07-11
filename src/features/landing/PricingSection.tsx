@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import Link from "next/link";
 import { PropsWithChildren } from "react";
+import { upgradeToPremium } from "./upgrade-premium.action";
 
 export const PricingSection = async () => {
   const user = await currentUser();
@@ -63,7 +64,7 @@ export const PricingSection = async () => {
               <Button
                 formAction={async () => {
                   "use server";
-                //   await upgradeToPremium("");
+                  await upgradeToPremium("");
                 }}
                 size="lg"
                 variant="default"
