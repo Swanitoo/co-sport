@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 export const POST = async (req: NextRequest) => {
-    const body = await req.json();
+    const body = await req.text();
 
     const stripeSignature = req.headers.get("stripe-signature");
 
