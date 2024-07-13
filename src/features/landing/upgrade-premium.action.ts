@@ -1,6 +1,7 @@
 "use server";
 
 import { env } from "@/env";
+import { getServerUrl } from "@/get-server-url";
 import { ActionError, userAction } from "@/safe-actions";
 import { stripe } from "@/stripe";
 import { redirect } from "next/navigation";
@@ -30,8 +31,8 @@ export const upgradeToPremium = userAction(z.string(), async (_ , context) => {
             quantity: 1,
           },
         ],
-        success_url: `${process.env.NEXTAUTH_URL}/success`,
-        cancel_url: `${process.env.NEXTAUTH_URL}/cancel`,
+        success_url: `${getServerUrl()}/success`,
+        cancel_url: `${getServerUrl()}/cancel`,
       });
 
       if (!stripeCheckout.url) {
