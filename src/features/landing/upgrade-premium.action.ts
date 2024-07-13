@@ -6,6 +6,7 @@ import { stripe } from "@/stripe";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+
 export const upgradeToPremium = userAction(z.string(), async (_ , context) => {
     if (context.user.plan === "PREMIUM") {
         throw new ActionError("User is already on premium plan");
@@ -29,8 +30,8 @@ export const upgradeToPremium = userAction(z.string(), async (_ , context) => {
             quantity: 1,
           },
         ],
-        success_url: `${process.env.NEXTAUTH.URL}/success`,
-        cancel_url: `${process.env.NEXTAUTH.URL}/cancel`,
+        success_url: `${process.env.NEXTAUTH_URL}/success`,
+        cancel_url: `${process.env.NEXTAUTH_URL}/cancel`,
       });
 
       if (!stripeCheckout.url) {
