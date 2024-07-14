@@ -11,13 +11,14 @@ import { z } from "zod";
 export const upgradeToPremium = userAction(z.string(), async (_ , context) => {
     if (context.user.plan === "PREMIUM") {
         throw new ActionError("User is already on premium plan");
-      }
+    }
     
-      const stripeCustomerId = context.user.stripeCustomerId;
+    const stripeCustomerId = context.user.stripeCustomerId;
     
-      if (!stripeCustomerId) {
+    if (!stripeCustomerId) {
         throw new ActionError("User does not have a stripe customer id");
-      }
+    }
+
     const stripeCheckout = await stripe.checkout.sessions.create({
         customer: stripeCustomerId,
         payment_method_types: ["card", "link"],
@@ -34,7 +35,6 @@ export const upgradeToPremium = userAction(z.string(), async (_ , context) => {
         success_url: `${getServerUrl()}/success`,
         cancel_url: `${getServerUrl()}/cancel`,
       });
-
       if (!stripeCheckout.url) {
         throw new ActionError("Stripe checkout url is missing");
       }
