@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { uploadImageAction } from "@/features/upload/upload.action";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Loader2 } from "lucide-react";
 
 export type ProductFormProps = {
   defaultValues?: ProductType;
@@ -52,6 +53,7 @@ export const ProductForm = (props: ProductFormProps) => {
       }
 
       router.push(`/products/${data.id}`);
+      router.refresh();
     },
   });
 
@@ -133,6 +135,9 @@ export const ProductForm = (props: ProductFormProps) => {
                       }} 
                       />
                   </FormControl>
+                  {submitImage.isPending ? (
+                    <Loader2 className="animate-spin h-6" />
+                  ) : null}
                   {field.value ? (
                     <Avatar>
                       <AvatarImage src={field.value} />
