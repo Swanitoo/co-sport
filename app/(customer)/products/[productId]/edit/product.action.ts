@@ -5,6 +5,9 @@ import { ProductSchema } from "./product.schema";
 import { prisma } from "@/prisma";
 import { z } from "zod";
 import { User } from "@prisma/client";
+import { resend } from "@/resend";
+import { EMAIL_FROM } from "@/config";
+import FirstProductCreatedEmail from "../../../../../emails/FirstProductCreatedEmail";
 
 const verifySlugUniqueness = async (slug: string, productId?: string) => {
     const slugExists = await prisma.product.count({
@@ -38,6 +41,50 @@ const verifyUserPlan = async (user: User) => {
         );
     }
 };
+
+const sendEmailIfUserCreatedFirstProduct = async (user: User) => {
+    if (user.plan === "PREMIUM") return;
+  
+    console.log("PREMIUM PLAN");
+  
+    const userProductsCount = await prisma.product.count({
+      where: {
+        userId: user.id,
+      },
+    });
+  
+    if (userProductsCount !== 1) {
+      return;
+    }
+  
+    console.log("USER COUNT", userProductsCount);
+  
+    const product = await prisma.product.findFirst({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        slug: true,
+        name: true,
+      },
+    });
+  
+    console.log("poruct", product);
+    if (!product) {
+      return;
+    }
+  
+    await resend.emails.send({
+      to: user.email ?? "",
+      subject: "You created your first product",
+      from: EMAIL_FROM,
+      react: FirstProductCreatedEmail({
+        product: product.name,
+        slug: product.slug,
+      }),
+    });
+  };
+  
 
 export const createProductAction = userAction(
     ProductSchema, 
