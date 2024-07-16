@@ -83,7 +83,7 @@ const sendEmailIfUserCreatedFirstProduct = async (user: User) => {
         slug: product.slug,
       }),
     });
-  };
+};
   
 
 export const createProductAction = userAction(
