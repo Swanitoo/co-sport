@@ -1,5 +1,5 @@
 import type { PageParams } from "@/types/next";
-import { Layout, LayoutTitle } from "@/components/layout";
+import { Layout, LayoutDescription, LayoutTitle } from "@/components/layout";
 import { requieredCurrentUser } from "@/auth/current-user";
 import { prisma } from "@/prisma";
 import { Card } from "@/components/ui/card";
@@ -29,7 +29,10 @@ export default async function RoutePage(props: PageParams<{}>) {
   return (
     <Layout>
         <div className="flex justify-between">
-            <LayoutTitle>Products</LayoutTitle>
+            <div className="space-y-0.5">
+                <LayoutTitle>Products</LayoutTitle>
+                <LayoutDescription>Create Product to review</LayoutDescription>
+            </div>
             <Link
                 href={`/products/new`}
                 className={buttonVariants({ size: "sm", variant: "secondary" })}
@@ -37,7 +40,6 @@ export default async function RoutePage(props: PageParams<{}>) {
                 Create
             </Link>
         </div>
-        <Card className="p-4">
             {products.length ? (
             <Table>
                 <TableHeader>
@@ -63,7 +65,6 @@ export default async function RoutePage(props: PageParams<{}>) {
                     Create product
                 </Link>
             )}
-        </Card>
     </Layout>
   );
 }
