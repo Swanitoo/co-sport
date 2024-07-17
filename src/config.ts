@@ -1,1 +1,1 @@
-export const EMAIL_FROM = "<send.co-sport.com.>";
+export const EMAIL_FROM = "<postmaster@co-sport.com>";

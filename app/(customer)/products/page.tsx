@@ -20,7 +20,13 @@ export default async function RoutePage(props: PageParams<{}>) {
             slug: true,
             _count: {
                 select: {
-                    reviews: true,
+                    reviews: {
+                        where: {
+                            text: {
+                                not: null,
+                            },
+                        },
+                    },
                 },
             },
         },
