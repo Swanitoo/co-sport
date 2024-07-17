@@ -45,8 +45,6 @@ const verifyUserPlan = async (user: User) => {
 const sendEmailIfUserCreatedFirstProduct = async (user: User) => {
     if (user.plan === "PREMIUM") return;
   
-    console.log("PREMIUM PLAN");
-  
     const userProductsCount = await prisma.product.count({
       where: {
         userId: user.id,
@@ -56,9 +54,7 @@ const sendEmailIfUserCreatedFirstProduct = async (user: User) => {
     if (userProductsCount !== 1) {
       return;
     }
-  
-    console.log("USER COUNT", userProductsCount);
-  
+
     const product = await prisma.product.findFirst({
       where: {
         userId: user.id,
@@ -68,12 +64,11 @@ const sendEmailIfUserCreatedFirstProduct = async (user: User) => {
         name: true,
       },
     });
-  
-    console.log("poruct", product);
+
     if (!product) {
       return;
     }
-  
+
     await resend.emails.send({
       to: user.email ?? "",
       subject: "You created your first product",
@@ -98,6 +93,8 @@ export const createProductAction = userAction(
                 userId: context.user.id,
             },
         });
+
+        await sendEmailIfUserCreatedFirstProduct(context.user);
 
         return product;
     }
