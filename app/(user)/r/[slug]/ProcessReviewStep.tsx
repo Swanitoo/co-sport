@@ -2,7 +2,7 @@
 
 import { Product, Review } from "@prisma/client";
 import { useState } from "react";
-import ReviewSelector from "./ReviewSelector";
+import ReviewSelector from "./RatingSelector";
 import { motion, AnimatePresence } from "framer-motion";
 import { SocialSelector } from "./SocialSelector";
 import { ReviewTextSelector } from "./ReviewTextSelector";

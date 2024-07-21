@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { FeatureSection } from "@/features/landing/FeatureSection";
 import { HeroSection } from "@/features/landing/HeroSection";
 import { LandingHeader } from "@/features/landing/LandingHeader";
 import Image from "next/image";
@@ -9,7 +10,7 @@ export default function Home() {
       <div className="h-16" />
       <LandingHeader />
       <HeroSection />
-      <p>Test</p>
+      <FeatureSection />
       <Button>Test</Button>
     </div>
   );

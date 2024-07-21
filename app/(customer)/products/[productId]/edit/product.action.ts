@@ -69,14 +69,14 @@ const sendEmailIfUserCreatedFirstProduct = async (user: User) => {
       return;
     }
 
-    await resend.emails.send({
-      to: user.email ?? "",
-      subject: "You created your first product",
-      from: EMAIL_FROM,
-      react: FirstProductCreatedEmail({
-        product: product.name,
-        slug: product.slug,
-      }),
+    await resend.emails.send({        
+        to: user.email ?? "",
+        subject: "You created your first product",
+        from: EMAIL_FROM,
+        react: FirstProductCreatedEmail({
+            product: product.name,
+            slug: product.slug,
+        }),
     });
 };
   
