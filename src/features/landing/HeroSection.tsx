@@ -79,7 +79,7 @@ export const HeroSection = () => {
       </div>
       <div className="mx-auto px-4 text-center md:max-w-screen-md lg:max-w-screen-lg lg:px-36">
         <span className="font-semibold uppercase text-gray-400">
-          en colaboration avec
+          en partenariat avec
         </span>
         <div className="mt-8 flex flex-wrap items-center justify-center text-muted-foreground sm:justify-between">
           <a
