@@ -1,7 +1,7 @@
 import { Layout, LayoutTitle } from "@/components/layout";
 import type { PageParams } from "@/types/next";
 import { ProductForm } from "./ProductForm";
-import { requieredCurrentUser } from "@/auth/current-user";
+import { requiredCurrentUser } from "@/auth/current-user";
 import { prisma } from "@/prisma";
 import { notFound } from "next/navigation";
 
@@ -10,7 +10,7 @@ export default async function RoutePage(
     productId: string;
   }>
 ) {
-  const user = await requieredCurrentUser();
+  const user = await requiredCurrentUser();
 
   const product = await prisma.product.findUnique({
     where: {

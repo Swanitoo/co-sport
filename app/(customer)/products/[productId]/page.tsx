@@ -1,4 +1,4 @@
-import { requieredCurrentUser } from "@/auth/current-user";
+import { requiredCurrentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +14,7 @@ export default async function RoutePage(
     productId: string;
   }>
 ) {
-  const user = await requieredCurrentUser();
+  const user = await requierequiredCurrentUserredCurrentUser();
 
   const product = await prisma.product.findUnique({
     where: {

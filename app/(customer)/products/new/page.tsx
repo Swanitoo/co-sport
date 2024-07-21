@@ -1,14 +1,14 @@
 import { Layout, LayoutTitle } from "@/components/layout";
 import type { PageParams } from "@/types/next";
 import { ProductForm } from "../[productId]/edit/ProductForm";
-import { requieredCurrentUser } from "@/auth/current-user";
 import { prisma } from "@/prisma";
 import { AlertTriangle } from "lucide-react";
 import { PricingSection } from "@/features/landing/PricingSection";
+import { requiredCurrentUser } from "@/auth/current-user";
 
 export default async function RoutePage(props: PageParams<{}>) {
 
-    const user = await requieredCurrentUser();
+    const user = await requiredCurrentUser();
 
     const isAutorized =
         user.plan === "PREMIUM"
