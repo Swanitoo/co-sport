@@ -14,7 +14,7 @@ export default async function RoutePage(
     productId: string;
   }>
 ) {
-  const user = await requierequiredCurrentUserredCurrentUser();
+  const user = await requiredCurrentUser();
 
   const product = await prisma.product.findUnique({
     where: {
