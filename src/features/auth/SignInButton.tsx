@@ -14,7 +14,7 @@ export const SignInButton = () => {
       }}
     >
       <LogIn size={16} className="mr-2" />
-      Sign In
+      Connexion
     </Button>
   );
 };

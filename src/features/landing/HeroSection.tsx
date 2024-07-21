@@ -1,5 +1,6 @@
 import { buttonVariants } from "@/components/ui/button";
 import { Section } from "./Section";
+import Link from "next/link";
 
 export const HeroSection = () => {
   return (
@@ -13,7 +14,7 @@ export const HeroSection = () => {
           New
         </span>{" "}
         <span className="text-sm font-medium">
-          Review is now available
+          Nouvelle version 2.0
         </span>
         <svg
           className="ml-2 size-5"
@@ -29,14 +30,13 @@ export const HeroSection = () => {
         </svg>
       </a>
       <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-foreground  md:text-5xl lg:text-6xl">
-        Increase your customer review by 4
+        Trouve ton partenaire de sport
       </h1>
       <p className="mb-8 text-lg font-normal text-muted-foreground sm:px-16 lg:text-xl xl:px-48">
-        Using note taking to engage the customer in more meaningful
-        review.
+      Consulte les avis de la communauté et partage ton expérience pour aider les autres à trouver leur parfait partenaire d'entraînement.
       </p>
       <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0 lg:mb-16">
-        <a
+        {/* <a
           href="#"
           className={buttonVariants({
             size: "lg",
@@ -55,8 +55,11 @@ export const HeroSection = () => {
               clip-rule="evenodd"
             ></path>
           </svg>
-        </a>
-        <a
+        </a> */}
+        <Link className={buttonVariants({ size: "lg" })} href="#pricing">
+          Commence maintenant
+        </Link>
+        {/* <a
           href="#"
           className={buttonVariants({
             size: "lg",
@@ -72,11 +75,11 @@ export const HeroSection = () => {
             <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
           </svg>
           Watch video
-        </a>
+        </a> */}
       </div>
       <div className="mx-auto px-4 text-center md:max-w-screen-md lg:max-w-screen-lg lg:px-36">
         <span className="font-semibold uppercase text-gray-400">
-          FEATURED IN
+          en colaboration avec
         </span>
         <div className="mt-8 flex flex-wrap items-center justify-center text-muted-foreground sm:justify-between">
           <a

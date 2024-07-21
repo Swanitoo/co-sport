@@ -21,18 +21,18 @@ export const PricingSection = async () => {
     <section id="pricing">
       <div className="mx-auto mb-8 max-w-screen-md text-center lg:mb-12">
         <h2 className="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-          Increase your testimonials by 2
+          2 Abonnnements au choix
         </h2>
         <p className="mb-5 font-light text-gray-500 dark:text-gray-400 sm:text-xl">
-          We offer a simple plan for everyone.
+          Un accès gratuit dans un premier temps
         </p>
       </div>
       <div className="flex justify-center gap-4 max-lg:flex-col">
         <PricingCard
           title="Starter"
           price={0}
-          description="To try our product"
-          items={["Create 1 product", "Get 10 reviews"]}
+          description="Pour un essais"
+          items={["Créez une sceance", "Reservez 10 sceances"]}
         >
           <Link
             href="/api/auth/signin"
@@ -44,7 +44,7 @@ export const PricingSection = async () => {
               "w-full"
             )}
           >
-            Sign Up
+            Inscription
           </Link>
         </PricingCard>
         <PricingCard
@@ -52,11 +52,10 @@ export const PricingSection = async () => {
           price={15}
           description="For business that want to grow with the best review experience"
           items={[
-            "Create infinite product",
-            "Get infinite reviews",
-            "Customize your review page",
-            "Customize your colors",
-            "Get a 'wall of reviews'",
+            "Creez un nombres de sceance infini",
+            "Participez a un nombre de sceance infini",
+            "Personalisez vos sceances",
+            "Posez un max d'avis",
           ]}
         >
           {user ? (
@@ -84,7 +83,7 @@ export const PricingSection = async () => {
                 "w-full"
               )}
             >
-              Sign Up
+              Inscription
             </Link>
           )}
         </PricingCard>

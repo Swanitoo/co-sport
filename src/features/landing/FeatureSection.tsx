@@ -18,7 +18,7 @@ export const FeatureSection = () => {
     <>
       <Section className="pb-2" id="features">
         <h2 className="text-center text-3xl font-bold">
-          The review process made simple :
+          Le procéder est simple :
         </h2>
       </Section>
       <Section className="light rounded-lg bg-gradient-to-r from-fuchsia-600 to-pink-600 py-12 text-foreground shadow">
@@ -34,7 +34,7 @@ export const FeatureSection = () => {
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
                 <h2 className="text-lg font-bold">
-                  {`How much did you like co-sport.com`}
+                  {`Que penses-tu de co-sport.com`}
                 </h2>
                 <RatingSelector
                   onSelect={(review) => {
@@ -61,7 +61,7 @@ export const FeatureSection = () => {
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
                 <h2 className="text-lg font-bold">
-                  {"I need more information about you!"}
+                  {"J'ai besoin de plus d'informations sur toi"}
                 </h2>
                 <SocialSelector
                   onSelect={(name, url) => {
@@ -88,7 +88,7 @@ export const FeatureSection = () => {
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
                 <h2 className="text-lg font-bold">
-                  {"Tell me what you liked and what you disliked?"}
+                  {"Dis moi ce que tu as aimé est moins aimé ?"}
                 </h2>
                 <ReviewTextSelector
                   onInputSend={(i) => {
@@ -118,12 +118,12 @@ export const FeatureSection = () => {
                 className="flex h-full max-w-lg flex-col items-center justify-center gap-4"
               >
                 <h2 className="text-lg font-bold">
-                  {"Thanks for your review!"}
+                  {"Merci pour ton avis!"}
                 </h2>
                 <Card>
                   <CardHeader>
                     <CardDescription>
-                      Here is the customer review submitted ✅
+                      Ton avis a bien été publié ! ✅
                     </CardDescription>
                   </CardHeader>
                 </Card>
@@ -134,7 +134,7 @@ export const FeatureSection = () => {
       </Section>
       <Section className="flex flex-col items-center justify-center gap-8">
         <h2 className="text-center text-3xl font-bold">
-          And get your review wall to share !
+          Partage ton avis !
         </h2>
 
         <div>
@@ -168,7 +168,7 @@ const reviews: Review[] = [
     rating: 5,
     socialLink: "",
     socialType: "LINKEDIN",
-    text: "I love it! The AI Vocal feature is a game-changer for collecting customer feedback.",
+    text: "J'ai trouvé un super partenaire pour mes séances de course à pied. On se motive mutuellement, c'est génial !",
   },
   {
     createdAt: new Date(),
@@ -182,7 +182,7 @@ const reviews: Review[] = [
     rating: 4,
     socialLink: "",
     socialType: "LINKEDIN",
-    text: "Really impressed with how easy it is to leave voice notes. Makes giving feedback feel more personal.",
+    text: "Super expérience, j'ai rencontré quelqu'un pour faire du yoga ensemble. C'est plus motivant à deux !",
   },
   {
     createdAt: new Date(),
@@ -196,7 +196,7 @@ const reviews: Review[] = [
     rating: 5,
     socialLink: "",
     socialType: "TWITTER",
-    text: "The review process is incredibly streamlined, and the Review AI Vocal helps capture genuine customer sentiments.",
+    text: "Faire du sport à plusieurs, c'est vraiment plus fun. Merci Co-Sport !",
   },
   {
     createdAt: new Date(),
@@ -210,7 +210,7 @@ const reviews: Review[] = [
     rating: 3,
     socialLink: "",
     socialType: "LINKEDIN",
-    text: "Good concept, but the voice note feature could be smoother. Looking forward to updates!",
+    text: "Grâce à Co-Sport, j'ai un partenaire de fitness avec qui je m'entraîne régulièrement. Ça change tout !",
   },
   {
     createdAt: new Date(),
@@ -224,7 +224,7 @@ const reviews: Review[] = [
     rating: 5,
     socialLink: "",
     socialType: "LINKEDIN",
-    text: "As a business owner, gathering quality testimonials has never been easier. Highly recommend!",
+    text: "Je me sens en meilleure forme depuis que je m'entraîne avec un partenaire trouvé sur ce site.",
   },
   {
     createdAt: new Date(),
@@ -238,7 +238,7 @@ const reviews: Review[] = [
     rating: 5,
     socialLink: "",
     socialType: "LINKEDIN",
-    text: "I love it! The AI Vocal feature is a game-changer for collecting customer feedback.",
+    text: "Co-Sport m'a permis de rencontrer quelqu'un près de chez moi pour faire des séances de musculation. Top !",
   },
   {
     createdAt: new Date(),
@@ -252,7 +252,7 @@ const reviews: Review[] = [
     rating: 4,
     socialLink: "",
     socialType: "LINKEDIN",
-    text: "Really impressed with how easy it is to leave voice notes. Makes giving feedback feel more personal.",
+    text: "Les avis m'ont beaucoup aidé à choisir un partenaire d'entraînement. Super service.",
   },
   {
     createdAt: new Date(),
@@ -266,7 +266,7 @@ const reviews: Review[] = [
     rating: 5,
     socialLink: "",
     socialType: "TWITTER",
-    text: "The review process is incredibly streamlined, and the Review AI Vocal helps capture genuine customer sentiments.",
+    text: "Le site est facile à utiliser et j'ai trouvé quelqu'un pour faire du vélo avec moi. Je recommande !",
   },
   {
     createdAt: new Date(),
@@ -280,7 +280,7 @@ const reviews: Review[] = [
     rating: 3,
     socialLink: "",
     socialType: "LINKEDIN",
-    text: "Good concept, but the voice note feature could be smoother. Looking forward to updates!",
+    text: "Très satisfait de mon partenaire d'entraînement. On se motive et on progresse ensemble.",
   },
   {
     createdAt: new Date(),
@@ -294,6 +294,6 @@ const reviews: Review[] = [
     rating: 5,
     socialLink: "",
     socialType: "LINKEDIN",
-    text: "As a business owner, gathering quality testimonials has never been easier. Highly recommend!",
+    text: "Bonne plateforme, j'ai pu trouver un partenaire de sport qui me correspond parfaitement.",
   },
 ];

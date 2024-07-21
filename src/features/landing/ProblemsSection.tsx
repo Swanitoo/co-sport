@@ -4,23 +4,23 @@ export const ProblemsSection = () => {
   return (
     <Section>
       <h2 className="text-center text-3xl font-bold">
-        Increase your review = increase your sales
+      Sociabiliser = Se surpasser
       </h2>
       <div className="m-auto mt-4 flex max-w-3xl gap-4 max-lg:flex-col">
         <div className="flex flex-1 flex-col items-start rounded-lg bg-red-500/50 p-4 shadow lg:p-8">
-          <h3 className="text-xl font-bold">Before co-sport.com</h3>
+          <h3 className="text-xl font-bold">Free plan</h3>
           <ul className="flex list-disc flex-col items-start text-left ml-5">
-            <li>Customer don't trust your product</li>
-            <li>Customer doesn't make review because it's too long</li>
-            <li>It's hard to get review from customer</li>
+            <li>Créer une sceance</li>
+            <li>Nombre de réservation limité</li>
+            <li>Nombre d'avis limité</li>
           </ul>
         </div>
         <div className="flex flex-1 flex-col items-start rounded-lg bg-green-500/50 p-4 shadow lg:p-8">
-          <h3 className="text-xl font-bold">After co-sport.com</h3>
+          <h3 className="text-xl font-bold">Premium</h3>
           <ul className="flex list-disc flex-col items-start text-left ml-5">
-            <li>Customer trust your product and PAY 💰</li>
-            <li>You get A LOT of review because of the process</li>
-            <li>Customer WANT give you a review</li>
+            <li>Creer des sceances ilimité 💰</li>
+            <li>Reservez autant que vous voulez</li>
+            <li>Nombre d'avis limité</li>
           </ul>
         </div>
       </div>

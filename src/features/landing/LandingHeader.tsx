@@ -73,8 +73,8 @@ export function LandingHeader() {
           }}
           className="flex items-center gap-4 text-sm font-medium text-muted-foreground"
         >
-          <a href="#pricing">Pricing</a>
-          <a href="#features">Feathures</a>
+          <a href="#pricing">Prix</a>
+          <a href="#features">Fonctionnalités</a>
           <AppButton />
           <ModeToggle />
         </motion.nav>
