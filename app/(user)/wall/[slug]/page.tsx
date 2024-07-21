@@ -4,7 +4,7 @@ import type { PageParams } from "@/types/next";
 import { notFound } from "next/navigation";
 import { ReviewItem } from "./ReviewCard";
 
-export const maxDuration = 50;
+export const maxDuration = 10;
 
 export default async function RoutePage(props: PageParams<{ slug: string }>) {
   const product = await prisma.product.findFirst({
