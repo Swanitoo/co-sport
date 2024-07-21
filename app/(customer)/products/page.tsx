@@ -65,9 +65,11 @@ export default async function RoutePage(props: PageParams<{}>) {
           <TableBody>
             {products.map((product) => (
               <TableRow key={product.id}>
+                <TableCell>
                 <Link href={`/products/${product.id}`} key={product.id}>
-                  <TableCell>{product.name}</TableCell>
+                  {product.name}
                 </Link>
+                </TableCell>
                 <TableCell className="font-mono">{product.slug}</TableCell>
                 <TableCell className="font-mono">
                   {product._count.reviews}
