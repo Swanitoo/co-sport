@@ -8,7 +8,7 @@ export const getServerUrl = () => {
   
     // If we are in production, we return the production URL.
     if (process.env.VERCEL_ENV === "production") {
-      return "https://get-testimonials.com";
+      return "https://co-sport.com";
     }
   
     // If we are in "stage" environment, we return the staging URL.

@@ -34,7 +34,7 @@ export const FeatureSection = () => {
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
                 <h2 className="text-lg font-bold">
-                  {`How much did you like get-testimonials.com`}
+                  {`How much did you like co-sport.com`}
                 </h2>
                 <RatingSelector
                   onSelect={(review) => {
@@ -164,7 +164,7 @@ const reviews: Review[] = [
     image: "",
     ip: "",
     name: "John Doe",
-    productId: "get-testimonials-com",
+    productId: "co-sport.com",
     rating: 5,
     socialLink: "",
     socialType: "LINKEDIN",
@@ -178,7 +178,7 @@ const reviews: Review[] = [
     image: "",
     ip: "",
     name: "Emily Rivera",
-    productId: "get-testimonials-com",
+    productId: "co-sport.com",
     rating: 4,
     socialLink: "",
     socialType: "LINKEDIN",
@@ -192,7 +192,7 @@ const reviews: Review[] = [
     image: "",
     ip: "",
     name: "Michael Chen",
-    productId: "get-testimonials-com",
+    productId: "co-sport.com",
     rating: 5,
     socialLink: "",
     socialType: "TWITTER",
@@ -206,7 +206,7 @@ const reviews: Review[] = [
     image: "",
     ip: "",
     name: "Sofia Patel",
-    productId: "get-testimonials-com",
+    productId: "co-sport.com",
     rating: 3,
     socialLink: "",
     socialType: "LINKEDIN",
@@ -220,7 +220,7 @@ const reviews: Review[] = [
     image: "",
     ip: "",
     name: "Alex Johnson",
-    productId: "get-testimonials-com",
+    productId: "co-sport.com",
     rating: 5,
     socialLink: "",
     socialType: "LINKEDIN",
@@ -234,7 +234,7 @@ const reviews: Review[] = [
     image: "",
     ip: "",
     name: "John Doe",
-    productId: "get-testimonials-com",
+    productId: "co-sport.com",
     rating: 5,
     socialLink: "",
     socialType: "LINKEDIN",
@@ -248,7 +248,7 @@ const reviews: Review[] = [
     image: "",
     ip: "",
     name: "Emily Rivera",
-    productId: "get-testimonials-com",
+    productId: "co-sport.com",
     rating: 4,
     socialLink: "",
     socialType: "LINKEDIN",
@@ -262,7 +262,7 @@ const reviews: Review[] = [
     image: "",
     ip: "",
     name: "Michael Chen",
-    productId: "get-testimonials-com",
+    productId: "co-sport.com",
     rating: 5,
     socialLink: "",
     socialType: "TWITTER",
@@ -276,7 +276,7 @@ const reviews: Review[] = [
     image: "",
     ip: "",
     name: "Sofia Patel",
-    productId: "get-testimonials-com",
+    productId: "co-sport.com",
     rating: 3,
     socialLink: "",
     socialType: "LINKEDIN",
@@ -290,7 +290,7 @@ const reviews: Review[] = [
     image: "",
     ip: "",
     name: "Alex Johnson",
-    productId: "get-testimonials-com",
+    productId: "co-sport.com",
     rating: 5,
     socialLink: "",
     socialType: "LINKEDIN",

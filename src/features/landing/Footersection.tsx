@@ -4,7 +4,7 @@ export const FooterSection = () => {
         <div className="mx-auto w-full max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
           <span className="text-sm text-muted-foreground sm:text-center">
             © 2024{" "}
-            <a href="https://get-testimonials.com" className="hover:underline">
+            <a href="https://co-sport.com" className="hover:underline">
               Co-sport
             </a>
             . All Rights Reserved.

@@ -60,7 +60,7 @@ export function LandingHeader() {
             src="/icon.png"
             width={32}
             height={32}
-            alt="get-testimonials.com logo"
+            alt="co-sport.com logo"
           />
         </motion.div>
         <motion.nav
@@ -75,7 +75,7 @@ export function LandingHeader() {
         >
           <a href="#pricing">Pricing</a>
           <a href="#features">Feathures</a>
-
+          <AppButton />
           <ModeToggle />
         </motion.nav>
       </div>
@@ -87,6 +87,11 @@ let clamp = (number: number, min: number, max: number) =>
   Math.min(Math.max(number, min), max);
 
 const AppButton = () => {
+  const session = useSession();
 
-
+  if (session.data?.user) {
+    return <a href="/products">App</a>;
+  } else {
+    return <SignInButton />;
+  }
 };

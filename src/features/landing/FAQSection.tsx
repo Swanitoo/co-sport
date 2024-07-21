@@ -13,7 +13,7 @@ import {
         "The AI Vocal feature allows customers to leave voice notes as reviews. Our AI then transcribes these notes into text, making it easier to share and analyze feedback.",
     },
     {
-      question: "Can I integrate get-testimonials.com with my website?",
+      question: "Can I integrate co-sport.com with my website?",
       answer:
         "Yes, you can easily integrate our service with your website. We provide simple widgets and APIs that you can embed to start collecting testimonials directly from your site.",
     },
@@ -24,7 +24,7 @@ import {
     },
     {
       question:
-        "How does get-testimonials.com ensure the authenticity of reviews?",
+        "How does co-sport.com ensure the authenticity of reviews?",
       answer:
         "We use several verification methods to ensure reviews are authentic, including social media verification and IP checks. This maintains the credibility of your testimonials.",
     },
@@ -50,14 +50,14 @@ import {
         "Yes, our platform provides analytics tools that allow you to measure the impact of your reviews, including sentiment analysis, review volume trends, and more.",
     },
     {
-      question: "Can I respond to reviews directly through get-testimonials.com?",
+      question: "Can I respond to reviews directly through co-sport.com?",
       answer:
         "Yes, our platform enables you to respond to reviews directly, allowing you to engage with your customers and address their feedback promptly.",
     },
     {
       question: "What support options are available if I need help?",
       answer:
-        "We offer comprehensive support through our Help Center, email support, and live chat. Our team is dedicated to assisting you in making the most of get-testimonials.com.",
+        "We offer comprehensive support through our Help Center, email support, and live chat. Our team is dedicated to assisting you in making the most of co-sport.com.",
     },
   ];
   

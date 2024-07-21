@@ -1,7 +1,7 @@
 import { SignInButton } from "./SignInButton"
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LoggedInDropDown } from "./LoggedInDropdown";
+import { LoggedInDropdown } from "./LoggedInDropdown";
 import { currentUser } from "@/auth/current-user";
 import { Star } from "lucide-react";
 
@@ -13,7 +13,7 @@ export const LoggedInButton = async () => {
     }
 
     return (
-        <LoggedInDropDown>
+        <LoggedInDropdown>
             <Button variant="outline" size="sm">
                 {user.plan ==="PREMIUM" ? <Star size={14} className="mr-2" /> : null}
                 <Avatar className="size-6">
@@ -26,6 +26,6 @@ export const LoggedInButton = async () => {
                     ): null}
                 </Avatar>
             </Button>
-        </LoggedInDropDown>
+        </LoggedInDropdown>
     );
 };

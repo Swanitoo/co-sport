@@ -26,7 +26,7 @@ export const PremiumEmail = () => {
       </Text>
 
       <Text className="text-base font-light leading-8 text-gray-800">
-        Melvyn, creator of get-testimonials.com
+        Swan, creator of co-sport.com.com
       </Text>
     </EmailLayout>
   );
