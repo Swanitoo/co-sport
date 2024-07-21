@@ -3,12 +3,14 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "./providers";
+import { getServerUrl } from "@/get-server-url";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "co-sport.com",
   description: "Share your sport session with everyone",
+  metadataBase: new URL(getServerUrl()),
 };
 
 export default function RootLayout({
