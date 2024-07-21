@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { CTASection } from "@/features/landing/CTASection";
 import { FAQSection } from "@/features/landing/FAQSection";
 import { FeatureSection } from "@/features/landing/FeatureSection";
 import { HeroSection } from "@/features/landing/HeroSection";
@@ -17,6 +18,7 @@ export default function Home() {
       <ProblemsSection />
       <PricingSection />
       <FAQSection />
+      <CTASection />
     </div>
   );
 }
