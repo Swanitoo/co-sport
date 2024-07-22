@@ -54,8 +54,8 @@ export const PricingSection = async () => {
           items={[
             "Creez un nombres de sceance infini",
             "Participez a un nombre de sceance infini",
-            "Personalisez vos sceances",
-            "Posez un max d'avis",
+            "Choisissez n'importe quel sport",
+            "Organise ton programme pour que le pratiquant se calle dessus",
           ]}
         >
           {user ? (
