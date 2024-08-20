@@ -20,7 +20,6 @@ export default async function RoutePage(
   const product = await prisma.product.findUnique({
     where: {
       id: props.params.productId,
-      userId: user.id,
     },
     include: {
       reviews: {
@@ -37,6 +36,8 @@ export default async function RoutePage(
     notFound();
   }
 
+  const isOwner = product.userId === user.id; 
+
   return (
     <Layout>
       <div className="flex justify-between">
@@ -44,15 +45,17 @@ export default async function RoutePage(
           <LayoutTitle>{product.name}</LayoutTitle>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/products/${product.id}/edit`}
-            className={buttonVariants({ size: "sm", variant: "secondary" })}
-          >
-            Edit
-          </Link>
-          <DeleteButton productId={product.id} />
-        </div>
+        {isOwner && (
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/products/${product.id}/edit`}
+              className={buttonVariants({ size: "sm", variant: "secondary" })}
+            >
+              Edit
+            </Link>
+            <DeleteButton productId={product.id} />
+          </div>
+        )}
       </div>
 
       <div className="flex gap-4 max-lg:flex-col">

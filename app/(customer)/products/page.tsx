@@ -17,13 +17,11 @@ export default async function RoutePage(props: PageParams<{}>) {
   const user = await requiredCurrentUser();
 
   const products = await prisma.product.findMany({
-    where: {
-      userId: user.id,
-    },
     select: {
       id: true,
       name: true,
       slug: true,
+      userId: true,
       _count: {
         select: {
           reviews: {
@@ -42,24 +40,24 @@ export default async function RoutePage(props: PageParams<{}>) {
     <Layout>
       <div className="flex justify-between">
         <div className="space-y-0.5">
-          <LayoutTitle>Products</LayoutTitle>
-          <LayoutDescription>Create product to review.</LayoutDescription>
+          <LayoutTitle>Session</LayoutTitle>
+          <LayoutDescription>Crée ta session ou rejoins-en une.</LayoutDescription>
         </div>
 
         <Link
           href={`/products/new`}
           className={buttonVariants({ size: "sm", variant: "secondary" })}
         >
-          Create
+          Créer
         </Link>
       </div>
       {products.length ? (
         <Table>
           <TableHeader>
             <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Reviews</TableHead>
+                <TableHead>Nom</TableHead>
+                <TableHead>Sport</TableHead>
+                <TableHead>Avis</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
