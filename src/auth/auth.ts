@@ -13,7 +13,7 @@ export const {
 } = NextAuth({
   adapter: PrismaAdapter(prisma),
   theme: {
-    logo: "/icon-title.png",
+    logo: "/opengraph-image.png",
   },
   providers: [
     Google({
