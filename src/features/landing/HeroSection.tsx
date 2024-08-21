@@ -33,7 +33,7 @@ export const HeroSection = () => {
         Trouve ton partenaire de sport
       </h1>
       <p className="mb-8 text-lg font-normal text-muted-foreground sm:px-16 lg:text-xl xl:px-48">
-      Consulte les avis de la communauté et partage ton expérience pour aider les autres à trouver leur parfait partenaire d'entraînement.
+      Quel que soit ton sport, trouve le partenaire idéal, progresse ensemble pour atteindre tes objectifs tout en sociabilisant.
       </p>
       <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0 lg:mb-16">
         {/* <a

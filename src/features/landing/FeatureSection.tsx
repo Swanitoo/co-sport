@@ -10,6 +10,14 @@ import { SocialSelector } from "../../../app/(user)/r/[slug]/SocialSelector";
 import { ReviewItem } from "../../../app/(user)/wall/[slug]/ReviewCard";
 import { Section } from "./Section";
 import RatingSelector from "../../../app/(user)/r/[slug]/RatingSelector";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export const FeatureSection = () => {
   const [step, setStep] = useState(0);
@@ -21,10 +29,11 @@ export const FeatureSection = () => {
           Le procéder est simple :
         </h2>
       </Section>
-      <Section className="light rounded-lg bg-gradient-to-r from-fuchsia-600 to-pink-600 py-12 text-foreground shadow">
+      <Section className="light rounded-lg bg-gradient-to-r from-red-500 to-orange-500 py-12 text-foreground shadow">
         <div className={cn("w-full flex flex-col items-center py-4")}>
           <AnimatePresence mode="wait">
-            {step === 0 && (
+            
+          {step === 0 && (
               <motion.div
                 key="step-0"
                 exit={{
@@ -34,15 +43,75 @@ export const FeatureSection = () => {
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
                 <h2 className="text-lg font-bold">
-                  {`Que penses-tu de co-sport.com`}
+                  {`Choisis ta séance et ton partenaire`}
                 </h2>
-                <RatingSelector
-                  onSelect={(review) => {
-                    setStep((s) => s + 1);
-                  }}
-                />
+                <Table>
+          <TableHeader>
+            <TableRow>
+                <TableHead>Nom</TableHead>
+                <TableHead>Sport</TableHead>
+                <TableHead>Lieux</TableHead>
+                <TableHead>Pratiquant</TableHead>
+                <TableHead>Avis</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+          <TableRow
+          onClick={() => {
+            setStep((s) => s + 1);
+          }}
+          className="cursor-pointer"
+        >
+                <TableCell>
+                  Scéance biceps
+                </TableCell>
+                <TableCell className="font-mono">Musculation</TableCell>
+                <TableCell className="font-mono">Onair Lyon 3</TableCell>
+                <TableCell className="font-mono">Patoche</TableCell>
+                <TableCell className="font-mono">
+                  46
+                </TableCell>
+                
+              </TableRow>
+              <TableRow
+          onClick={() => {
+            setStep((s) => s + 1);
+          }}
+          className="cursor-pointer"
+        >
+                <TableCell>
+                  Scéance boxe anglaise
+                </TableCell>
+                <TableCell className="font-mono">Boxe</TableCell>
+                <TableCell className="font-mono">Club du Rhône</TableCell>
+                <TableCell className="font-mono">Seb</TableCell>
+                <TableCell className="font-mono">
+                  3
+                </TableCell>
+                
+              </TableRow>
+              <TableRow
+          onClick={() => {
+            setStep((s) => s + 1);
+          }}
+          className="cursor-pointer"
+        >
+                <TableCell>
+                  Séssion alpinisme D+
+                </TableCell>
+                <TableCell className="font-mono">Alpinisme</TableCell>
+                <TableCell className="font-mono">Mont cervin</TableCell>
+                <TableCell className="font-mono">Fabrice</TableCell>
+                <TableCell className="font-mono">
+                  105
+                </TableCell>
+                
+              </TableRow>
+          </TableBody>
+        </Table>
               </motion.div>
             )}
+
             {step === 1 && (
               <motion.div
                 key="step-1"
@@ -50,21 +119,13 @@ export const FeatureSection = () => {
                   opacity: 0,
                   x: -100,
                 }}
-                initial={{
-                  opacity: 0,
-                  x: 100,
-                }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                }}
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
                 <h2 className="text-lg font-bold">
-                  {"J'ai besoin de plus d'informations sur toi"}
+                  {`Note ton partenaire`}
                 </h2>
-                <SocialSelector
-                  onSelect={(name, url) => {
+                <RatingSelector
+                  onSelect={(review) => {
                     setStep((s) => s + 1);
                   }}
                 />
@@ -88,7 +149,7 @@ export const FeatureSection = () => {
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
                 <h2 className="text-lg font-bold">
-                  {"Dis moi ce que tu as aimé est moins aimé ?"}
+                  {"Laisse un avis détaillé avec ce que tu as aimé est moins aimé pendant la séance."}
                 </h2>
                 <ReviewTextSelector
                   onInputSend={(i) => {
@@ -96,7 +157,6 @@ export const FeatureSection = () => {
                   }}
                   productId={""}
                 />
-                <p>PS : Not working for the landing page</p>
               </motion.div>
             )}
 
@@ -118,12 +178,12 @@ export const FeatureSection = () => {
                 className="flex h-full max-w-lg flex-col items-center justify-center gap-4"
               >
                 <h2 className="text-lg font-bold">
-                  {"Merci pour ton avis!"}
+                  {"Et voilà !"}
                 </h2>
                 <Card>
                   <CardHeader>
                     <CardDescription>
-                      Ton avis a bien été publié ! ✅
+                      Tu sais utiliser Co-sport ! ✅
                     </CardDescription>
                   </CardHeader>
                 </Card>
@@ -139,7 +199,7 @@ export const FeatureSection = () => {
 
         <div>
           <h2 className="text-4xl font-extrabold">5 / 5</h2>
-          <p>144 reviews</p>
+          <p>22 reviews</p>
         </div>
         <div className="size-full columns-1 md:columns-2 lg:columns-3">
           {reviews.map((r) => (
@@ -163,12 +223,12 @@ const reviews: Review[] = [
     id: "1",
     image: "",
     ip: "",
-    name: "Sylvain",
+    name: "Jean Claude",
     productId: "co-sport.com",
     rating: 5,
-    socialLink: "",
+    socialLink: "https://www.instagram.com/jcvd/",
     socialType: "LINKEDIN",
-    text: "J'ai trouvé un super partenaire pour mes séances de course à pied. On se motive mutuellement, c'est génial !",
+    text: "Co-Sport m'a permis de rencontrer quelqu'un près de chez moi pour faire des séances de musculation. Top !",
   },
   {
     createdAt: new Date(),
@@ -180,7 +240,7 @@ const reviews: Review[] = [
     name: "Emily",
     productId: "co-sport.com",
     rating: 4,
-    socialLink: "",
+    socialLink: "https://www.instagram.com/emily_ratajkowski_official/",
     socialType: "LINKEDIN",
     text: "Super expérience, j'ai rencontré quelqu'un pour faire du yoga ensemble. C'est plus motivant à deux !",
   },
@@ -191,10 +251,10 @@ const reviews: Review[] = [
     id: "3",
     image: "",
     ip: "",
-    name: "Michael",
+    name: "Emmanuel",
     productId: "co-sport.com",
     rating: 5,
-    socialLink: "",
+    socialLink: "https://www.instagram.com/emmanuelmacron/",
     socialType: "TWITTER",
     text: "Faire du sport à plusieurs, c'est vraiment plus fun. Merci Co-Sport !",
   },
@@ -205,10 +265,10 @@ const reviews: Review[] = [
     id: "4",
     image: "",
     ip: "",
-    name: "Sofia",
+    name: "David",
     productId: "co-sport.com",
     rating: 3,
-    socialLink: "",
+    socialLink: "https://www.instagram.com/davidguetta/",
     socialType: "LINKEDIN",
     text: "Grâce à Co-Sport, j'ai un partenaire de fitness avec qui je m'entraîne régulièrement. Ça change tout !",
   },
@@ -219,10 +279,10 @@ const reviews: Review[] = [
     id: "5",
     image: "",
     ip: "",
-    name: "Alex",
+    name: "Ali",
     productId: "co-sport.com",
     rating: 5,
-    socialLink: "",
+    socialLink: "https://www.instagram.com/bigaliofficial/",
     socialType: "LINKEDIN",
     text: "Je me sens en meilleure forme depuis que je m'entraîne avec un partenaire trouvé sur ce site.",
   },
@@ -233,67 +293,11 @@ const reviews: Review[] = [
     id: "6",
     image: "",
     ip: "",
-    name: "John",
+    name: "Kilian",
     productId: "co-sport.com",
     rating: 5,
-    socialLink: "",
+    socialLink: "https://www.instagram.com/kilianjornet/",
     socialType: "LINKEDIN",
-    text: "Co-Sport m'a permis de rencontrer quelqu'un près de chez moi pour faire des séances de musculation. Top !",
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    audio: null,
-    id: "7",
-    image: "",
-    ip: "",
-    name: "Camille",
-    productId: "co-sport.com",
-    rating: 4,
-    socialLink: "",
-    socialType: "LINKEDIN",
-    text: "Les avis m'ont beaucoup aidé à choisir un partenaire d'entraînement. Super service.",
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    audio: null,
-    id: "8",
-    image: "",
-    ip: "",
-    name: "Batiste",
-    productId: "co-sport.com",
-    rating: 5,
-    socialLink: "",
-    socialType: "TWITTER",
-    text: "Le site est facile à utiliser et j'ai trouvé quelqu'un pour faire du vélo avec moi. Je recommande !",
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    audio: null,
-    id: "9",
-    image: "",
-    ip: "",
-    name: "Elodie",
-    productId: "co-sport.com",
-    rating: 3,
-    socialLink: "",
-    socialType: "LINKEDIN",
-    text: "Très satisfait de mon partenaire d'entraînement. On se motive et on progresse ensemble.",
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    audio: null,
-    id: "10",
-    image: "",
-    ip: "",
-    name: "Cassandra",
-    productId: "co-sport.com",
-    rating: 5,
-    socialLink: "",
-    socialType: "LINKEDIN",
-    text: "Bonne plateforme, j'ai pu trouver un partenaire de sport qui me correspond parfaitement.",
+    text: "J'ai trouvé un super partenaire pour mes séances de course à pied. On se motive mutuellement, c'est génial !",
   },
 ];

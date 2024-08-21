@@ -4,7 +4,7 @@ export const ProblemsSection = () => {
   return (
     <Section>
       <h2 className="text-center text-3xl font-bold">
-      Sociabiliser = Se surpasser
+      Se surpasser + Sociabiliser 
       </h2>
       <div className="m-auto mt-4 flex max-w-3xl gap-4 max-lg:flex-col">
         <div className="flex flex-1 flex-col items-start rounded-lg bg-red-500/50 p-4 shadow lg:p-8">
