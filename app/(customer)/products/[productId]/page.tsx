@@ -87,13 +87,13 @@ export default async function RoutePage(
         </Card>
         <Card className="flex-1">
           <CardHeader>
-            <CardTitle>Reviews</CardTitle>
+            <CardTitle>Avis</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                    <TableHead>Name</TableHead>
+                    <TableHead>Nom</TableHead>
                     <TableHead>Text</TableHead>
                 </TableRow>
               </TableHeader>
