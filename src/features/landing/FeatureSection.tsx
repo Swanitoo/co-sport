@@ -6,7 +6,6 @@ import { Review } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { ReviewTextSelector } from "../../../app/(user)/r/[slug]/ReviewTextSelector";
-import { SocialSelector } from "../../../app/(user)/r/[slug]/SocialSelector";
 import { ReviewItem } from "../../../app/(user)/wall/[slug]/ReviewCard";
 import { Section } from "./Section";
 import RatingSelector from "../../../app/(user)/r/[slug]/RatingSelector";
@@ -219,7 +218,6 @@ const reviews: Review[] = [
   {
     createdAt: new Date(),
     updatedAt: new Date(),
-    audio: null,
     id: "1",
     image: "",
     ip: "",
@@ -227,13 +225,11 @@ const reviews: Review[] = [
     productId: "co-sport.com",
     rating: 5,
     socialLink: "https://www.instagram.com/jcvd/",
-    socialType: "LINKEDIN",
     text: "Co-Sport m'a permis de rencontrer quelqu'un près de chez moi pour faire des séances de musculation. Top !",
   },
   {
     createdAt: new Date(),
     updatedAt: new Date(),
-    audio: null,
     id: "2",
     image: "",
     ip: "",
@@ -241,13 +237,11 @@ const reviews: Review[] = [
     productId: "co-sport.com",
     rating: 4,
     socialLink: "https://www.instagram.com/emily_ratajkowski_official/",
-    socialType: "LINKEDIN",
     text: "Super expérience, j'ai rencontré quelqu'un pour faire du yoga ensemble. C'est plus motivant à deux !",
   },
   {
     createdAt: new Date(),
     updatedAt: new Date(),
-    audio: null,
     id: "3",
     image: "",
     ip: "",
@@ -255,13 +249,11 @@ const reviews: Review[] = [
     productId: "co-sport.com",
     rating: 5,
     socialLink: "https://www.instagram.com/emmanuelmacron/",
-    socialType: "TWITTER",
     text: "Faire du sport à plusieurs, c'est vraiment plus fun. Merci Co-Sport !",
   },
   {
     createdAt: new Date(),
     updatedAt: new Date(),
-    audio: null,
     id: "4",
     image: "",
     ip: "",
@@ -269,13 +261,11 @@ const reviews: Review[] = [
     productId: "co-sport.com",
     rating: 3,
     socialLink: "https://www.instagram.com/davidguetta/",
-    socialType: "LINKEDIN",
     text: "Grâce à Co-Sport, j'ai un partenaire de fitness avec qui je m'entraîne régulièrement. Ça change tout !",
   },
   {
     createdAt: new Date(),
     updatedAt: new Date(),
-    audio: null,
     id: "5",
     image: "",
     ip: "",
@@ -283,13 +273,11 @@ const reviews: Review[] = [
     productId: "co-sport.com",
     rating: 5,
     socialLink: "https://www.instagram.com/bigaliofficial/",
-    socialType: "LINKEDIN",
     text: "Je me sens en meilleure forme depuis que je m'entraîne avec un partenaire trouvé sur ce site.",
   },
   {
     createdAt: new Date(),
     updatedAt: new Date(),
-    audio: null,
     id: "6",
     image: "",
     ip: "",
@@ -297,7 +285,6 @@ const reviews: Review[] = [
     productId: "co-sport.com",
     rating: 5,
     socialLink: "https://www.instagram.com/kilianjornet/",
-    socialType: "LINKEDIN",
     text: "J'ai trouvé un super partenaire pour mes séances de course à pied. On se motive mutuellement, c'est génial !",
   },
 ];

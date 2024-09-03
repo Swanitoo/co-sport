@@ -53,16 +53,18 @@ model User {
   image            String?
   plan             Plan      @default(FREE)
   stripeCustomerId String?
+  socialLink       String?  
 
   accounts Account[]
   sessions Session[]
   products Product[]
+  memberships Membership[]  
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-enum Plan {
+enum Plan {   
   FREE
   PREMIUM
 }
@@ -83,6 +85,7 @@ model Product {
   userId String
 
   reviews Review[]
+  memberships Membership[]  
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -93,11 +96,7 @@ model Review {
   rating     Int
   ip         String
   text       String?
-  // Audio URL
-  audio      String?
   socialLink String?
-  socialType SocialType?
-  // Image and name getting from social
   name       String?
   image      String?
 
@@ -108,7 +107,24 @@ model Review {
   updatedAt DateTime @updatedAt
 }
 
-enum SocialType {
-  LINKEDIN
-  TWITTER
+model Membership {
+  id             String    @id @default(cuid())
+  userId         String
+  productId      String
+  status         Status    @default(PENDING)
+  comment        String?
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  REMOVED
 }
