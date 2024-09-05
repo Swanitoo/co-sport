@@ -131,3 +131,48 @@ export const deleteProductAction = userAction(
       });
     }
   );
+
+export async function joinProductAction({ productId, userId }: { productId: string, userId: string }) {
+    try {
+      await prisma.membership.create({
+        data: {
+          userId,
+          productId,
+          status: 'PENDING',
+        },
+      });
+      return { data: 'success' };
+    } catch (error) {
+      console.error('Erreur lors de la demande d\'adhésion:', error);
+      return { serverError: 'Une erreur est survenue. Veuillez réessayer plus tard.' };
+    }
+}
+
+export async function acceptMembershipAction(membershipId: string) {
+    try {
+      await prisma.membership.update({
+        where: { id: membershipId },
+        data: { status: 'APPROVED' },
+      });
+  
+      return { success: true };
+    } catch (error) {
+      console.error("Erreur lors de l'acceptation de la demande:", error);
+      return { success: false, error: "Erreur lors de l'acceptation de la demande." };
+    }
+}
+
+export async function leaveGroupAction(productId: string, userId: string) {
+    try {
+      const membership = await prisma.membership.deleteMany({
+        where: {
+          productId: productId,
+          userId: userId,
+        },
+      });
+  
+      return { data: membership };
+    } catch (error) {
+      return { serverError: "Erreur lors de la suppression de l'adhésion." };
+    }
+}

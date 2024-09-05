@@ -5,10 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
-import { Link2 } from "lucide-react";
+import { CheckCircle, Link2 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DeleteButton } from "./DeleteButton";
+import { JoinButton } from "./JoinButton";
+import { AcceptRequestButton } from "./AcceptButton";
+import { LeaveButton } from "./LeaveButton";
 
 export default async function RoutePage(
   props: PageParams<{
@@ -22,13 +25,20 @@ export default async function RoutePage(
       id: props.params.productId,
     },
     include: {
+      user: {
+        select: {
+          name: true,
+          socialLink: true,
+        },
+      },
       reviews: {
         where: {
-            text: {
-                not: null,
-            }
+          text: {
+            not: null,
+          }
         }
-      }
+      },
+      memberships: true,
     },
   });
 
@@ -37,13 +47,29 @@ export default async function RoutePage(
   }
 
   const isOwner = product.userId === user.id; 
+  const isClient = product.userId !== user.id; 
+
+  const membership = product!.memberships[0];
 
   return (
     <Layout>
       <div className="flex justify-between">
         <div className="space-y-0.5">
           <LayoutTitle>{product.name}</LayoutTitle>
+          {product.user.socialLink ? (
+            <Link href={product.user.socialLink} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+              {product.user.name}
+            </Link>
+          ) : (
+            <p className="text-sm text-gray-600">{product.user.name}</p>
+          )}
         </div>
+
+        {isOwner && product.memberships.some(m => m.status === 'PENDING') && (
+          <div className="flex items-center gap-2">
+          <AcceptRequestButton membershipId={product.memberships.find(m => m.status === 'PENDING')?.id! } />
+          </div>
+        )}
 
         {isOwner && (
           <div className="flex items-center gap-2">
@@ -56,6 +82,42 @@ export default async function RoutePage(
             <DeleteButton productId={product.id} />
           </div>
         )}
+
+        {isClient && !membership && (
+          <JoinButton productId={product.id} userId={user.id} />
+        )}
+
+        {isClient && membership && membership.status === 'PENDING' && (
+          <div className="flex items-center gap-2">
+            <button
+              className={buttonVariants({ size: "sm", variant: "secondary" })}
+              disabled
+            >
+              En attente d'acceptation...
+            </button>
+          </div>
+        )}
+
+        {isClient && membership && membership.status === 'APPROVED' && (
+          <div className="flex items-center gap-2">
+          <span className="flex items-center">
+            <CheckCircle size={16} className="mr-2 text-green-600" />
+            Vous êtes membre
+          </span>
+          <LeaveButton productId={product.id} userId={user.id} />
+        </div>
+        )}
+
+        {isClient && membership && membership.status === 'REMOVED' && (
+          <div className="flex items-center gap-2">
+            <button
+              className={buttonVariants({ size: "sm", variant: "destructive" })}
+              disabled
+            >
+              Adhésion refusée
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-4 max-lg:flex-col">
@@ -64,7 +126,7 @@ export default async function RoutePage(
             <CardTitle>Details</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2 items-start">
-            <p>Slug : {product.slug}</p>
+            <p>Sport : {product.slug}</p>
             <Link
               href={`/r/${product.slug}`}
               className={buttonVariants({
@@ -72,7 +134,7 @@ export default async function RoutePage(
               })}
             >
               <Link2 size={16} className="mr-2" />
-              Share review link
+              Écris un avis
             </Link>
             <Link
               href={`/wall/${product.slug}`}
@@ -81,7 +143,7 @@ export default async function RoutePage(
               })}
             >
               <Link2 size={16} className="mr-2" />
-              Wall link
+              Découvre tout les avis
             </Link>
           </CardContent>
         </Card>
