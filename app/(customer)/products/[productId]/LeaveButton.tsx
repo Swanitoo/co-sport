@@ -15,37 +15,52 @@ export type LeaveButtonProps = {
 
 export const LeaveButton = (props: LeaveButtonProps) => {
   const router = useRouter();
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const leaveMutation = useMutation({
     mutationFn: () => leaveGroupAction(props.productId, props.userId),
-    onSuccess: ({ data, serverError }) => {
-      if (serverError) {
-        toast.error(serverError);
-        return;
-      }
-
+    onSuccess: () => {
       toast.success("Vous avez quitté le groupe.");
-
-      router.push("/dashboard");
       router.refresh();
     },
+    onError: (error) => {
+      toast.error("Erreur lors de la tentative de quitter le groupe: " + error.message);
+    }
   });
 
-  const [isConfirming, setIsConfirming] = useState(false);
-
   return (
-    <Button
-      size="sm"
-      variant="destructive"
-      onClick={() => {
-        if (isConfirming) {
-          leaveMutation.mutate();
-        } else {
-          setIsConfirming(true);
-        }
-      }}
-    >
-      {leaveMutation.isPending && <Loader2 className="size-4 animate-spin" />}
-      {isConfirming ? "Êtes-vous sûr ?" : "Quitter le groupe"}
-    </Button>
+    <>
+      <Button
+        size="sm"
+        variant="destructive"
+        onClick={() => setShowConfirm(true)}
+      >
+        Quitter le groupe
+      </Button>
+
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-secondary p-4 rounded-lg shadow-lg">
+            <p>Êtes-vous sûr de vouloir quitter ce groupe ?</p>
+            <div className="flex justify-end space-x-2 mt-4">
+              <Button variant="secondary" onClick={() => setShowConfirm(false)}>
+                Non
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  leaveMutation.mutate();
+                  setShowConfirm(false);
+                }}
+              >
+                Oui
+              </Button>
+            </div>
+          </div>
+          {leaveMutation.isPending && <Loader2 className="size-4 animate-spin" />}
+        </div>
+      )}
+
+    </>
   );
 };

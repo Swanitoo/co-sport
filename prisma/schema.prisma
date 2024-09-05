@@ -127,4 +127,5 @@ enum Status {
   PENDING
   APPROVED
   REMOVED
+  REFUSED
 }

@@ -23,3 +23,12 @@ export const GRADIENTS_CLASSES = [
     "bg-gradient-to-r from-fuchsia-600 to-pink-600",
     "bg-gradient-to-r from-blue-800 to-indigo-900",
 ];
+
+export const MembershipSchema = z.object({
+    userId: z.string(),
+    productId: z.string(), 
+    comment: z.string().optional().nullable(),  
+    status: z.enum(["PENDING", "APPROVED", "REFUSED", "REMOVED"]),  
+});
+
+export type MembershipType = z.infer<typeof MembershipSchema>;

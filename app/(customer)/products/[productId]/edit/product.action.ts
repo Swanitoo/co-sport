@@ -4,7 +4,7 @@ import { ActionError, userAction } from "@/safe-actions";
 import { ProductSchema } from "./product.schema";
 import { prisma } from "@/prisma";
 import { z } from "zod";
-import { User } from "@prisma/client";
+import { Status, User } from "@prisma/client";
 import { resend } from "@/resend";
 import { EMAIL_FROM } from "@/config";
 import FirstProductCreatedEmail from "../../../../../emails/FirstProductCreatedEmail";
@@ -132,14 +132,18 @@ export const deleteProductAction = userAction(
     }
   );
 
-export async function joinProductAction({ productId, userId }: { productId: string, userId: string }) {
+export async function joinProductAction({ productId, userId, comment }: { productId: string, userId: string, comment: string; }) {
+    const membershipData = {
+        userId,
+        productId,
+        comment,
+        status: Status.PENDING,
+    };
+    
     try {
       await prisma.membership.create({
-        data: {
-          userId,
-          productId,
-          status: 'PENDING',
-        },
+        data: membershipData,
+
       });
       return { data: 'success' };
     } catch (error) {
@@ -174,5 +178,34 @@ export async function leaveGroupAction(productId: string, userId: string) {
       return { data: membership };
     } catch (error) {
       return { serverError: "Erreur lors de la suppression de l'adhésion." };
+    }
+}
+
+export async function refuseMembershipAction(membershipId: string) {
+    try {
+        const deletedMembership = await prisma.membership.delete({
+            where: { id: membershipId },
+        });
+        return { success: true, data: deletedMembership };
+    } catch (error) {
+        console.error("Erreur lors du refus de la demande:", error);
+        return { success: false, error: "Erreur lors du refus de la demande." };
+    }
+}
+
+export async function removeMemberAction({ membershipId, comment }: { membershipId: string, comment: string }) {
+    try {
+      await prisma.membership.update({
+        where: { id: membershipId },
+        data: { 
+          status: 'REMOVED',
+          comment: comment 
+        },
+      });
+  
+      return { success: true };
+    } catch (error) {
+      console.error("Erreur lors du retrait du membre:", error);
+      return { success: false, error: "Erreur lors du retrait du membre." };
     }
 }

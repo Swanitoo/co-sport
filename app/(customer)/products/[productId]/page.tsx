@@ -12,6 +12,7 @@ import { DeleteButton } from "./DeleteButton";
 import { JoinButton } from "./JoinButton";
 import { AcceptRequestButton } from "./AcceptButton";
 import { LeaveButton } from "./LeaveButton";
+import { RemoveMemberButton } from "./RemoveMemberButton";
 
 export default async function RoutePage(
   props: PageParams<{
@@ -19,7 +20,6 @@ export default async function RoutePage(
   }>
 ) {
   const user = await requiredCurrentUser();
-
   const product = await prisma.product.findUnique({
     where: {
       id: props.params.productId,
@@ -29,6 +29,7 @@ export default async function RoutePage(
         select: {
           name: true,
           socialLink: true,
+          image: true,
         },
       },
       reviews: {
@@ -38,7 +39,17 @@ export default async function RoutePage(
           }
         }
       },
-      memberships: true,
+      memberships: {
+        include: {
+          user: {
+            select: {
+              name: true,
+              socialLink: true,
+              image: true,
+            }
+          }
+        }
+      }
     },
   });
 
@@ -49,7 +60,11 @@ export default async function RoutePage(
   const isOwner = product.userId === user.id; 
   const isClient = product.userId !== user.id; 
 
-  const membership = product!.memberships[0];
+  const activeMemberships = product.memberships.filter(m => m.status === 'APPROVED');
+  const membership = product.memberships.find(m => m.userId === user.id);
+
+  const pendingMemberships = product.memberships.filter(m => m.status === 'PENDING');
+  const pendingCount = pendingMemberships.length;
 
   return (
     <Layout>
@@ -65,14 +80,13 @@ export default async function RoutePage(
           )}
         </div>
 
-        {isOwner && product.memberships.some(m => m.status === 'PENDING') && (
-          <div className="flex items-center gap-2">
-          <AcceptRequestButton membershipId={product.memberships.find(m => m.status === 'PENDING')?.id! } />
-          </div>
+        <div className="flex items-center gap-2">
+        {isOwner && pendingMemberships.length > 0 && (
+            <AcceptRequestButton membership={pendingMemberships[0]} count={pendingCount} />
         )}
 
         {isOwner && (
-          <div className="flex items-center gap-2">
+          <>
             <Link
               href={`/products/${product.id}/edit`}
               className={buttonVariants({ size: "sm", variant: "secondary" })}
@@ -80,8 +94,9 @@ export default async function RoutePage(
               Edit
             </Link>
             <DeleteButton productId={product.id} />
-          </div>
+          </>
         )}
+        </div>
 
         {isClient && !membership && (
           <JoinButton productId={product.id} userId={user.id} />
@@ -175,6 +190,39 @@ export default async function RoutePage(
           </CardContent>
         </Card>
       </div>
+      {isOwner && (
+          <Card className="flex-1">
+            <CardHeader>
+              <CardTitle>Membres</CardTitle>
+            </CardHeader>
+            <CardContent>
+            <Table>
+        <TableBody>
+          {activeMemberships.map((membership) => (
+            <TableRow key={membership.id}>
+              <TableCell>
+                <p>{membership.user.name}</p>
+                {membership.user.socialLink && (
+                  <Link
+                    href={membership.user.socialLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    Réseau social
+                  </Link>
+                )}
+              </TableCell>
+              <TableCell className="text-right">
+                <RemoveMemberButton membershipId={membership.id} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+            </CardContent>
+          </Card>
+        )}
     </Layout>
   );
 }
