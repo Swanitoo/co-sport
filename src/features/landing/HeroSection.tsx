@@ -1,12 +1,14 @@
+"use client";
+
 import { buttonVariants } from "@/components/ui/button";
 import { Section } from "./Section";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export const HeroSection = () => {
   return (
     <Section className="text-center">
-      <a
-        href="#"
+      <div
         className="mb-7  inline-flex items-center justify-between rounded-full bg-accent/50 p-1 pr-4 text-sm text-card-foreground hover:bg-accent"
         role="alert"
       >
@@ -14,26 +16,14 @@ export const HeroSection = () => {
           Prochainement
         </span>{" "}
         <span className="text-sm font-medium">
-          Nouvelle fonctionnalité
+          L'application mobile
         </span>
-        <svg
-          className="ml-2 size-5"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-            clip-rule="evenodd"
-          ></path>
-        </svg>
-      </a>
+      </div>
       <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-foreground  md:text-5xl lg:text-6xl">
         Trouve ton partenaire de sport
       </h1>
       <p className="mb-8 text-lg font-normal text-muted-foreground sm:px-16 lg:text-xl xl:px-48">
-      Quel que soit ton sport, trouve le partenaire idéal, progresse ensemble pour atteindre tes objectifs tout en sociabilisant.
+      Choisis ton sport, trouve ton partenaire idéal et progressez ensemble tout en sociabilisant.
       </p>
       <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0 lg:mb-16">
         {/* <a
@@ -56,9 +46,12 @@ export const HeroSection = () => {
             ></path>
           </svg>
         </a> */}
-        <Link className={buttonVariants({ size: "lg" })} href="#pricing">
+        <button
+          className={buttonVariants({ size: "lg" })}
+          onClick={() => signIn()}
+        >
           Commence maintenant
-        </Link>
+        </button>
         {/* <a
           href="#"
           className={buttonVariants({

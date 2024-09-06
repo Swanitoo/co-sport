@@ -89,7 +89,7 @@ export const ProductForm = (props: ProductFormProps) => {
         <CardTitle>
           {isCreate
             ? "Create product"
-            : `Edit product ${props.defaultValues?.name}`}
+            : `Modification ${props.defaultValues?.name}`}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -111,7 +111,7 @@ export const ProductForm = (props: ProductFormProps) => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Nom</FormLabel>
                     <FormControl>
                       <Input placeholder="Sceance bras" {...field} />
                     </FormControl>
@@ -328,7 +328,7 @@ export const ProductForm = (props: ProductFormProps) => {
             </TabsContent>
           </Tabs>
 
-          <Button>{isCreate ? "Create product" : "Save product"}</Button>
+          <Button>{isCreate ? "Créer ta scéance" : "Enregistre ta scéance"}</Button>
         </Form>
       </CardContent>
     </Card>

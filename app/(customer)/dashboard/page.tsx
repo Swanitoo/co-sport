@@ -49,28 +49,28 @@ export default async function RoutePage(props: PageParams<{}>) {
   return (
     <Layout>
       <LayoutTitle>Dashboard</LayoutTitle>
-      <h2 className="text-xl font-bold">Welcome back, {user.name}</h2>
+      <h2 className="text-xl font-bold">Content de te voir, {user.name}</h2>
       <div className="flex flex-wrap items-start gap-4">
         <Card className="min-w-52">
           <CardHeader>
-            <CardDescription>Products</CardDescription>
+            <CardDescription>Séances</CardDescription>
             <CardTitle>{productsCount}</CardTitle>
           </CardHeader>
           <CardHeader>
-            <CardDescription>Reviews</CardDescription>
+            <CardDescription>Commentaires</CardDescription>
             <CardTitle>{reviewsCount}</CardTitle>
           </CardHeader>
         </Card>
 
         <Card className="min-w-52">
           <CardHeader>
-            <CardTitle>Last review</CardTitle>
+            <CardTitle>Dernier commentaire</CardTitle>
           </CardHeader>
           <CardContent className="max-w-lg">
             {lastReview ? (
               <ReviewItem review={lastReview} />
             ) : (
-              <p>no review yet</p>
+              <p>Pas de commentaire pour le moment</p>
             )}
           </CardContent>
         </Card>
@@ -83,10 +83,10 @@ export default async function RoutePage(props: PageParams<{}>) {
               href="/products/new"
               className={buttonVariants({ size: "lg" })}
             >
-              Create a product
+              Créer une séance
             </Link>
             <Link href="/products" className={buttonVariants({ size: "lg" })}>
-              Products list
+              Liste des séance
             </Link>
           </CardContent>
         </Card>
@@ -96,11 +96,11 @@ export default async function RoutePage(props: PageParams<{}>) {
             <CardDescription>{user.plan}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <p>Max {user.plan === "FREE" ? 100 : "Inifnity"} reviews</p>
-            <Progress value={(reviewsCount * 100) / 100} />
+            <p>Max commentaires {user.plan === "FREE" ? 1 : "infini"}</p>
+            <Progress value={(reviewsCount * 1) / 1} />
             {productsCount === 1}
-            <p>Max {user.plan === "FREE" ? 1 : "Inifnity"} products</p>
-            <Progress value={(productsCount * 100) / 1} />
+            <p>Max séances {user.plan === "FREE" ? 1 : "infini"}</p>
+            <Progress value={(productsCount * 1) / 1} />
             {productsCount === 1}
             {user.plan === "FREE" &&
               (productsCount === 1 || reviewsCount === 100) && (

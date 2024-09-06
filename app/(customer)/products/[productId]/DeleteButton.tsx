@@ -44,7 +44,7 @@ export const DeleteButton = (props: DeleteButtonProps) => {
       }}
     >
       {deleteMutation.isPending && <Loader2 className="size-4 animate-spin" />}
-      {isConfirming ? "Are you sure?" : "Delete"}
+      {isConfirming ? "Tu es sur?" : "Delete"}
     </Button>
   );
 };

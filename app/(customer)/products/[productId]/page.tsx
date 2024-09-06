@@ -138,7 +138,7 @@ export default async function RoutePage(
       <div className="flex gap-4 max-lg:flex-col">
         <Card className="flex-1">
           <CardHeader>
-            <CardTitle>Details</CardTitle>
+            <CardTitle>Détails</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2 items-start">
             <p>Sport : {product.slug}</p>

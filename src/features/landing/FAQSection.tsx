@@ -10,12 +10,12 @@ import {
     {
       question: "Comment puis-je m'inscrire sur Co-Sport ?",
       answer:
-        "Vous pouvez vous inscrire en cliquant sur le bouton 'Inscription' en haut à droite de la page d'accueil.",
+        "En cliquant sur Connexion, vous pouvez vous connecter directement avec votre compte Google.",
     },
     {
       question: "Quels types de partenaires d'entraînement puis-je trouver sur Co-Sport ?",
       answer:
-        "Vous pouvez trouver des partenaires pour divers types d'activités sportives comme la course à pied, le yoga, la musculation, le vélo, et",
+        "Vous pouvez trouver des partenaires pour tout types d'activités sportives comme la course à pied, le yoga, la musculation, le vélo..",
     },
     {
       question: "Est-ce que l'inscription est gratuite ?",
@@ -36,23 +36,13 @@ import {
     {
       question: "Quels sont les avantages du plan Premium ?",
       answer:
-        "Le plan Premium offre des fonctionnalités avancées comme la création illimitée de produits et la personnalisation de votre page d'avis.",
+        "Le plan Premium offre des fonctionnalités avancées comme la création illimitée de séance",
     },
     {
       question:
         "Comment puis-je contacter le support client ?",
       answer:
         "Vous pouvez nous contacter via le formulaire de contact disponible sur notre site.",
-    },
-    {
-      question: "Les avis sont-ils anonymes ?",
-      answer:
-        "Vous pouvez choisir de laisser un avis anonyme ou de vous identifier.",
-    },
-    {
-      question: "Puis-je laisser plusieurs avis ?",
-      answer:
-        "Oui, vous pouvez laisser un avis pour chaque partenaire d'entraînement que vous avez rencontré.",
     },
     {
       question: "Comment puis-je annuler mon abonnement ?",

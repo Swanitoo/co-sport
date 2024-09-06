@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Review } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
@@ -17,18 +17,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { LayoutTitle } from "@/components/layout";
+import { Loader2, UsersRound } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { signInAction } from "../auth/auth.action";
 
 export const FeatureSection = () => {
   const [step, setStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleJoin = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setStep((s) => s + 1);
+    }, 500);
+  };
 
   return (
     <>
-      <Section className="pb-2" id="features">
+      <Section className="light rounded-lg py-12 bg-customPurple lg:min-h-[650px]" id="features">
         <h2 className="text-center text-3xl font-bold">
-          Le procéder est simple :
+          Rien de plus simple ! Voici les étapes à suivre :
         </h2>
-      </Section>
-      <Section className="light rounded-lg bg-gradient-to-r from-red-500 to-orange-500 py-12 text-foreground shadow">
         <div className={cn("w-full flex flex-col items-center py-4")}>
           <AnimatePresence mode="wait">
             
@@ -41,37 +52,49 @@ export const FeatureSection = () => {
                 }}
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
-                <h2 className="text-lg font-bold">
-                  {`Choisis ta séance et ton partenaire`}
-                </h2>
+        <h2 className="text-lg font-bold bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow-md mb-4 lg:mt-16">
+          {`Trouve ton sport et ton partenaire en cliquant sur une séance qui t'intéresse.`}
+        </h2>
                 <Table>
           <TableHeader>
             <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Sport</TableHead>
-                <TableHead>Lieux</TableHead>
-                <TableHead>Pratiquant</TableHead>
-                <TableHead>Avis</TableHead>
+                <TableHead className="text-black dark:text-white">Nom</TableHead>
+                <TableHead className="text-black dark:text-white">Sport</TableHead>
+                <TableHead className="text-black dark:text-white">Lieux</TableHead>
+                <TableHead className="text-black dark:text-white">Avis</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-          <TableRow
-          onClick={() => {
-            setStep((s) => s + 1);
-          }}
-          className="cursor-pointer"
-        >
-                <TableCell>
-                  Scéance biceps
-                </TableCell>
-                <TableCell className="font-mono">Musculation</TableCell>
-                <TableCell className="font-mono">Onair Lyon 3</TableCell>
-                <TableCell className="font-mono">Patoche</TableCell>
-                <TableCell className="font-mono">
-                  46
-                </TableCell>
-                
-              </TableRow>
+            <TableRow
+            onClick={() => {
+              setStep((s) => s + 1);
+            }}
+            className="cursor-pointer"
+            >
+              <TableCell>
+                Scéance jambes
+              </TableCell>
+              <TableCell className="font-mono">Musculation</TableCell>
+              <TableCell className="font-mono">Onair Lyon 3</TableCell>
+              <TableCell className="font-mono">
+                8
+              </TableCell>
+            </TableRow>
+            <TableRow
+            onClick={() => {
+              setStep((s) => s + 1);
+            }}
+            className="cursor-pointer"
+            >
+              <TableCell>
+                SaintéLyon
+              </TableCell>
+              <TableCell className="font-mono">Trail</TableCell>
+              <TableCell className="font-mono">Lyon</TableCell>
+              <TableCell className="font-mono">
+                1
+              </TableCell>
+            </TableRow>
               <TableRow
           onClick={() => {
             setStep((s) => s + 1);
@@ -79,15 +102,13 @@ export const FeatureSection = () => {
           className="cursor-pointer"
         >
                 <TableCell>
-                  Scéance boxe anglaise
+                  Coatching
                 </TableCell>
-                <TableCell className="font-mono">Boxe</TableCell>
-                <TableCell className="font-mono">Club du Rhône</TableCell>
-                <TableCell className="font-mono">Seb</TableCell>
+                <TableCell className="font-mono">Boxe Anglaise</TableCell>
+                <TableCell className="font-mono">Club Rhône</TableCell>
                 <TableCell className="font-mono">
                   3
                 </TableCell>
-                
               </TableRow>
               <TableRow
           onClick={() => {
@@ -96,13 +117,12 @@ export const FeatureSection = () => {
           className="cursor-pointer"
         >
                 <TableCell>
-                  Séssion alpinisme D+
+                  Traversée 3 monts
                 </TableCell>
                 <TableCell className="font-mono">Alpinisme</TableCell>
-                <TableCell className="font-mono">Mont cervin</TableCell>
-                <TableCell className="font-mono">Fabrice</TableCell>
+                <TableCell className="font-mono">Mont blanc</TableCell>
                 <TableCell className="font-mono">
-                  105
+                  12
                 </TableCell>
                 
               </TableRow>
@@ -120,46 +140,76 @@ export const FeatureSection = () => {
                 }}
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
-                <h2 className="text-lg font-bold">
-                  {`Note ton partenaire`}
-                </h2>
-                <RatingSelector
-                  onSelect={(review) => {
-                    setStep((s) => s + 1);
-                  }}
-                />
+          <h2 className="text-lg font-bold bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow-md">
+            {`Consulte les détails, découvre le profil et clique sur "Rejoindre" si tu souhaites faire une activité avec lui/elle.`}
+          </h2>
+      <div className="flex justify-between items-center w-full">
+        <div className="space-y-0.5">
+          <LayoutTitle>Scéance Jambes</LayoutTitle>
+          <p className="text-sm">Louise</p>
+        </div>
+        <div className="flex-shrink-0">
+        <Button
+                      className="flex items-center gap-2"
+                      onClick={handleJoin}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        <UsersRound />
+                      )}
+                      <span>{isLoading ? "Rejoindre..." : "Rejoindre"}</span>
+                    </Button>
+        </div>
+      </div>
+      <div className="flex gap-4 max-lg:flex-col bg">
+      <Card className="flex-1 bg-white dark:bg-black text-black dark:text-white">
+        <CardHeader>
+          <CardTitle>Détails</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2 items-start">
+          <p>Sport : Musculation</p>
+          <p>Niveau : Moyen (3 ans)</p>
+          <div>
+            Salut ! Je fais les jambes tous les lundis, 
+            et je serais super ravie de partager mon programme avec quelqu’un ! 
+            J’aimerais bien avoir un(e) partenaire pour m’assurer sur les séries, 
+            ça m’aiderait vraiment à progresser et à pousser plus loin mes limites. 
+            Si tu veux qu’on se motive ensemble, n’hésite pas à me rejoindre ! 😊
+          </div>
+        </CardContent>
+      </Card>
+      <Card className="flex-1 bg-white dark:bg-black text-black dark:text-white">
+        <CardHeader>
+          <CardTitle>Avis</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableBody>
+                <TableRow>
+                  <TableCell>
+                    <div>
+                      Emma
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                  J’ai eu la chance de faire une séance jambes avec elle, 
+                  et c’était top ! Son programme est super bien structuré, 
+                  et elle m’a vraiment aidé à rester motivé tout au long de l’entraînement. 
+                  Elle est aussi super encourageante, surtout sur les séries difficiles. 
+                  Hâte de refaire ça ! 💪</TableCell>
+                </TableRow>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      </div>
+
+
               </motion.div>
             )}
             {step === 2 && (
-              <motion.div
-                key="step-2"
-                exit={{
-                  opacity: 0,
-                  x: -100,
-                }}
-                initial={{
-                  opacity: 0,
-                  x: 100,
-                }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                }}
-                className="flex h-full flex-col items-center justify-center gap-4"
-              >
-                <h2 className="text-lg font-bold">
-                  {"Laisse un avis détaillé avec ce que tu as aimé est moins aimé pendant la séance."}
-                </h2>
-                <ReviewTextSelector
-                  onInputSend={(i) => {
-                    setStep((s) => s + 1);
-                  }}
-                  productId={""}
-                />
-              </motion.div>
-            )}
-
-            {step === 3 && (
               <motion.div
                 key="step-3"
                 exit={{
@@ -176,14 +226,21 @@ export const FeatureSection = () => {
                 }}
                 className="flex h-full max-w-lg flex-col items-center justify-center gap-4"
               >
-                <h2 className="text-lg font-bold">
-                  {"Et voilà !"}
+                <h2 className="text-lg font-bold lg:mt-20">
+                  {"Bravo !"}
                 </h2>
                 <Card>
                   <CardHeader>
-                    <CardDescription>
-                      Tu sais utiliser Co-sport ! ✅
-                    </CardDescription>
+                    <CardTitle>
+                      Tu n'as plus qu'a t'organiser avec ton/ta partenaire ! ✅
+                      </CardTitle>
+                    <CardDescription className="flex justify-center pt-6">
+                    <Button onClick={() => {
+                      signInAction();
+                    }}>
+                    Commence maintenant ! 
+                  </Button>
+                      </CardDescription>
                   </CardHeader>
                 </Card>
               </motion.div>
@@ -191,100 +248,6 @@ export const FeatureSection = () => {
           </AnimatePresence>
         </div>
       </Section>
-      <Section className="flex flex-col items-center justify-center gap-8">
-        <h2 className="text-center text-3xl font-bold">
-          Partage ton avis !
-        </h2>
-
-        <div>
-          <h2 className="text-4xl font-extrabold">5 / 5</h2>
-          <p>22 reviews</p>
-        </div>
-        <div className="size-full columns-1 md:columns-2 lg:columns-3">
-          {reviews.map((r) => (
-            <ReviewItem
-              review={r}
-              className="mb-8 break-inside-avoid-column"
-              key={r.id}
-            />
-          ))}
-        </div>
-      </Section>
     </>
   );
 };
-
-const reviews: Review[] = [
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    id: "1",
-    image: "",
-    ip: "",
-    name: "Jean Claude",
-    productId: "co-sport.com",
-    rating: 5,
-    socialLink: "https://www.instagram.com/jcvd/",
-    text: "Co-Sport m'a permis de rencontrer quelqu'un près de chez moi pour faire des séances de musculation. Top !",
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    id: "2",
-    image: "",
-    ip: "",
-    name: "Emily",
-    productId: "co-sport.com",
-    rating: 4,
-    socialLink: "https://www.instagram.com/emily_ratajkowski_official/",
-    text: "Super expérience, j'ai rencontré quelqu'un pour faire du yoga ensemble. C'est plus motivant à deux !",
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    id: "3",
-    image: "",
-    ip: "",
-    name: "Emmanuel",
-    productId: "co-sport.com",
-    rating: 5,
-    socialLink: "https://www.instagram.com/emmanuelmacron/",
-    text: "Faire du sport à plusieurs, c'est vraiment plus fun. Merci Co-Sport !",
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    id: "4",
-    image: "",
-    ip: "",
-    name: "David",
-    productId: "co-sport.com",
-    rating: 3,
-    socialLink: "https://www.instagram.com/davidguetta/",
-    text: "Grâce à Co-Sport, j'ai un partenaire de fitness avec qui je m'entraîne régulièrement. Ça change tout !",
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    id: "5",
-    image: "",
-    ip: "",
-    name: "Ali",
-    productId: "co-sport.com",
-    rating: 5,
-    socialLink: "https://www.instagram.com/bigaliofficial/",
-    text: "Je me sens en meilleure forme depuis que je m'entraîne avec un partenaire trouvé sur ce site.",
-  },
-  {
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    id: "6",
-    image: "",
-    ip: "",
-    name: "Kilian",
-    productId: "co-sport.com",
-    rating: 5,
-    socialLink: "https://www.instagram.com/kilianjornet/",
-    text: "J'ai trouvé un super partenaire pour mes séances de course à pied. On se motive mutuellement, c'est génial !",
-  },
-];

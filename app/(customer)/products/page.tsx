@@ -81,7 +81,7 @@ export default async function RoutePage(props: PageParams<{}>) {
           href="/products/new"
           className="flex w-full items-center justify-center rounded-md border-2 border-dashed border-primary p-8 transition-colors hover:bg-accent/40 lg:p-12"
         >
-          Create product
+          Créer ta scéance
         </Link>
       )}
     </Layout>

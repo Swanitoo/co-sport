@@ -50,12 +50,10 @@ export const PricingSection = async () => {
         <PricingCard
           title="Premium"
           price={15}
-          description="For business that want to grow with the best review experience"
+          description="Pour une utilisation sans fin"
           items={[
             "Creez un nombres de sceance infini",
             "Participez a un nombre de sceance infini",
-            "Choisissez n'importe quel sport",
-            "Organise ton programme pour que le pratiquant se calle dessus",
           ]}
         >
           {user ? (
@@ -69,7 +67,7 @@ export const PricingSection = async () => {
                 variant="default"
                 className="w-full"
               >
-                Grab it
+                Abonnement
               </Button>
             </form>
           ) : (
@@ -113,7 +111,7 @@ const PricingCard = (props: PricingCardProps) => {
       </CardHeader>
       <CardContent className="my-8 flex items-baseline justify-center">
         <span className="mr-2 text-5xl font-extrabold">${props.price}</span>
-        <span className="text-muted-foreground">/month</span>
+        <span className="text-muted-foreground">/mois</span>
       </CardContent>
 
       <CardContent>

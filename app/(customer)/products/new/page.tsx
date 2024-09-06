@@ -22,7 +22,7 @@ export default async function RoutePage(props: PageParams<{}>) {
     if (!isAutorized) {
         return (
             <Layout>
-                <LayoutTitle>Create product</LayoutTitle>
+                <LayoutTitle>Créer ta scéance</LayoutTitle>
                 <p>
                     <AlertTriangle className="inline" />
                     Sorry, you need to upgrade to our premium plan to create more products.
@@ -34,7 +34,7 @@ export default async function RoutePage(props: PageParams<{}>) {
     return (
         <Layout>
             <LayoutTitle>
-                Create product
+                Créer ta scéance
             </LayoutTitle>
             <ProductForm />
         </Layout>
