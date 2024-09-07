@@ -223,7 +223,7 @@ export async function removeMemberAction({ membershipId, comment }: { membership
       await prisma.membership.update({
         where: { id: membershipId },
         data: { 
-          status: 'REMOVED',
+          status: 'REFUSED',
           comment: comment 
         },
       });

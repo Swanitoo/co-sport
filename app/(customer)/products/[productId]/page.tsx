@@ -140,8 +140,12 @@ export default async function RoutePage(
           <CardHeader>
             <CardTitle>Détails</CardTitle>
           </CardHeader>
+          <CardHeader>
+            <CardTitle>Détails</CardTitle>
+            <p>Sport : {product.sport}</p>
+          </CardHeader>
           <CardContent className="flex flex-col gap-2 items-start">
-            <p>Sport : {product.slug}</p>
+            {isClient && membership && membership.status === 'APPROVED' && (
             <Link
               href={`/r/${product.slug}`}
               className={buttonVariants({
@@ -150,7 +154,8 @@ export default async function RoutePage(
             >
               <Link2 size={16} className="mr-2" />
               Écris un avis
-            </Link>
+              </Link>
+            )}
             <Link
               href={`/wall/${product.slug}`}
               className={buttonVariants({
@@ -160,6 +165,7 @@ export default async function RoutePage(
               <Link2 size={16} className="mr-2" />
               Découvre tout les avis
             </Link>
+            <p>Description : {product.description}</p>
           </CardContent>
         </Card>
         <Card className="flex-1">

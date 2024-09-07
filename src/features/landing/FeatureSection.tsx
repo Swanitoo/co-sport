@@ -36,7 +36,7 @@ export const FeatureSection = () => {
 
   return (
     <>
-      <Section className="light rounded-lg py-12 bg-customPurple lg:min-h-[650px]" id="features">
+      <Section className="light rounded-lg py-12 bg-customPurple lg:min-h-[650px] md:min-h-[550px]" id="features">
         <h2 className="text-center text-3xl font-bold">
           Rien de plus simple ! Voici les étapes à suivre :
         </h2>
@@ -141,7 +141,7 @@ export const FeatureSection = () => {
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
           <h2 className="text-lg font-bold bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow-md">
-            {`Consulte les détails, découvre le profil et clique sur "Rejoindre" si tu souhaites faire une activité avec lui/elle.`}
+            {`Consulte les détails, découvre le profil et clique sur "Rejoindre".`}
           </h2>
       <div className="flex justify-between items-center w-full">
         <div className="space-y-0.5">
@@ -174,34 +174,8 @@ export const FeatureSection = () => {
           <div>
             Salut ! Je fais les jambes tous les lundis, 
             et je serais super ravie de partager mon programme avec quelqu’un ! 
-            J’aimerais bien avoir un(e) partenaire pour m’assurer sur les séries, 
-            ça m’aiderait vraiment à progresser et à pousser plus loin mes limites. 
             Si tu veux qu’on se motive ensemble, n’hésite pas à me rejoindre ! 😊
           </div>
-        </CardContent>
-      </Card>
-      <Card className="flex-1 bg-white dark:bg-black text-black dark:text-white">
-        <CardHeader>
-          <CardTitle>Avis</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableBody>
-                <TableRow>
-                  <TableCell>
-                    <div>
-                      Emma
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                  J’ai eu la chance de faire une séance jambes avec elle, 
-                  et c’était top ! Son programme est super bien structuré, 
-                  et elle m’a vraiment aidé à rester motivé tout au long de l’entraînement. 
-                  Elle est aussi super encourageante, surtout sur les séries difficiles. 
-                  Hâte de refaire ça ! 💪</TableCell>
-                </TableRow>
-            </TableBody>
-          </Table>
         </CardContent>
       </Card>
       </div>

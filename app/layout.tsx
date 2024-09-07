@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "co-sport.com",
-  description: "Share your sport session with everyone",
+  description: "Trouve ton partenaire de sport et progressez enssemble !",
   metadataBase: new URL(getServerUrl()),
 };
 
