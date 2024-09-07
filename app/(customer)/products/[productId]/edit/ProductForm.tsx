@@ -21,8 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { uploadImageAction } from "@/features/upload/upload.action";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -30,7 +29,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createProductAction, updateProductAction } from "./product.action";
 import {
-  GRADIENTS_CLASSES,
+  LEVEL_CLASSES,
+  SPORT_CLASSES,
   ProductSchema,
   ProductType,
 } from "./product.schema";
@@ -66,29 +66,12 @@ export const ProductForm = (props: ProductFormProps) => {
       router.refresh();
     },
   });
-
-  const submitImage = useMutation({
-    mutationFn: async (file: File) => {
-      const formData = new FormData();
-      formData.set("file", file);
-      const { data, serverError } = await uploadImageAction(formData);
-
-      if (!data || serverError) {
-        toast.error(serverError);
-        return;
-      }
-
-      const url = data.url;
-      form.setValue("image", url);
-    },
-  });
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>
           {isCreate
-            ? "Create product"
+            ? "Nouvelle séance"
             : `Modification ${props.defaultValues?.name}`}
         </CardTitle>
       </CardHeader>
@@ -101,10 +84,6 @@ export const ProductForm = (props: ProductFormProps) => {
           }}
         >
           <Tabs defaultValue="general">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="texts">Text</TabsTrigger>
-            </TabsList>
             <TabsContent className="flex flex-col gap-6" value="general">
               <FormField
                 control={form.control}
@@ -113,97 +92,22 @@ export const ProductForm = (props: ProductFormProps) => {
                   <FormItem>
                     <FormLabel>Nom</FormLabel>
                     <FormControl>
-                      <Input placeholder="Sceance bras" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      The name of the product to review
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="image"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Image</FormLabel>
-
-                    <div className="flex items-center gap-4">
-                      <FormControl className="flex-1">
-                        <Input
-                          type="file"
-                          placeholder="sceance bras"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-
-                            if (!file) {
-                              return;
-                            }
-
-                            if (file.size > 1024 * 1024) {
-                              toast.error("File is too big");
-                              return;
-                            }
-
-                            if (!file.type.includes("image")) {
-                              toast.error("File is not an image");
-                              return;
-                            }
-
-                            submitImage.mutate(file);
-                          }}
-                        />
-                      </FormControl>
-                      {submitImage.isPending ? (
-                        <Loader2 className="h-6 animate-spin" />
-                      ) : null}
-                      {field.value ? (
-                        <Avatar className="rounded-sm">
-                          <AvatarFallback>{field.value[0]}</AvatarFallback>
-                          <AvatarImage src={field.value} />
-                        </Avatar>
-                      ) : null}
-                    </div>
-                    <FormDescription>
-                      The name of the product to review
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="slug"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Slug</FormLabel>
-                    <FormControl>
                       <Input
-                        placeholder="Sceance bras"
+                        placeholder="Séance bras"
                         {...field}
-                        onChange={(e) => {
-                          const value = e.target.value
-                            .replaceAll(" ", "-")
-                            .toLowerCase();
-
-                          field.onChange(value);
-                        }}
                       />
                     </FormControl>
-                    <FormDescription>
-                      The slug is used in the URL of the review page.
-                    </FormDescription>
+                    <FormDescription>Le nom de la séance</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
-                name="backgroundColor"
+                name="sport"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Background color</FormLabel>
+                    <FormLabel>Sport</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value ?? ""}
@@ -213,114 +117,73 @@ export const ProductForm = (props: ProductFormProps) => {
                           <SelectValue></SelectValue>
                         </SelectTrigger>
                         <SelectContent>
-                          {GRADIENTS_CLASSES.map((gradient) => (
+                          {SPORT_CLASSES.map((sport) => (
                             <SelectItem
-                              value={gradient}
-                              key={gradient}
+                              value={sport}
+                              key={sport}
                               className="flex"
                             >
-                              <div
-                                className={cn(
-                                  gradient,
-                                  "block w-80 h-8 rounded-md flex-1"
-                                )}
-                              ></div>
+                              <div>
+                                <span>{sport}</span>
+                              </div>
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </FormControl>
-                    <FormDescription>
-                      The review page background color
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </TabsContent>
-            <TabsContent className="flex flex-col gap-6" value="texts">
-              <FormField
-                control={form.control}
-                name="noteText"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Note Text</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Give a note / 5"
-                        {...field}
-                        value={field.value ?? ""}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      The title where the user can add a note / 5.
-                    </FormDescription>
+                    <FormDescription>Le sport pratiqué</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
-                name="informationText"
+                name="level"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Information label</FormLabel>
-
+                    <FormLabel>Niveau</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Please give us some information"
-                        {...field}
+                      <Select
                         value={field.value ?? ""}
-                      />
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue></SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {LEVEL_CLASSES.map((level) => (
+                            <SelectItem
+                              value={level}
+                              key={level}
+                              className="flex"
+                            >
+                              <div>
+                                <span>{level}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
-                    <FormDescription>
-                      The label where the user give his name and social link.
-                    </FormDescription>
+                    <FormDescription>Ton niveau</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
-                name="reviewText"
+                name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Review text</FormLabel>
-
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="What you think about our product ?"
+                        placeholder="Salut ! Je fais les bras tous les mardis, 
+                        et je serais super ravie de partager mon programme avec quelqu’un !"
                         {...field}
-                        value={field.value ?? ""}
                       />
                     </FormControl>
-                    <FormDescription>
-                      The label where the user can speak or write about the
-                      product.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="thanksText"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Thanks label</FormLabel>
-
-                    <FormControl>
-                      <Input
-                        placeholder="Thanks you for your review !"
-                        {...field}
-                        value={field.value ?? ""}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      The label when the user submit his review.
-                    </FormDescription>
+                    <FormDescription>Déscription de la séance</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -328,7 +191,9 @@ export const ProductForm = (props: ProductFormProps) => {
             </TabsContent>
           </Tabs>
 
-          <Button>{isCreate ? "Créer ta scéance" : "Enregistre ta scéance"}</Button>
+          <Button>
+            {isCreate ? "Créer ta scéance" : "Enregistre ta scéance"}
+          </Button>
         </Form>
       </CardContent>
     </Card>

@@ -73,12 +73,9 @@ model Product {
   id              String  @id @default(cuid())
   slug            String  @unique
   name            String
-  image           String?
-  noteText        String?
-  informationText String?
-  reviewText      String?
-  thanksText      String?
-  backgroundColor String?
+  sport           String
+  level           String
+  description     String
   enabled         Boolean @default(true)
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)

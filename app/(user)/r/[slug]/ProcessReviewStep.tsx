@@ -98,11 +98,11 @@ export const ProcessReviewStep = ({ product } : { product: Product }) => {
                             exit={{
                                 opacity: 0,
                                 x: -100,
-                            }} 
+                            }}
                             className="flex h-full flex-col items-center justify-center"
                         >
                             <h2 className="text-lg font-bold">
-                                {product.noteText ?? `How much did you like ${product.name}?`}
+                                {`Quelle note attribues-tu à ${product.name}?`}
                             </h2>
                             <ReviewSelector 
                                 onSelect={(review) => {
@@ -114,36 +114,6 @@ export const ProcessReviewStep = ({ product } : { product: Product }) => {
                         </motion.div>
                     )}
                     {step === 1 && (
-                        <motion.div
-                            key="step-1"
-                            exit={{
-                                opacity: 0,
-                                x: -100,
-                            }}
-                            initial={{
-                                opacity: 0,
-                                x: 100,
-                            }}
-                            animate={{
-                                opacity: 1,
-                                x: 0,
-                            }}
-                                className="flex h-full flex-col items-center justify-center gap-4"
-                            >
-                            <h2 className="text-lg font-bold">
-                                {product.informationText ?? `I need more information about you!`}
-                            </h2>
-                            <SocialSelector 
-                                onSelect={(name, url) => {
-                                    updateData({ 
-                                        name: name,
-                                        socialLink: url,
-                                    });
-                            }}
-                        />
-                        </motion.div>
-                    )}
-                    {step === 2 && (
                         <motion.div
                             key="step-2"
                             exit={{
@@ -161,7 +131,7 @@ export const ProcessReviewStep = ({ product } : { product: Product }) => {
                                 className="flex h-full flex-col items-center justify-center gap-4"
                             >
                             <h2 className="text-lg font-bold">
-                                {product.reviewText ?? `Tell me what you liked and what you disliked`}
+                                {`Dis-moi ce que tu as aimé et ce que tu n'as pas aimé`}
                             </h2>
                             <ReviewTextSelector 
                                 onInputSend={(i) =>{
@@ -191,13 +161,12 @@ export const ProcessReviewStep = ({ product } : { product: Product }) => {
                                 className="flex h-full flex-col items-center justify-center gap-4 max-w-lg"
                             >
                             <h2 className="text-lg font-bold">
-                                {product.thanksText ?? 
-                                    `Thanks for your review!`}
+                                {`Merci pour ton commentaire!`}
                             </h2>
                             <Card>
                                 <CardHeader>
                                     <CardDescription>
-                                        <p>Your Review : {reviewData.data?.text}</p>
+                                        <p>Ton commentaire: {reviewData.data?.text}</p>
                                     </CardDescription>
                                 </CardHeader>
                             </Card>

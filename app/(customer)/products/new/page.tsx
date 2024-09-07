@@ -25,7 +25,7 @@ export default async function RoutePage(props: PageParams<{}>) {
                 <LayoutTitle>Créer ta scéance</LayoutTitle>
                 <p>
                     <AlertTriangle className="inline" />
-                    Sorry, you need to upgrade to our premium plan to create more products.
+                    Désolé, Tu dois passer à notre forfait premium pour créer plus de produits.
                 </p>
                 <PricingSection />
             </Layout>

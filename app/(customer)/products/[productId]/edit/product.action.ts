@@ -9,19 +9,37 @@ import { resend } from "@/resend";
 import { EMAIL_FROM } from "@/config";
 import FirstProductCreatedEmail from "../../../../../emails/FirstProductCreatedEmail";
 
-const verifySlugUniqueness = async (slug: string, productId?: string) => {
-    const slugExists = await prisma.product.count({
-        where: {
-            slug: slug,
-            id: productId ? {
-                not: productId,
-            } : undefined,
-        },
-    });
+const generateSlug = (name: string, level: string) => {
+  const slugBase = `${name.replace(/\s+/g, '-').toLowerCase()}-${level.replace(/\s+/g, '-').toLowerCase()}`;
+  return slugBase;
+};
 
-    if (slugExists) {
-        throw new ActionError("Slug already exists");
-    }
+const verifySlugUniqueness = async (slug: string, productId?: string): Promise<string> => {
+  let uniqueSlug = slug;
+  let slugExists = await prisma.product.count({
+      where: {
+          slug: uniqueSlug,
+          id: productId ? {
+              not: productId,
+          } : undefined,
+      },
+  });
+
+  let counter = 1;
+  while (slugExists > 0) {
+      uniqueSlug = `${slug}-${counter}`;
+      slugExists = await prisma.product.count({
+          where: {
+              slug: uniqueSlug,
+              id: productId ? {
+                  not: productId,
+              } : undefined,
+          },
+      });
+      counter++;
+  }
+
+  return uniqueSlug;
 };
 
 const verifyUserPlan = async (user: User) => {
@@ -82,42 +100,49 @@ const sendEmailIfUserCreatedFirstProduct = async (user: User) => {
   
 
 export const createProductAction = userAction(
-    ProductSchema, 
-    async (input, context) => {
-        await verifySlugUniqueness(input.slug);
-        await verifyUserPlan(context.user)
+  ProductSchema,
+  async (input, context) => {
+      const slugBase = generateSlug(input.name, input.level);
+      const slug = await verifySlugUniqueness(slugBase);
 
-        const product = await prisma.product.create({
-            data: {
-                ...input,
-                userId: context.user.id,
-            },
-        });
+      await verifyUserPlan(context.user);
 
-        await sendEmailIfUserCreatedFirstProduct(context.user);
+      const product = await prisma.product.create({
+          data: {
+              ...input,
+              slug,
+              userId: context.user.id,
+          },
+      });
 
-        return product;
-    }
+      await sendEmailIfUserCreatedFirstProduct(context.user);
+
+      return product;
+  }
 );
 
 export const updateProductAction = userAction(
-    z.object({
-        id: z.string(),
-        data: ProductSchema,
-    }),
-    async (input, context) => {
-        await verifySlugUniqueness(input.data.slug, input.id);
+  z.object({
+      id: z.string(),
+      data: ProductSchema,
+  }),
+  async (input, context) => {
+      const slugBase = generateSlug(input.data.name, input.data.level);
+      const slug = await verifySlugUniqueness(slugBase, input.id);
 
-        const updatedProduct = await prisma.product.update({
-            where: {
-                id: input.id,
-                userId: context.user.id,
-            },
-            data: input.data,
-        });
-        
-        return updatedProduct;
-    }
+      const updatedProduct = await prisma.product.update({
+          where: {
+              id: input.id,
+              userId: context.user.id,
+          },
+          data: {
+              ...input.data,
+              slug,
+          },
+      });
+
+      return updatedProduct;
+  }
 );
 
 export const deleteProductAction = userAction(

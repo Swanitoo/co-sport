@@ -38,7 +38,7 @@ export const LoggedInDropdown = (props: LoggedInDropdownProps) => {
         <DropdownMenuItem asChild>
           <Link href="/home" className="w-full">
             <Home size={16} className="mr-2" />
-            Home
+            Accueil
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -51,12 +51,12 @@ export const LoggedInDropdown = (props: LoggedInDropdownProps) => {
           ) : (
             <CreditCard size={16} className="mr-2" />
           )}
-          Payment info
+          Infos de paiement
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/products" className="w-full">
             <Square size={16} className="mr-2" />
-            Session
+            Séances
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -65,7 +65,7 @@ export const LoggedInDropdown = (props: LoggedInDropdownProps) => {
           }}
         >
           <LogOut size={16} className="mr-2" />
-          Logout
+          Déconnexion
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

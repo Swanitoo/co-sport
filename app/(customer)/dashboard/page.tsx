@@ -86,7 +86,7 @@ export default async function RoutePage(props: PageParams<{}>) {
               Créer une séance
             </Link>
             <Link href="/products" className={buttonVariants({ size: "lg" })}>
-              Liste des séance
+              Liste des séances
             </Link>
           </CardContent>
         </Card>
@@ -106,13 +106,13 @@ export default async function RoutePage(props: PageParams<{}>) {
               (productsCount === 1 || reviewsCount === 100) && (
                 <Alert>
                   <AlertTitle>
-                    You reached the limit of your free plan, please upgrade
+                    Vous avez atteint la limite de votre forfait gratuit, veuillez mettre à niveau
                   </AlertTitle>
                   <Link
                     className={buttonVariants({ size: "sm" })}
                     href="/upgrade"
                   >
-                    Upgrade
+                    Passer au premium
                   </Link>
                 </Alert>
               )}

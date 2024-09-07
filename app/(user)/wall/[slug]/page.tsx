@@ -22,6 +22,12 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
           },
         },
       },
+      user: {
+        select: {
+          image: true,
+          name: true,
+        },
+      },
     },
   });
 
@@ -51,9 +57,11 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
   return (
     <Layout className="my-12 flex h-full flex-col items-center justify-center gap-4">
       <div className="flex items-center gap-2">
-        {product.image ? (
-          <img className="size-12" src={product.image} alt={product.name} />
-        ) : null}
+        {product.user?.image ? (
+          <img className="size-12 rounded-full" src={product.user.image} alt={`${product.user.name}'s profile`} />
+        ) : (
+          <div className="size-12 bg-gray-300 rounded-full" />
+        )}
         <h1 className="text-2xl font-bold">{product.name}</h1>
       </div>
       <div>

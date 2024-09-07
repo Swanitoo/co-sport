@@ -41,7 +41,7 @@ export default async function RoutePage(props: PageParams<{}>) {
       <div className="flex justify-between">
         <div className="space-y-0.5">
           <LayoutTitle>Session</LayoutTitle>
-          <LayoutDescription>Crée ta session ou rejoins-en une.</LayoutDescription>
+          <LayoutDescription>Créer ta séance ou rejoins-en une.</LayoutDescription>
         </div>
 
         <Link
