@@ -48,12 +48,12 @@ export default async function RoutePage(props: PageParams<{}>) {
 
   return (
     <Layout>
-      <LayoutTitle>Dashboard</LayoutTitle>
+      <LayoutTitle>Tableau de bord</LayoutTitle>
       <h2 className="text-xl font-bold">Content de te voir, {user.name}</h2>
       <div className="flex flex-wrap items-start gap-4">
         <Card className="min-w-52">
           <CardHeader>
-            <CardDescription>Séances</CardDescription>
+            <CardDescription>Annonces</CardDescription>
             <CardTitle>{productsCount}</CardTitle>
           </CardHeader>
           <CardHeader>
@@ -83,10 +83,10 @@ export default async function RoutePage(props: PageParams<{}>) {
               href="/products/new"
               className={buttonVariants({ size: "lg" })}
             >
-              Créer une séance
+              Créer une annonce
             </Link>
             <Link href="/products" className={buttonVariants({ size: "lg" })}>
-              Liste des séances
+              Liste des annonces
             </Link>
           </CardContent>
         </Card>
@@ -96,23 +96,23 @@ export default async function RoutePage(props: PageParams<{}>) {
             <CardDescription>{user.plan}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <p>Max commentaires {user.plan === "FREE" ? 1 : "infini"}</p>
+            <p>Commentaires Max : {user.plan === "FREE" ? 1 : "infini"}</p>
             <Progress value={(reviewsCount * 1) / 1} />
             {productsCount === 1}
-            <p>Max séances {user.plan === "FREE" ? 1 : "infini"}</p>
+            <p>Annonce Max : {user.plan === "FREE" ? 1 : "infini"}</p>
             <Progress value={(productsCount * 1) / 1} />
             {productsCount === 1}
             {user.plan === "FREE" &&
               (productsCount === 1 || reviewsCount === 100) && (
                 <Alert>
                   <AlertTitle>
-                    Vous avez atteint la limite de votre forfait gratuit, veuillez mettre à niveau
+                    Tu as atteint la limite de votre forfait gratuit, veuillez mettre à niveau
                   </AlertTitle>
                   <Link
                     className={buttonVariants({ size: "sm" })}
                     href="/upgrade"
                   >
-                    Passer au premium
+                    Passes au premium
                   </Link>
                 </Alert>
               )}

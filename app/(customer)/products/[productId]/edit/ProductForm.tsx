@@ -71,7 +71,7 @@ export const ProductForm = (props: ProductFormProps) => {
       <CardHeader>
         <CardTitle>
           {isCreate
-            ? "Nouvelle séance"
+            ? "Nouvelle annonce"
             : `Modification ${props.defaultValues?.name}`}
         </CardTitle>
       </CardHeader>
@@ -93,11 +93,10 @@ export const ProductForm = (props: ProductFormProps) => {
                     <FormLabel>Nom</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Séance bras"
+                        placeholder="Randonnée de 30km"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>Le nom de la séance</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -131,7 +130,6 @@ export const ProductForm = (props: ProductFormProps) => {
                         </SelectContent>
                       </Select>
                     </FormControl>
-                    <FormDescription>Le sport pratiqué</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -165,7 +163,6 @@ export const ProductForm = (props: ProductFormProps) => {
                         </SelectContent>
                       </Select>
                     </FormControl>
-                    <FormDescription>Ton niveau</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -178,12 +175,10 @@ export const ProductForm = (props: ProductFormProps) => {
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Salut ! Je fais les bras tous les mardis, 
-                        et je serais super ravie de partager mon programme avec quelqu’un !"
+                        placeholder="Randonnée de 30 km dans les Alpes..."
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>Déscription de la séance</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -192,7 +187,7 @@ export const ProductForm = (props: ProductFormProps) => {
           </Tabs>
 
           <Button>
-            {isCreate ? "Créer ta scéance" : "Enregistre ta scéance"}
+            {isCreate ? "Créer ton annonce" : "Enregistre ton annonce"}
           </Button>
         </Form>
       </CardContent>

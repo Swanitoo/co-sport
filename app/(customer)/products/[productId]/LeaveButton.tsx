@@ -20,7 +20,7 @@ export const LeaveButton = (props: LeaveButtonProps) => {
   const leaveMutation = useMutation({
     mutationFn: () => leaveGroupAction(props.productId, props.userId),
     onSuccess: () => {
-      toast.success("Vous avez quitté le groupe.");
+      toast.success("Tu as quitté le groupe.");
       router.refresh();
     },
     onError: (error) => {
@@ -41,7 +41,7 @@ export const LeaveButton = (props: LeaveButtonProps) => {
       {showConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-secondary p-4 rounded-lg shadow-lg">
-            <p>Êtes-vous sûr de vouloir quitter ce groupe ?</p>
+            <p>Es-tu sûr sûr de vouloir quitter ce groupe ?</p>
             <div className="flex justify-end space-x-2 mt-4">
               <Button variant="secondary" onClick={() => setShowConfirm(false)}>
                 Non

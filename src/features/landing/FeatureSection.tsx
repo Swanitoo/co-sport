@@ -37,7 +37,7 @@ export const FeatureSection = () => {
   return (
     <>
       <Section className="light rounded-lg py-12 bg-customPurple lg:min-h-[650px] md:min-h-[550px]" id="features">
-        <h2 className="text-center text-3xl font-bold">
+        <h2 className="text-center text-3xl font-bold text-white">
           Rien de plus simple ! Voici les étapes à suivre :
         </h2>
         <div className={cn("w-full flex flex-col items-center py-4")}>
@@ -52,16 +52,16 @@ export const FeatureSection = () => {
                 }}
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
-        <h2 className="text-lg font-bold bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow-md mb-4 lg:mt-16">
-          {`Trouve ton sport et ton partenaire en cliquant sur une séance qui t'intéresse.`}
+        <h2 className="text-lg font-bold bg-gray-800 text-white p-4 rounded-lg shadow-md mb-4 lg:mt-16">
+          {`Trouve ton sport et ton partenaire en cliquant sur une annonce qui t'intéresse.`}
         </h2>
                 <Table>
-          <TableHeader>
+          <TableHeader className="pointer-events-none">
             <TableRow>
-                <TableHead className="text-black dark:text-white">Nom</TableHead>
-                <TableHead className="text-black dark:text-white">Sport</TableHead>
-                <TableHead className="text-black dark:text-white">Lieux</TableHead>
-                <TableHead className="text-black dark:text-white">Avis</TableHead>
+                <TableHead className="text-white dark:text-white">Nom</TableHead>
+                <TableHead className="text-white dark:text-white">Sport</TableHead>
+                <TableHead className="text-white dark:text-white">Lieux</TableHead>
+                <TableHead className="text-white dark:text-white">Avis</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -69,14 +69,14 @@ export const FeatureSection = () => {
             onClick={() => {
               setStep((s) => s + 1);
             }}
-            className="cursor-pointer"
+            className="cursor-pointer hover:bg-blue-900"
             >
-              <TableCell>
-                Scéance jambes
+              <TableCell className="text-white">
+                Séance jambes
               </TableCell>
-              <TableCell className="font-mono">Musculation</TableCell>
-              <TableCell className="font-mono">Onair Lyon 3</TableCell>
-              <TableCell className="font-mono">
+              <TableCell className="font-mono text-white">Musculation</TableCell>
+              <TableCell className="font-mono text-white">Onair Lyon 3</TableCell>
+              <TableCell className="font-mono text-white">
                 8
               </TableCell>
             </TableRow>
@@ -84,14 +84,14 @@ export const FeatureSection = () => {
             onClick={() => {
               setStep((s) => s + 1);
             }}
-            className="cursor-pointer"
+            className="cursor-pointer hover:bg-blue-900"
             >
-              <TableCell>
+              <TableCell className="text-white">
                 SaintéLyon
               </TableCell>
-              <TableCell className="font-mono">Trail</TableCell>
-              <TableCell className="font-mono">Lyon</TableCell>
-              <TableCell className="font-mono">
+              <TableCell className="font-mono text-white">Trail</TableCell>
+              <TableCell className="font-mono text-white">Lyon</TableCell>
+              <TableCell className="font-mono text-white">
                 1
               </TableCell>
             </TableRow>
@@ -99,14 +99,14 @@ export const FeatureSection = () => {
           onClick={() => {
             setStep((s) => s + 1);
           }}
-          className="cursor-pointer"
+          className="cursor-pointer hover:bg-blue-900"
         >
-                <TableCell>
+                <TableCell className="text-white">
                   Coatching
                 </TableCell>
-                <TableCell className="font-mono">Boxe Anglaise</TableCell>
-                <TableCell className="font-mono">Club Rhône</TableCell>
-                <TableCell className="font-mono">
+                <TableCell className="font-mono text-white">Boxe Anglaise</TableCell>
+                <TableCell className="font-mono text-white">Club Rhône</TableCell>
+                <TableCell className="font-mono text-white">
                   3
                 </TableCell>
               </TableRow>
@@ -114,14 +114,14 @@ export const FeatureSection = () => {
           onClick={() => {
             setStep((s) => s + 1);
           }}
-          className="cursor-pointer"
+          className="cursor-pointer hover:bg-blue-900"
         >
-                <TableCell>
+                <TableCell className="text-white">
                   Traversée 3 monts
                 </TableCell>
-                <TableCell className="font-mono">Alpinisme</TableCell>
-                <TableCell className="font-mono">Mont blanc</TableCell>
-                <TableCell className="font-mono">
+                <TableCell className="font-mono text-white">Alpinisme</TableCell>
+                <TableCell className="font-mono text-white">Mont blanc</TableCell>
+                <TableCell className="font-mono text-white">
                   12
                 </TableCell>
                 
@@ -140,12 +140,12 @@ export const FeatureSection = () => {
                 }}
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
-          <h2 className="text-lg font-bold bg-gray-100 dark:bg-gray-800 p-4 rounded-lg shadow-md">
+          <h2 className="text-lg font-bold bg-gray-800 text-white p-4 rounded-lg shadow-md">
             {`Consulte les détails, découvre le profil et clique sur "Rejoindre".`}
           </h2>
-      <div className="flex justify-between items-center w-full">
+      <div className="flex justify-between items-center w-full text-white">
         <div className="space-y-0.5">
-          <LayoutTitle>Scéance Jambes</LayoutTitle>
+          <LayoutTitle>Séance Jambes</LayoutTitle>
           <p className="text-sm">Louise</p>
         </div>
         <div className="flex-shrink-0">
@@ -200,7 +200,7 @@ export const FeatureSection = () => {
                 }}
                 className="flex h-full max-w-lg flex-col items-center justify-center gap-4"
               >
-                <h2 className="text-lg font-bold lg:mt-20">
+                <h2 className="text-lg font-bold lg:mt-20 text-white">
                   {"Bravo !"}
                 </h2>
                 <Card>

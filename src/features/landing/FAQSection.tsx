@@ -36,7 +36,7 @@ import {
     {
       question: "Quels sont les avantages du plan Premium ?",
       answer:
-        "Le plan Premium offre des fonctionnalités avancées comme la création illimitée de séance",
+        "Le plan Premium offre des fonctionnalités avancées comme la création illimitée d'annonce",
     },
     {
       question:

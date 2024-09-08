@@ -117,7 +117,7 @@ export default async function RoutePage(
           <div className="flex items-center gap-2">
           <span className="flex items-center">
             <CheckCircle size={16} className="mr-2 text-green-600" />
-            Vous êtes membre
+            Tu es membre
           </span>
           <LeaveButton productId={product.id} userId={user.id} />
         </div>
@@ -174,7 +174,7 @@ export default async function RoutePage(
           </CardHeader>
           <CardContent>
             <Table>
-              <TableHeader>
+              <TableHeader className="pointer-events-none">
                 <TableRow>
                     <TableHead>Nom</TableHead>
                     <TableHead>Text</TableHead>

@@ -40,8 +40,8 @@ export default async function RoutePage(props: PageParams<{}>) {
     <Layout>
       <div className="flex justify-between">
         <div className="space-y-0.5">
-          <LayoutTitle>Séances</LayoutTitle>
-          <LayoutDescription>Créer ta séance ou rejoins-en une.</LayoutDescription>
+          <LayoutTitle>Annonces</LayoutTitle>
+          <LayoutDescription>Créer ton annonce ou rejoins-en une.</LayoutDescription>
         </div>
 
         <Link
@@ -53,38 +53,46 @@ export default async function RoutePage(props: PageParams<{}>) {
       </div>
       {products.length ? (
         <Table>
-          <TableHeader>
+          <TableHeader className="pointer-events-none">
             <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Sport</TableHead>
-                <TableHead>Niveau</TableHead>
-                <TableHead>Avis</TableHead>
+              <TableHead>Nom</TableHead>
+              <TableHead>Sport</TableHead>
+              <TableHead>Niveau</TableHead>
+              <TableHead>Avis</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {products.map((product) => (
-              <TableRow key={product.id}>
+              <TableRow key={product.id} className="cursor-pointer">
                 <TableCell>
-                <Link className="flex items-center" href={`/products/${product.id}`} key={product.id}>
-                  {product.userId === user.id && (
-                    <Crown size={16} className="mr-2 flex-shrink-0" />
-                  )}
-                  {product.userId === user.id ? (
-                    <span>Propriétaire</span>
-                  ) : product.memberships.length > 0 ? (
-                    product.memberships[0].status === "APPROVED" ? (
-                      <CheckCircle size={16} className="text-green-500 mr-2 flex-shrink-0" />
-                    ) : product.memberships[0].status === "PENDING" ? (
-                      <Hourglass size={16} className="mr-2 flex-shrink-0" />
-                    ) : null
-                  ) : null }
-                  {product.name}
-                </Link>
+                  <Link href={`/products/${product.id}`} className="flex items-center">
+                    {product.userId === user.id && (
+                      <Crown size={16} className="mr-2 flex-shrink-0" />
+                    )}
+                    {product.memberships.length > 0 ? (
+                      product.memberships[0].status === "APPROVED" ? (
+                        <CheckCircle size={16} className="text-green-500 mr-2 flex-shrink-0" />
+                      ) : product.memberships[0].status === "PENDING" ? (
+                        <Hourglass size={16} className="mr-2 flex-shrink-0" />
+                      ) : null
+                    ) : null}
+                    {product.name}
+                  </Link>
                 </TableCell>
-                <TableCell className="font-mono">{product.sport}</TableCell>
-                <TableCell className="font-mono">{product.level}</TableCell>
-                <TableCell className="font-mono">
-                  {product._count.reviews}
+                <TableCell>
+                  <Link href={`/products/${product.id}`} className="font-mono">
+                    {product.sport}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Link href={`/products/${product.id}`} className="font-mono">
+                    {product.level}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Link href={`/products/${product.id}`} className="font-mono">
+                    {product._count.reviews}
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}
@@ -95,7 +103,7 @@ export default async function RoutePage(props: PageParams<{}>) {
           href="/products/new"
           className="flex w-full items-center justify-center rounded-md border-2 border-dashed border-primary p-8 transition-colors hover:bg-accent/40 lg:p-12"
         >
-          Créer ta scéance
+          Créer ton annonce
         </Link>
       )}
     </Layout>
