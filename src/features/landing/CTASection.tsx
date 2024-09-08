@@ -1,22 +1,35 @@
 "use client";
 
+import { useSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Section } from "./Section";
-import { signIn } from "next-auth/react";
 
 export const CTASection = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  const handleButtonClick = () => {
+    if (status === "authenticated") {
+      router.push("/products");
+    } else {
+      signIn();
+    }
+  };
+
   return (
     <Section>
-      <Card className="flex flex-col items-center justify-center gap-4 p-12 lg:p-20">
-        <h2 className="text-3xl font-bold">Commencez dès maintenant</h2>
+      <Card className="flex flex-col items-center justify-center gap-4 p-6">
+        <h2 className="text-2xl font-bold text-center">Commence dès maintenant</h2>
         <button
           className={buttonVariants({ size: "lg" })}
-          onClick={() => signIn()}
+          onClick={handleButtonClick}
         >
-          Commence maintenant
+          Voir les annonces
         </button>
       </Card>
     </Section>
   );
 };
+

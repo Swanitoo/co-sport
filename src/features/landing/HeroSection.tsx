@@ -4,6 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Section } from "./Section";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { CTASection } from "./CTASection";
 
 export const HeroSection = () => {
   return (
@@ -26,32 +27,7 @@ export const HeroSection = () => {
       Choisis ton sport, trouve ton partenaire idéal et progressez ensemble tout en sociabilisant.
       </p>
       <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0 lg:mb-16">
-        {/* <a
-          href="#"
-          className={buttonVariants({
-            size: "lg",
-          })}
-        >
-          Learn more
-          <svg
-            className="-mr-1 ml-2 size-5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
-        </a> */}
-        <button
-          className={buttonVariants({ size: "lg" })}
-          onClick={() => signIn()}
-        >
-          Commence maintenant
-        </button>
+      <CTASection />
         {/* <a
           href="#"
           className={buttonVariants({

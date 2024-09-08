@@ -10,7 +10,7 @@ export default function RouteError() {
       <Card>
         <CardHeader>
           <CardTitle>
-            Sorry, you need to be logged in to view this page.
+            Désolé, tu dois être connecté pour voir cette page.
           </CardTitle>
         </CardHeader>
         <CardFooter>

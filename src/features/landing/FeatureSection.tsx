@@ -21,11 +21,13 @@ import { LayoutTitle } from "@/components/layout";
 import { Loader2, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signInAction } from "../auth/auth.action";
+import { CTASection } from "./CTASection";
 
 export const FeatureSection = () => {
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
+  
   const handleJoin = () => {
     setIsLoading(true);
     setTimeout(() => {
@@ -200,7 +202,7 @@ export const FeatureSection = () => {
                 }}
                 className="flex h-full max-w-lg flex-col items-center justify-center gap-4"
               >
-                <h2 className="text-lg font-bold lg:mt-20 text-white">
+                <h2 className="text-lg font-bold lg:mt-10 text-white">
                   {"Bravo !"}
                 </h2>
                 <Card>
@@ -208,13 +210,9 @@ export const FeatureSection = () => {
                     <CardTitle>
                       Tu n'as plus qu'a t'organiser avec ton/ta partenaire ! ✅
                       </CardTitle>
-                    <CardDescription className="flex justify-center pt-6">
-                    <Button onClick={() => {
-                      signInAction();
-                    }}>
-                    Commence maintenant ! 
-                  </Button>
-                      </CardDescription>
+
+                      <CTASection />
+
                   </CardHeader>
                 </Card>
               </motion.div>

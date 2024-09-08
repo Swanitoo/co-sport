@@ -27,12 +27,12 @@ export const PricingSection = async () => {
           Un accès gratuit dans un premier temps
         </p>
       </div>
-      <div className="flex justify-center gap-4 max-lg:flex-col">
+      <div className="flex justify-center items-center gap-4 max-lg:flex-col">
         <PricingCard
           title="Starter"
           price={0}
           description="Pour un essais"
-          items={["Créez une sceance", "Reservez 10 sceances"]}
+          items={["Créer une annonce", "Réserve 10 annonces"]}
         >
           <Link
             href="/api/auth/signin"
@@ -52,8 +52,8 @@ export const PricingSection = async () => {
           price={15}
           description="Pour une utilisation sans fin"
           items={[
-            "Creez un nombres de sceance infini",
-            "Participez a un nombre de sceance infini",
+            "Créer un nombre d'annonces infini",
+            "Participe a un nombre d'annonces infini",
           ]}
         >
           {user ? (
