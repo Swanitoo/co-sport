@@ -6,16 +6,16 @@ import Link from "next/link";
 export default async function RoutePage(props: PageParams<{}>) {
   return (
     <Layout>
-      <LayoutTitle>Yeah ! You are now a premium user</LayoutTitle>
+      <LayoutTitle>Tu es maintenant un utilisateur premium</LayoutTitle>
       <div className="flex gap-4">
         <Link
           className={buttonVariants({ size: "lg", variant: "secondary" })}
           href="/products"
         >
-          Go to products
+          Voir les annonces
         </Link>
         <Link className={buttonVariants({ size: "lg" })} href="/products/new">
-          Create your next product
+          Créez ton prochain produit
         </Link>
       </div>
     </Layout>

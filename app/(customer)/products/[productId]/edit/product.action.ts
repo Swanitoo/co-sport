@@ -53,9 +53,9 @@ const verifyUserPlan = async (user: User) => {
         },
     });
 
-    if (userProductsCount > 0) {
+    if (userProductsCount > 3) {
         throw new ActionError(
-            "You need to upgrade to premium to create more products"
+            "Tu dois passer au Premium pour créer plus de produits"
         );
     }
 };

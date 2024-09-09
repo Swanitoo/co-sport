@@ -7,20 +7,20 @@ export default async function RoutePage(props: PageParams<{}>) {
   return (
     <Layout>
       <LayoutTitle>
-        Ohhh... it's seems the payment has been canceled
+        Oh... il semble que le paiement ait été annulé.
       </LayoutTitle>
       <div className="flex gap-4">
         <Link
           className={buttonVariants({ size: "lg", variant: "secondary" })}
           href="/"
         >
-          Back to home
+          Retournes a l'accueil
         </Link>
         <Link
           className={buttonVariants({ size: "lg" })}
           href="mailto:swan.marin@gmail.com"
         >
-          Contact help
+          Contact
         </Link>
       </div>
     </Layout>

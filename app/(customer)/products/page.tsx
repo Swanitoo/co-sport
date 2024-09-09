@@ -22,17 +22,6 @@ export default async function RoutePage(props: PageParams<{}>) {
       memberships: {
         where: { userId: user.id },
       },
-      _count: {
-        select: {
-          reviews: {
-            where: {
-              text: {
-                not: null,
-              },
-            },
-          },
-        },
-      },
     },
   });
 
@@ -56,9 +45,8 @@ export default async function RoutePage(props: PageParams<{}>) {
           <TableHeader className="pointer-events-none">
             <TableRow>
               <TableHead>Nom</TableHead>
-              <TableHead>Sport</TableHead>
-              <TableHead>Niveau</TableHead>
-              <TableHead>Avis</TableHead>
+              <TableHead className="text-center">Sport</TableHead>
+              <TableHead className="text-right">Niveau</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -79,19 +67,14 @@ export default async function RoutePage(props: PageParams<{}>) {
                     {product.name}
                   </Link>
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-center">
                   <Link href={`/products/${product.id}`} className="font-mono">
                     {product.sport}
                   </Link>
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-right">
                   <Link href={`/products/${product.id}`} className="font-mono">
                     {product.level}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <Link href={`/products/${product.id}`} className="font-mono">
-                    {product._count.reviews}
                   </Link>
                 </TableCell>
               </TableRow>

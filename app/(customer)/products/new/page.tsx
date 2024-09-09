@@ -17,7 +17,7 @@ export default async function RoutePage(props: PageParams<{}>) {
                 where: {
                     userId: user.id,
                 },
-            })) < 1;
+            })) < 3;
 
     if (!isAutorized) {
         return (
