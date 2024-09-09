@@ -24,11 +24,10 @@ export default async function RoutePage(props: PageParams<{}>) {
     },
   });
 
-  const reviewsCount = await prisma.review.count({
+  const joinedSessionsCount = await prisma.membership.count({
     where: {
-      product: {
-        userId: user.id,
-      },
+      userId: user.id,
+      status: "APPROVED",
     },
   });
 
@@ -58,7 +57,7 @@ export default async function RoutePage(props: PageParams<{}>) {
           </CardHeader>
           <CardHeader>
             <CardDescription>Commentaires</CardDescription>
-            <CardTitle>{reviewsCount}</CardTitle>
+            <CardTitle>{joinedSessionsCount}</CardTitle>
           </CardHeader>
         </Card>
 
@@ -96,17 +95,20 @@ export default async function RoutePage(props: PageParams<{}>) {
             <CardDescription>{user.plan}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <p>Commentaires Max : {user.plan === "FREE" ? 1 : "infini"}</p>
-            <Progress value={(reviewsCount * 1) / 1} />
-            {productsCount === 1}
-            <p>Annonce Max : {user.plan === "FREE" ? 1 : "infini"}</p>
+          <p>Annonces Max Rejointes : {user.plan === "FREE" ? `3 (Restantes: ${3 - joinedSessionsCount})` : "illimité"}</p>
+          <Progress value={(joinedSessionsCount / (user.plan === "FREE" ? 3 : joinedSessionsCount)) * 100} />
+
+          {user.plan === "FREE" && joinedSessionsCount >= 3 && (
+            <p className="text-red-500">Tu as atteint la limite de 3 annonces rejointes pour le plan gratuit. Passes au plan Premium pour rejoindre plus de séances.</p>
+          )}
+            <p>Annonce Max : {user.plan === "FREE" ? 1 : "illimité"}</p>
             <Progress value={(productsCount * 1) / 1} />
             {productsCount === 1}
             {user.plan === "FREE" &&
-              (productsCount === 1 || reviewsCount === 100) && (
+              (productsCount === 1 || joinedSessionsCount === 3) && (
                 <Alert>
                   <AlertTitle>
-                    Tu as atteint la limite de votre forfait gratuit, veuillez mettre à niveau
+                    Tu as atteint la limite de ton forfait gratuit
                   </AlertTitle>
                   <Link
                     className={buttonVariants({ size: "sm" })}

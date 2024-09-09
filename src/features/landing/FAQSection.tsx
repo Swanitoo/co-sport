@@ -47,7 +47,7 @@ import {
     {
       question: "Comment puis-je annuler mon abonnement ?",
       answer:
-        "Vous pouvez annuler votre abonnement à tout moment via les paramètres de votre compte.",
+        "Vous pouvez annuler votre abonnement à tout moment via l'onglet 'Infos de paiement'",
     },
   ];
   
@@ -55,8 +55,7 @@ import {
     return (
       <Section className="flex w-full flex-row items-start gap-4 max-lg:flex-col max-lg:items-center">
         <div className="flex-1 max-lg:text-center">
-          <h2 className="text-xl font-bold text-primary">FAQ</h2>
-          <h2 className="text-3xl font-bold">FAQ</h2>
+          <h2 className="text-3xl font-bold text-primary">FAQ</h2>
         </div>
         <div className="w-full max-w-lg flex-1 text-left">
           <Accordion type="multiple">
