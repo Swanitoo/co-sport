@@ -14,6 +14,8 @@ import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
 import Link from "next/link";
 import { ReviewItem } from "../../(user)/wall/[slug]/ReviewCard";
+import Activities from "@/features/auth/StravaButton";
+
 
 export default async function RoutePage(props: PageParams<{}>) {
   const user = await requiredCurrentUser();
@@ -118,6 +120,14 @@ export default async function RoutePage(props: PageParams<{}>) {
                   </Link>
                 </Alert>
               )}
+          </CardContent>
+        </Card>
+        <Card className="min-w-52">
+          <CardHeader>
+            <CardTitle>Mes activités Strava</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Activities />
           </CardContent>
         </Card>
       </div>
