@@ -54,6 +54,11 @@ model User {
   plan             Plan      @default(FREE)
   stripeCustomerId String?
   socialLink       String?  
+  bio              String?
+  city             String?
+  state            String?
+  country          String?
+  sex              String?
 
   accounts Account[]
   sessions Session[]
