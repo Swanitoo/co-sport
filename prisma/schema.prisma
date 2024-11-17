@@ -45,6 +45,17 @@ model VerificationToken {
 
 // App models
 
+model StravaActivity {
+  id        String   @id @default(cuid())
+  userId    String
+  activity  String
+  date      DateTime
+  distance  Float
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
 model User {
   id               String    @id @default(cuid())
   name             String?
@@ -60,10 +71,12 @@ model User {
   country          String?
   sex              String?
 
+
   accounts Account[]
   sessions Session[]
   products Product[]
   memberships Membership[]  
+  stravaActivities StravaActivity[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
