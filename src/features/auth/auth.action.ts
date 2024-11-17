@@ -35,3 +35,29 @@ export const setupCustomerPortal = userAction(
     return stripeSettingsLink.url;
   }
 );
+
+export const connectStravaAction = async () => {
+  console.log("Fetching URL:", `${getServerUrl()}/api/auth/link-strava`);
+  try {
+    // Appelle l'API pour démarrer le processus de liaison
+    const response = await fetch(`${getServerUrl()}/api/auth/link-strava`, {
+      method: "POST",
+      credentials: "include",
+    });
+    console.log("Fetching URL:", `${getServerUrl()}/api/auth/link-strava`);
+    console.log("Response status:", response.status);
+    console.log("Response body:", await response.text());
+
+    if (!response.ok) {
+      throw new ActionError("Failed to initiate Strava linking process");
+    }
+
+    const { redirectUrl } = await response.json();
+
+    // Redirige l'utilisateur vers Strava pour autorisation
+    window.location.href = redirectUrl;
+  } catch (error) {
+    console.error(error);
+    throw new ActionError("Failed to connect Strava account");
+  }
+};

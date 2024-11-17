@@ -14,7 +14,7 @@ import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
 import Link from "next/link";
 import { ReviewItem } from "../../(user)/wall/[slug]/ReviewCard";
-
+import { StravaConnectButton } from "@/features/auth/StravaConnectButton";
 
 export default async function RoutePage(props: PageParams<{}>) {
   const user = await requiredCurrentUser();
@@ -96,12 +96,26 @@ export default async function RoutePage(props: PageParams<{}>) {
             <CardDescription>{user.plan}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-          <p>Annonces Max Rejointes : {user.plan === "FREE" ? `3 (Restantes: ${3 - joinedSessionsCount})` : "illimité"}</p>
-          <Progress value={(joinedSessionsCount / (user.plan === "FREE" ? 3 : joinedSessionsCount)) * 100} />
+            <p>
+              Annonces Max Rejointes :{" "}
+              {user.plan === "FREE"
+                ? `3 (Restantes: ${3 - joinedSessionsCount})`
+                : "illimité"}
+            </p>
+            <Progress
+              value={
+                (joinedSessionsCount /
+                  (user.plan === "FREE" ? 3 : joinedSessionsCount)) *
+                100
+              }
+            />
 
-          {user.plan === "FREE" && joinedSessionsCount >= 3 && (
-            <p className="text-red-500">Tu as atteint la limite de 3 annonces rejointes pour le plan gratuit. Passes au plan Premium pour rejoindre plus de séances.</p>
-          )}
+            {user.plan === "FREE" && joinedSessionsCount >= 3 && (
+              <p className="text-red-500">
+                Tu as atteint la limite de 3 annonces rejointes pour le plan
+                gratuit. Passes au plan Premium pour rejoindre plus de séances.
+              </p>
+            )}
             <p>Annonce Max : {user.plan === "FREE" ? 1 : "illimité"}</p>
             <Progress value={(productsCount * 1) / 1} />
             {productsCount === 1}
@@ -125,7 +139,8 @@ export default async function RoutePage(props: PageParams<{}>) {
           <CardHeader>
             <CardTitle>Mes activités Strava</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex flex-col gap-2">
+            <StravaConnectButton />
           </CardContent>
         </Card>
       </div>
