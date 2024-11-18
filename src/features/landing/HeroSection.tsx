@@ -16,18 +16,16 @@ export const HeroSection = () => {
         <span className="mr-3 rounded-full bg-primary px-4 py-1.5 text-xs text-primary-foreground">
           Prochainement
         </span>{" "}
-        <span className="text-sm font-medium">
-          L'application mobile
-        </span>
+        <span className="text-sm font-medium">L'application mobile</span>
       </div>
       <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-foreground  md:text-5xl lg:text-6xl">
         Trouve ton partenaire de sport
       </h1>
       <p className="mb-8 text-lg font-normal text-muted-foreground sm:px-16 lg:text-xl xl:px-48">
-      Choisis ton sport, trouve ton partenaire idéal et progressez ensemble tout en sociabilisant.
+        Choisis ton sport, trouve ton partenaire idéal et progressez ensemble.
       </p>
       <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0 lg:mb-16">
-      <CTASection />
+        <CTASection />
         {/* <a
           href="#"
           className={buttonVariants({
@@ -46,7 +44,6 @@ export const HeroSection = () => {
           Watch video
         </a> */}
       </div>
-      
     </Section>
   );
 };

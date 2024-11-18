@@ -14,8 +14,8 @@ export default function Home() {
       <LandingHeader />
       <HeroSection />
       <FeatureSection />
-      <ProblemsSection />
-      <PricingSection />
+      {/* <ProblemsSection /> */}
+      {/* <PricingSection /> */}
       <FAQSection />
       <CTASection />
       <FooterSection />

@@ -54,7 +54,7 @@ export const LoggedInDropdown = (props: LoggedInDropdownProps) => {
             Tableau de bord
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem
+        {/* <DropdownMenuItem
           onClick={() => {
             stripeSettingsMutation.mutate();
           }}
@@ -65,7 +65,7 @@ export const LoggedInDropdown = (props: LoggedInDropdownProps) => {
             <CreditCard size={16} className="mr-2" />
           )}
           Infos de paiement
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuItem asChild>
           <Link href="/products" className="w-full">
             <Square size={16} className="mr-2" />

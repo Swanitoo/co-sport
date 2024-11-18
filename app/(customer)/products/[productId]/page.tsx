@@ -2,7 +2,14 @@ import { requiredCurrentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
 import { CheckCircle, Link2 } from "lucide-react";
@@ -36,8 +43,8 @@ export default async function RoutePage(
         where: {
           text: {
             not: null,
-          }
-        }
+          },
+        },
       },
       memberships: {
         include: {
@@ -46,10 +53,10 @@ export default async function RoutePage(
               name: true,
               socialLink: true,
               image: true,
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     },
   });
 
@@ -57,13 +64,17 @@ export default async function RoutePage(
     notFound();
   }
 
-  const isOwner = product.userId === user.id; 
-  const isClient = product.userId !== user.id; 
+  const isOwner = product.userId === user.id;
+  const isClient = product.userId !== user.id;
 
-  const activeMemberships = product.memberships.filter(m => m.status === 'APPROVED');
-  const membership = product.memberships.find(m => m.userId === user.id);
+  const activeMemberships = product.memberships.filter(
+    (m) => m.status === "APPROVED"
+  );
+  const membership = product.memberships.find((m) => m.userId === user.id);
 
-  const pendingMemberships = product.memberships.filter(m => m.status === 'PENDING');
+  const pendingMemberships = product.memberships.filter(
+    (m) => m.status === "PENDING"
+  );
   const pendingCount = pendingMemberships.length;
 
   return (
@@ -72,7 +83,12 @@ export default async function RoutePage(
         <div className="space-y-0.5">
           <LayoutTitle>{product.name}</LayoutTitle>
           {product.user.socialLink ? (
-            <Link href={product.user.socialLink} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+            <Link
+              href={product.user.socialLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 hover:underline"
+            >
               {product.user.name}
             </Link>
           ) : (
@@ -81,28 +97,31 @@ export default async function RoutePage(
         </div>
 
         <div className="flex items-center gap-2">
-        {isOwner && pendingMemberships.length > 0 && (
-            <AcceptRequestButton membership={pendingMemberships[0]} count={pendingCount} />
-        )}
+          {isOwner && pendingMemberships.length > 0 && (
+            <AcceptRequestButton
+              membership={pendingMemberships[0]}
+              count={pendingCount}
+            />
+          )}
 
-        {isOwner && (
-          <>
-            <Link
-              href={`/products/${product.id}/edit`}
-              className={buttonVariants({ size: "sm", variant: "secondary" })}
-            >
-              Edit
-            </Link>
-            <DeleteButton productId={product.id} />
-          </>
-        )}
+          {isOwner && (
+            <>
+              <Link
+                href={`/products/${product.id}/edit`}
+                className={buttonVariants({ size: "sm", variant: "secondary" })}
+              >
+                Edit
+              </Link>
+              <DeleteButton productId={product.id} />
+            </>
+          )}
         </div>
 
         {isClient && !membership && (
           <JoinButton productId={product.id} userId={user.id} />
         )}
 
-        {isClient && membership && membership.status === 'PENDING' && (
+        {isClient && membership && membership.status === "PENDING" && (
           <div className="flex items-center gap-2">
             <button
               className={buttonVariants({ size: "sm", variant: "secondary" })}
@@ -113,17 +132,17 @@ export default async function RoutePage(
           </div>
         )}
 
-        {isClient && membership && membership.status === 'APPROVED' && (
+        {isClient && membership && membership.status === "APPROVED" && (
           <div className="flex items-center gap-2">
-          <span className="flex items-center">
-            <CheckCircle size={16} className="mr-2 text-green-600" />
-            Tu es membre
-          </span>
-          <LeaveButton productId={product.id} userId={user.id} />
-        </div>
+            <span className="flex items-center">
+              <CheckCircle size={16} className="mr-2 text-green-600" />
+              Tu es membre
+            </span>
+            <LeaveButton productId={product.id} userId={user.id} />
+          </div>
         )}
 
-        {isClient && membership && membership.status === 'REMOVED' && (
+        {isClient && membership && membership.status === "REMOVED" && (
           <div className="flex items-center gap-2">
             <button
               className={buttonVariants({ size: "sm", variant: "destructive" })}
@@ -145,15 +164,15 @@ export default async function RoutePage(
             <p>Sport : {product.sport}</p>
           </CardHeader>
           <CardContent className="flex flex-col gap-2 items-start">
-            {isClient && membership && membership.status === 'APPROVED' && (
-            <Link
-              href={`/r/${product.slug}`}
-              className={buttonVariants({
-                size: "sm",
-              })}
-            >
-              <Link2 size={16} className="mr-2" />
-              Écris un avis
+            {isClient && membership && membership.status === "APPROVED" && (
+              <Link
+                href={`/r/${product.slug}`}
+                className={buttonVariants({
+                  size: "sm",
+                })}
+              >
+                <Link2 size={16} className="mr-2" />
+                Écris un avis
               </Link>
             )}
             <Link
@@ -176,17 +195,17 @@ export default async function RoutePage(
             <Table>
               <TableHeader className="pointer-events-none">
                 <TableRow>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Text</TableHead>
+                  <TableHead>Nom</TableHead>
+                  <TableHead>Text</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {product.reviews.map((review) => (
                   <TableRow key={product.id}>
                     <TableCell>
-                        <Link href={`/reviews/${product.id}`} key={product.id}>
+                      <Link href={`/reviews/${product.id}`} key={product.id}>
                         {product.name}
-                        </Link>
+                      </Link>
                     </TableCell>
                     <TableCell>{review.text}</TableCell>
                   </TableRow>
@@ -197,38 +216,38 @@ export default async function RoutePage(
         </Card>
       </div>
       {isOwner && (
-          <Card className="flex-1">
-            <CardHeader>
-              <CardTitle>Membres</CardTitle>
-            </CardHeader>
-            <CardContent>
+        <Card className="flex-1">
+          <CardHeader>
+            <CardTitle>Membres</CardTitle>
+          </CardHeader>
+          <CardContent>
             <Table>
-        <TableBody>
-          {activeMemberships.map((membership) => (
-            <TableRow key={membership.id}>
-              <TableCell>
-                <p>{membership.user.name}</p>
-                {membership.user.socialLink && (
-                  <Link
-                    href={membership.user.socialLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:underline"
-                  >
-                    Réseau social
-                  </Link>
-                )}
-              </TableCell>
-              <TableCell className="text-right">
-                <RemoveMemberButton membershipId={membership.id} />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-            </CardContent>
-          </Card>
-        )}
+              <TableBody>
+                {activeMemberships.map((membership) => (
+                  <TableRow key={membership.id}>
+                    <TableCell>
+                      <p>{membership.user.name}</p>
+                      {membership.user.socialLink && (
+                        <Link
+                          href={membership.user.socialLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 hover:underline"
+                        >
+                          Réseau social
+                        </Link>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <RemoveMemberButton membershipId={membership.id} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
     </Layout>
   );
 }

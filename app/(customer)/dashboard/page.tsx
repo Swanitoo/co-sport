@@ -56,7 +56,7 @@ export default async function RoutePage(props: PageParams<{}>) {
             <CardTitle>{productsCount}</CardTitle>
           </CardHeader>
           <CardHeader>
-            <CardDescription>Commentaires</CardDescription>
+            <CardDescription>Annonce Rejoint</CardDescription>
             <CardTitle>{joinedSessionsCount}</CardTitle>
           </CardHeader>
         </Card>
@@ -89,7 +89,7 @@ export default async function RoutePage(props: PageParams<{}>) {
             </Link>
           </CardContent>
         </Card>
-        <Card className="min-w-52">
+        {/* <Card className="min-w-52">
           <CardHeader>
             <CardTitle>Plan</CardTitle>
             <CardDescription>{user.plan}</CardDescription>
@@ -119,7 +119,7 @@ export default async function RoutePage(props: PageParams<{}>) {
                 </Alert>
               )}
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </Layout>
   );
