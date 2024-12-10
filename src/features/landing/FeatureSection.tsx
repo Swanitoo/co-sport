@@ -124,9 +124,7 @@ export const FeatureSection = () => {
                       }}
                       className="cursor-pointer hover:bg-blue-900"
                     >
-                      <TableCell className="text-white">
-                        Traversée 3 monts
-                      </TableCell>
+                      <TableCell className="text-white">3 monts</TableCell>
                       <TableCell className="font-mono text-white">
                         Alpinisme
                       </TableCell>
