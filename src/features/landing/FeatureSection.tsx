@@ -114,7 +114,7 @@ export const FeatureSection = () => {
                         Boxe Anglaise
                       </TableCell>
                       <TableCell className="font-mono text-white">
-                        Club Rhône
+                        Club du Rhône
                       </TableCell>
                       <TableCell className="font-mono text-white">3</TableCell>
                     </TableRow>
