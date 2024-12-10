@@ -12,11 +12,11 @@ export const env = createEnv({
     RESEND_API_KEY: z.string(),
   },
   client: {
-    NEXT_PUBLIC_PUSHER_KEY: z.string(),
-    NEXT_PUBLIC_PUSHER_CLUSTER: z.string(),
+    // NEXT_PUBLIC_PUSHER_KEY: z.string(),
+    // NEXT_PUBLIC_PUSHER_CLUSTER: z.string(),
   },
   experimental__runtimeEnv: {
-    NEXT_PUBLIC_PUSHER_KEY: process.env.NEXT_PUBLIC_PUSHER_KEY,
-    NEXT_PUBLIC_PUSHER_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
+    // NEXT_PUBLIC_PUSHER_KEY: process.env.NEXT_PUBLIC_PUSHER_KEY,
+    // NEXT_PUBLIC_PUSHER_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
   },
 });
