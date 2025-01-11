@@ -101,3 +101,9 @@
   padding: 2px;
   margin: -2px;
 }
+
+.truncate-multiline {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

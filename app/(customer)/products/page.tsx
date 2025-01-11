@@ -2,35 +2,54 @@ import { requiredCurrentUser } from "@/auth/current-user";
 import { Layout, LayoutDescription, LayoutTitle } from "@/components/layout";
 import { buttonVariants } from "@/components/ui/button";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
 import { CheckCircle, Crown, Hourglass } from "lucide-react";
 import Link from "next/link";
 
-export default async function RoutePage(props: PageParams<{}>) {
+export default async function RoutePage(props: PageParams<{ page?: string }>) {
   const user = await requiredCurrentUser();
 
-  const products = await prisma.product.findMany({
-    include: {
-      memberships: {
-        where: { userId: user.id },
+  const currentPage = Number(props.searchParams.page) || 1;
+  const itemsPerPage = 10;
+
+  const [products, total] = await Promise.all([
+    prisma.product.findMany({
+      include: {
+        memberships: {
+          where: { userId: user.id },
+        },
       },
-    },
-  });
+      skip: (currentPage - 1) * itemsPerPage,
+      take: itemsPerPage,
+    }),
+    prisma.product.count(),
+  ]);
+
+  const totalPages = Math.ceil(total / itemsPerPage);
 
   return (
     <Layout>
       <div className="flex justify-between">
         <div className="space-y-0.5">
           <LayoutTitle>Annonces</LayoutTitle>
-          <LayoutDescription>Créer ton annonce ou rejoins-en une.</LayoutDescription>
+          <LayoutDescription>
+            Créer ton annonce ou rejoins-en une.
+          </LayoutDescription>
         </div>
 
         <Link
@@ -41,46 +60,45 @@ export default async function RoutePage(props: PageParams<{}>) {
         </Link>
       </div>
       {products.length ? (
-        <Table>
-          <TableHeader className="pointer-events-none">
-            <TableRow>
-              <TableHead>Nom</TableHead>
-              <TableHead className="text-center">Sport</TableHead>
-              <TableHead className="text-right">Niveau</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id} className="cursor-pointer">
-                <TableCell>
-                  <Link href={`/products/${product.id}`} className="flex items-center">
-                    {product.userId === user.id && (
-                      <Crown size={16} className="mr-2 flex-shrink-0" />
-                    )}
-                    {product.memberships.length > 0 ? (
-                      product.memberships[0].status === "APPROVED" ? (
-                        <CheckCircle size={16} className="text-green-500 mr-2 flex-shrink-0" />
-                      ) : product.memberships[0].status === "PENDING" ? (
-                        <Hourglass size={16} className="mr-2 flex-shrink-0" />
-                      ) : null
-                    ) : null}
-                    {product.name}
-                  </Link>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Link href={`/products/${product.id}`} className="font-mono">
+        <div className="flex flex-col gap-2 space-y-4">
+          {products.map((product) => (
+            <Link key={product.id} href={`/products/${product.id}`}>
+              <Card className="cursor-pointer flex-col gap-2 transition-all duration-200 ease-in-out hover:scale-[1.02] hover:bg-accent/5  hover:shadow-lg">
+                <CardHeader className="flex items-center gap-2 p-4">
+                  {product.userId === user.id && (
+                    <Crown size={16} className="text-yellow-500" />
+                  )}
+                  {product.memberships.length > 0 && (
+                    <>
+                      {product.memberships[0].status === "APPROVED" && (
+                        <CheckCircle size={16} className="text-green-500" />
+                      )}
+                      {product.memberships[0].status === "PENDING" && (
+                        <Hourglass size={16} className="text-yellow-500" />
+                      )}
+                    </>
+                  )}
+                  <CardTitle>{product.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <CardDescription className="text-center">
                     {product.sport}
-                  </Link>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Link href={`/products/${product.id}`} className="font-mono">
+                  </CardDescription>
+                </CardContent>
+                <CardContent className="p-4 text-center">
+                  <p className="font-mono truncate-multiline">
+                    {product.description}
+                  </p>
+                </CardContent>
+                <CardContent className="p-4 text-center">
+                  <p className="overflow-hidden text-ellipsis font-mono">
                     {product.level}
-                  </Link>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
       ) : (
         <Link
           href="/products/new"
@@ -89,6 +107,32 @@ export default async function RoutePage(props: PageParams<{}>) {
           Créer ton annonce
         </Link>
       )}
+      <Pagination className="mt-4">
+        <PaginationContent>
+          {currentPage > 1 && (
+            <PaginationItem>
+              <PaginationPrevious href={`?page=${currentPage - 1}`} />
+            </PaginationItem>
+          )}
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <PaginationItem key={page}>
+              <PaginationLink
+                href={`?page=${page}`}
+                isActive={page === currentPage}
+              >
+                {page}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+
+          {currentPage < totalPages && (
+            <PaginationItem>
+              <PaginationNext href={`?page=${currentPage + 1}`} />
+            </PaginationItem>
+          )}
+        </PaginationContent>
+      </Pagination>
     </Layout>
   );
 }

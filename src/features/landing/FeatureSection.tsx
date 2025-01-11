@@ -2,15 +2,13 @@
 
 import { LayoutTitle } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, UsersRound } from "lucide-react";
@@ -53,7 +51,7 @@ export const FeatureSection = () => {
                 <h2 className="mb-4 rounded-lg bg-gray-800 p-4 text-lg font-bold text-white shadow-md lg:mt-16">
                   {`Trouve ton sport et ton partenaire en cliquant sur une annonce qui t'intéresse.`}
                 </h2>
-                <Table>
+                {/* <Table>
                   <TableHeader className="pointer-events-none">
                     <TableRow>
                       <TableHead className="text-white dark:text-white">
@@ -134,7 +132,35 @@ export const FeatureSection = () => {
                       <TableCell className="font-mono text-white">12</TableCell>
                     </TableRow>
                   </TableBody>
-                </Table>
+                </Table> */}
+
+                <div className="flex flex-col gap-2 space-y-4">
+                  <Card
+                    onClick={() => {
+                      setStep((s) => s + 1);
+                    }}
+                    className="cursor-pointer flex-col gap-2 transition-all duration-200 ease-in-out hover:scale-[1.02] hover:bg-accent/5  hover:shadow-lg"
+                  >
+                    <CardHeader className="flex items-center gap-2 p-4">
+                      <CardTitle>Séance jambes</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4">
+                      <CardDescription className="text-center">
+                        Sport : Musculation
+                      </CardDescription>
+                    </CardContent>
+                    <CardContent className="p-4 text-center">
+                      <p className="truncate-multiline font-mono">
+                        Salut ! Je fais les <br /> jambes tous les lundis 😊
+                      </p>
+                    </CardContent>
+                    <CardContent className="p-4 text-center">
+                      <p className="overflow-hidden text-ellipsis font-mono">
+                        Niveau : Moyen
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
               </motion.div>
             )}
 
