@@ -1,6 +1,5 @@
 import { requiredCurrentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
-import { Alert, AlertTitle } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -9,11 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
 import Link from "next/link";
 import { ReviewItem } from "../../(user)/wall/[slug]/ReviewCard";
+import { ProfileDataCheck } from "./ProfileDataCheck";
 
 export default async function RoutePage(props: PageParams<{}>) {
   const user = await requiredCurrentUser();
@@ -48,6 +47,10 @@ export default async function RoutePage(props: PageParams<{}>) {
   return (
     <Layout>
       <LayoutTitle>Tableau de bord</LayoutTitle>
+      <ProfileDataCheck
+        needsSex={user.sex === null}
+        needsCountry={!user.country}
+      />
       <h2 className="text-xl font-bold">Content de te voir, {user.name}</h2>
       <div className="flex flex-wrap items-start gap-4">
         <Card className="min-w-52">

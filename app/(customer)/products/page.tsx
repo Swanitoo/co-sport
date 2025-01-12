@@ -20,6 +20,7 @@ import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
 import { CheckCircle, Crown, Hourglass } from "lucide-react";
 import Link from "next/link";
+import { ProfileDataCheck } from "../dashboard/ProfileDataCheck";
 
 export default async function RoutePage(props: PageParams<{ page?: string }>) {
   const user = await requiredCurrentUser();
@@ -44,6 +45,10 @@ export default async function RoutePage(props: PageParams<{ page?: string }>) {
 
   return (
     <Layout>
+      <ProfileDataCheck
+        needsSex={user.sex === null}
+        needsCountry={!user.country}
+      />
       <div className="flex justify-between">
         <div className="space-y-0.5">
           <LayoutTitle>Annonces</LayoutTitle>

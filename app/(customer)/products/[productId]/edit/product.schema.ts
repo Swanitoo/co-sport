@@ -1,4 +1,4 @@
-import { optional, z } from "zod";
+import { z } from "zod";
 
 export const ProductSchema = z.object({
   name: z
@@ -16,7 +16,13 @@ export const ProductSchema = z.object({
 
 export type ProductType = z.infer<typeof ProductSchema>;
 
-export const LEVEL_CLASSES = ["Débutant", "Intermédiaire", "Avancé"];
+export const LEVEL_CLASSES = [
+  "Débutant",
+  "Intermédiaire",
+  "Avancé",
+  "Expert",
+  "Pro (Coatch, Entraîneur, Guide..)",
+];
 
 export const MembershipSchema = z.object({
   userId: z.string(),

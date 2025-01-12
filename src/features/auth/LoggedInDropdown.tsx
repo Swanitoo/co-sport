@@ -26,17 +26,17 @@ export type LoggedInDropdownProps = PropsWithChildren;
 export const LoggedInDropdown = (props: LoggedInDropdownProps) => {
   const router = useRouter();
 
-  const stripeSettingsMutation = useMutation({
-    mutationFn: () => setupCustomerPortal(""),
-    onSuccess: ({ data, serverError }) => {
-      if (serverError || !data) {
-        toast.error(serverError);
-        return;
-      }
+  // const stripeSettingsMutation = useMutation({
+  //   mutationFn: () => setupCustomerPortal(""),
+  //   onSuccess: ({ data, serverError }) => {
+  //     if (serverError || !data) {
+  //       toast.error(serverError);
+  //       return;
+  //     }
 
-      router.push(data);
-    },
-  });
+  //     router.push(data);
+  //   },
+  // });
 
   return (
     <DropdownMenu>
