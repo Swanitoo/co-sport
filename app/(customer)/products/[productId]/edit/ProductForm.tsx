@@ -1,12 +1,10 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,17 +20,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { SportVenueSearch } from "../SportVenueSearch";
 import { createProductAction, updateProductAction } from "./product.action";
 import {
   LEVEL_CLASSES,
-  SPORT_CLASSES,
   ProductSchema,
   ProductType,
+  SPORT_CLASSES,
 } from "./product.schema";
 
 export type ProductFormProps = {
@@ -92,10 +89,7 @@ export const ProductForm = (props: ProductFormProps) => {
                   <FormItem>
                     <FormLabel>Nom</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Randonnée de 30km"
-                        {...field}
-                      />
+                      <Input placeholder="Randonnée de 30km" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -129,6 +123,27 @@ export const ProductForm = (props: ProductFormProps) => {
                           ))}
                         </SelectContent>
                       </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="venueName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lieu de l'activité</FormLabel>
+                    <FormControl>
+                      <SportVenueSearch
+                        defaultValue={field.value}
+                        onSelect={(venue) => {
+                          form.setValue("venueName", venue.name);
+                          form.setValue("venueAddress", venue.address);
+                          form.setValue("venueLat", venue.lat);
+                          form.setValue("venueLng", venue.lng);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

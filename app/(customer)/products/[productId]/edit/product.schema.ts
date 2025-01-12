@@ -12,6 +12,10 @@ export const ProductSchema = z.object({
   sport: z.string(),
   level: z.string(),
   description: z.string(),
+  venueName: z.string().optional(),
+  venueAddress: z.string().optional(),
+  venueLat: z.number().optional(),
+  venueLng: z.number().optional(),
 });
 
 export type ProductType = z.infer<typeof ProductSchema>;

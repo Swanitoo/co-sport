@@ -76,6 +76,10 @@ model Product {
   level       String
   slug        String       @unique
   memberships Membership[]
+  venueName    String?
+  venueAddress String?
+  venueLat     Float?
+  venueLng     Float?
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   reviews     Review[]
 }
