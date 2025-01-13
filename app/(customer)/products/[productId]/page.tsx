@@ -15,9 +15,9 @@ import type { PageParams } from "@/types/next";
 import { CheckCircle, Link2 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AcceptRequestButton } from "./AcceptButton";
 import { DeleteButton } from "./DeleteButton";
 import { JoinButton } from "./JoinButton";
-import { AcceptRequestButton } from "./AcceptButton";
 import { LeaveButton } from "./LeaveButton";
 import { RemoveMemberButton } from "./RemoveMemberButton";
 
@@ -79,7 +79,7 @@ export default async function RoutePage(
 
   return (
     <Layout>
-      <div className="flex justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
         <div className="space-y-0.5">
           <LayoutTitle>{product.name}</LayoutTitle>
           {product.user.socialLink ? (
@@ -163,7 +163,7 @@ export default async function RoutePage(
             <CardTitle>Détails</CardTitle>
             <p>Sport : {product.sport}</p>
           </CardHeader>
-          <CardContent className="flex flex-col gap-2 items-start">
+          <CardContent className="flex flex-col items-start gap-2">
             {isClient && membership && membership.status === "APPROVED" && (
               <Link
                 href={`/r/${product.slug}`}
