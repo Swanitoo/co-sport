@@ -38,9 +38,19 @@ export type ProductFormProps = {
 };
 
 export const ProductForm = (props: ProductFormProps) => {
+  const transformedValues = props.defaultValues
+    ? {
+        ...props.defaultValues,
+        venueName: props.defaultValues.venueName ?? undefined,
+        venueAddress: props.defaultValues.venueAddress ?? undefined,
+        venueLat: props.defaultValues.venueLat ?? undefined,
+        venueLng: props.defaultValues.venueLng ?? undefined,
+      }
+    : undefined;
+
   const form = useZodForm({
     schema: ProductSchema,
-    defaultValues: props.defaultValues,
+    defaultValues: transformedValues,
   });
   const isCreate = !Boolean(props.defaultValues);
   const router = useRouter();
