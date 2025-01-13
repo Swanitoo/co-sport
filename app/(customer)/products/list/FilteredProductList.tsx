@@ -1,27 +1,67 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ScrollToTop } from "@/components/ui/scrollTotop";
 import { X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ProductFilters } from "./ProductFilters";
 import { ProductList } from "./ProductList";
+import { fetchMoreProducts, getFilteredProducts } from "./productList.actions";
 import { FilteredProductListProps, FilterType } from "./productList.schema";
 
 export function FilteredProductList({
-  products,
+  initialProducts,
   userSex,
   userId,
+  venues,
 }: FilteredProductListProps) {
+  const [hasMore, setHasMore] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const loadMoreRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState(initialProducts);
 
   const [filters, setFilters] = useState<FilterType>({
     sport: searchParams.get("sport") || undefined,
     level: searchParams.get("level") || undefined,
     onlyGirls: searchParams.get("onlyGirls") === "true",
+    countries: searchParams.get("countries")?.split(",") || [],
     location: undefined,
   });
+
+  useEffect(() => {
+    const fetchFilteredProducts = async () => {
+      const filteredProducts = await getFilteredProducts(filters);
+      setProducts(filteredProducts);
+    };
+    fetchFilteredProducts();
+  }, [filters]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        if (entries[0].isIntersecting && !loading && hasMore) {
+          setLoading(true);
+          const skip = products.length;
+          const newProducts = await fetchMoreProducts(skip, filters);
+          if (newProducts.length < 10) {
+            setHasMore(false);
+          }
+          setProducts((prev) => [...prev, ...newProducts]);
+          setLoading(false);
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [products.length, loading, filters, hasMore]);
 
   const handleFilterChange = (newFilters: FilterType) => {
     const params = new URLSearchParams(searchParams);
@@ -35,6 +75,12 @@ export function FilteredProductList({
     if (newFilters.onlyGirls) params.set("onlyGirls", "true");
     else params.delete("onlyGirls");
 
+    if (newFilters.countries && newFilters.countries.length > 0) {
+      params.set("countries", newFilters.countries.join(","));
+    } else {
+      params.delete("countries");
+    }
+
     router.push(`?${params.toString()}`);
     setFilters(newFilters);
   };
@@ -44,43 +90,52 @@ export function FilteredProductList({
       sport: undefined,
       level: undefined,
       onlyGirls: false,
+      countries: [],
       location: undefined,
     };
     router.push(window.location.pathname);
     setFilters(emptyFilters);
   };
 
-  const filteredProducts = products.filter((product) => {
-    if (filters.sport && product.sport !== filters.sport) return false;
-    if (filters.level && product.level !== filters.level) return false;
-    return true;
-  });
   return (
-    <div className="flex flex-col gap-6 lg:flex-row">
-      <div className="w-full lg:sticky lg:top-4 lg:h-[calc(100vh-6rem)] lg:w-64">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-medium">Filtres</h3>
-          {(filters.sport || filters.level || filters.onlyGirls) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={resetFilters}
-              className="flex items-center gap-2"
-            >
-              <X className="size-4" />
-              Réinitialiser les filtres
-            </Button>
-          )}
+    <>
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <div className="w-full lg:sticky lg:top-4 lg:h-[calc(100vh-6rem)] lg:w-64">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="font-medium">Filtres</h3>
+            {(filters.sport ||
+              filters.level ||
+              filters.onlyGirls ||
+              filters.countries?.length > 0) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={resetFilters}
+                className="flex items-center gap-2"
+              >
+                <X className="size-4" />
+                Réinitialiser les filtres
+              </Button>
+            )}
+          </div>
+          <ProductFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            showGenderFilter={userSex === "F"}
+            venues={venues}
+          />
         </div>
-        <ProductFilters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          showGenderFilter={userSex === "F"}
-        />
+        <div className="flex-1">
+          <ProductList products={products} userId={userId} />
+          {loading && (
+            <div className="mt-4 text-center text-muted-foreground">
+              Chargement...
+            </div>
+          )}
+          <div ref={loadMoreRef} className="h-10" />
+        </div>
       </div>
-      <div className="flex-1">
-        <ProductList products={products} userId={userId} />
-      </div>
-    </div>
+      <ScrollToTop />
+    </>
   );
 }

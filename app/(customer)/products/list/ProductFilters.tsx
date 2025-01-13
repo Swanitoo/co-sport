@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { COUNTRIES } from "@/data/country";
 import { cn } from "@/lib/utils";
 import {
   LEVEL_CLASSES,
@@ -18,15 +19,35 @@ import { FilterType, ProductFiltersProps } from "./productList.schema";
 export function ProductFilters({
   onFilterChange,
   filters,
+  venues = [],
   className,
   showGenderFilter,
-}: ProductFiltersProps) {
+}: ProductFiltersProps & {
+  venues: { venueName: string | null; venueAddress: string | null }[];
+}) {
   const updateFilters = (newFilters: Partial<FilterType>) => {
     onFilterChange({ ...filters, ...newFilters });
   };
 
+  const handleCountryChange = (countryCode: string) => {
+    const newSelectedCountries = filters.countries.includes(countryCode)
+      ? filters.countries.filter((code) => code !== countryCode)
+      : [...filters.countries, countryCode];
+    updateFilters({ countries: newSelectedCountries });
+  };
+
+  const countryOptions = COUNTRIES.map((country) => ({
+    value: country.code,
+    label: `${country.flag} ${country.name}`,
+  }));
+
   return (
-    <div className={cn("space-y-6", className)}>
+    <div
+      className={cn(
+        "space-y-6 rounded-lg border border-border bg-card p-6 shadow-sm",
+        className
+      )}
+    >
       <div className="space-y-4">
         <h3 className="font-medium">Sport</h3>
         <Select
@@ -42,6 +63,29 @@ export function ProductFilters({
                 {sport}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="font-medium">Lieu</h3>
+        <Select
+          value={filters.venue || ""}
+          onValueChange={(value) => updateFilters({ venue: value })}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez un lieu" />
+          </SelectTrigger>
+          <SelectContent>
+            {venues?.map((venue, index) => {
+              const displayName = venue.venueName || venue.venueAddress;
+              if (!displayName) return null;
+              return (
+                <SelectItem key={index} value={displayName}>
+                  {displayName}
+                </SelectItem>
+              );
+            })}
           </SelectContent>
         </Select>
       </div>
@@ -63,6 +107,43 @@ export function ProductFilters({
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="font-medium">Affinités culturelles du partenaire</h3>
+        <Select value="" onValueChange={(value) => handleCountryChange(value)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez des pays" />
+          </SelectTrigger>
+          <SelectContent>
+            {countryOptions.map((country) => (
+              <SelectItem key={country.value} value={country.value}>
+                {country.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {filters.countries.map((countryCode) => {
+            const country = COUNTRIES.find((c) => c.code === countryCode);
+            if (!country) return null;
+            return (
+              <span
+                key={countryCode}
+                className="inline-flex items-center rounded-full bg-gray-200 px-3 py-1 text-gray-700"
+              >
+                {country.flag} {country.name}
+                <button
+                  type="button"
+                  className="ml-2 text-gray-500 hover:text-gray-700"
+                  onClick={() => handleCountryChange(countryCode)}
+                >
+                  &times;
+                </button>
+              </span>
+            );
+          })}
+        </div>
       </div>
 
       {showGenderFilter && (

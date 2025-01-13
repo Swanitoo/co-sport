@@ -77,7 +77,7 @@ export function SportVenueSearch({
                 setQuery(venue.name);
                 setVenues([]);
               }}
-              className="relative cursor-pointer select-none px-3 py-2 hover:bg-gray-100"
+              className="relative cursor-pointer select-none px-3 py-2 transition-colors duration-200 hover:bg-red-200  hover:text-blue-700 dark:hover:bg-primary/20"
             >
               <div className="font-medium text-gray-900 dark:text-gray-100">
                 {venue.name}

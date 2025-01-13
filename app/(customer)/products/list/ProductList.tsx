@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CheckCircle, Crown, Hourglass } from "lucide-react";
+import { CheckCircle, Crown, Hourglass, MapPin } from "lucide-react";
 import Link from "next/link";
 import { ProductListProps } from "./productList.schema";
 
@@ -38,6 +38,15 @@ export function ProductList({ products, userId }: ProductListProps) {
                 {product.sport}
               </CardDescription>
             </CardContent>
+            {(product.venueName || product.venueAddress) && (
+              <CardContent className="line-clamp-2 text-center text-sm text-muted-foreground">
+                <span>
+                  {product.venueName}
+                  {product.venueName && product.venueAddress && " - "}
+                  {product.venueAddress}
+                </span>
+              </CardContent>
+            )}
             <CardContent className="p-4 text-center">
               <p className="truncate-multiline font-mono">
                 {product.description}

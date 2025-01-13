@@ -49,6 +49,58 @@ export async function GET(request: Request) {
       "piscine",
       "swimming",
 
+      "Smart Fit",
+      "basic-fit",
+      "fitness park",
+      "neoness",
+      "keepcool",
+      "l'orange bleue",
+      "orange bleue",
+      "magic form",
+      "on air",
+      "on air fitness",
+      "Sportlife Fitness Club",
+
+      // Établissements municipaux
+      "gymnase",
+      "complexe sportif",
+      "centre sportif",
+      "palais des sports",
+      "salle omnisports",
+      "salle polyvalente",
+      "cosec",
+      "dojo",
+
+      // Types de salles spécifiques
+      "salle de sport",
+      "salle de fitness",
+      "salle de musculation",
+      "salle d'escalade",
+      "climbing spot",
+      "block out",
+      "arkose",
+      "salle de combat",
+      "ring",
+      "dojo",
+
+      // Installations spécifiques
+      "piscine municipale",
+      "centre aquatique",
+      "stade municipal",
+      "court de tennis",
+      "terrain de foot",
+      "city stade",
+
+      // Marques connues
+      "urban soccer",
+      "soccer park",
+      "five",
+      "futsal",
+      "soccer five",
+      "climb up",
+      "blockout",
+      "vertical art",
+
       // Outdoor sports facilities
       "stade",
       "terrain",
@@ -94,7 +146,97 @@ export async function GET(request: Request) {
       "leisure",
     ];
 
+    const excludedKeywords = [
+      // Lieux religieux
+      "mosque",
+      "mosquée",
+      "church",
+      "église",
+      "chapel",
+      "chapelle",
+      "temple",
+      "synagogue",
+
+      // Arabic terms
+      "مسجد",
+      "جامع",
+      "مصلى",
+      "كنيسة",
+      "معبد",
+      "مقبرة",
+      "مدرسة",
+      "مدينة",
+      "حرم",
+
+      // Transliterated Arabic
+      "masjid",
+      "jami",
+      "musalla",
+      "kanisa",
+      "maqbara",
+      "madrasa",
+      "madina",
+      "haram",
+
+      // Countries/Regions to exclude
+      "arabia",
+      "arabie",
+      "saudi",
+      "saoud",
+      "emirates",
+      "émirats",
+      "العربية",
+      "السعودية",
+      "الإمارات",
+
+      // Religious terms
+      "islamic",
+      "islamique",
+      "إسلامي",
+      "muslim",
+      "musulman",
+      "مسلم",
+      "minaret",
+      "منارة",
+      "mihrab",
+      "محراب",
+      "qibla",
+      "قبلة",
+
+      // Places
+      "medina",
+      "médina",
+      "مدينة",
+      "souk",
+      "سوق",
+      "cemetery",
+      "cimetière",
+      "مقبرة",
+      "memorial",
+      "mémorial",
+
+      // Additional terms
+      "holy",
+      "saint",
+      "sacré",
+      "مقدس",
+      "sanctuaire",
+      "shrine",
+      "ضريح",
+    ];
+
+    const isLatinOnly = (text: string) => {
+      return /^[a-zA-Z0-9\s.,'\-()]+$/.test(text);
+    };
+
     const filteredResults = results.filter((result: NominatimResult) => {
+      if (
+        result.display_name.length > 50 ||
+        !isLatinOnly(result.display_name)
+      ) {
+        return false;
+      }
+
       const normalizedTags = normalizeText(result.type || "");
       const normalizedName = normalizeText(result.display_name);
       const address = result.address || {};

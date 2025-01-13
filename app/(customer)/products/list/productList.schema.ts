@@ -7,6 +7,11 @@ import {
 
 export interface ProductWithMemberships extends Product {
   memberships: Membership[];
+  user: {
+    id: string;
+    sex: string | null;
+    country: string | null;
+  };
 }
 
 export interface ProductListProps {
@@ -14,30 +19,19 @@ export interface ProductListProps {
   userId: string;
 }
 
-export interface ProductFiltersProps {
-  onFilterChange: (filters: FilterType) => void;
-  filters: FilterType;
-  className?: string;
-  showGenderFilter?: boolean;
-}
-
 export interface FilteredProductListProps {
-  products: ProductWithMemberships[];
+  initialProducts: ProductWithMemberships[];
   userSex: string | null;
   userId: string;
-  users: { id: string; sex: string | null }[];
-}
-export interface ProductListParams {
-  page?: string;
-  sport?: string;
-  level?: string;
-  onlyGirls?: string;
+  venues: { venueName: string | null; venueAddress: string | null }[];
 }
 
 export const FilterSchema = z.object({
   sport: z.enum(SPORT_CLASSES as [string, ...string[]]).optional(),
   level: z.enum(LEVEL_CLASSES as [string, ...string[]]).optional(),
-  onlyGirls: z.boolean().optional(),
+  onlyGirls: z.boolean().default(false),
+  countries: z.array(z.string()).default([]),
+  venue: z.string().optional(),
   location: z
     .object({
       name: z.string(),
@@ -48,3 +42,10 @@ export const FilterSchema = z.object({
 });
 
 export type FilterType = z.infer<typeof FilterSchema>;
+
+export interface ProductFiltersProps {
+  onFilterChange: (filters: FilterType) => void;
+  filters: FilterType;
+  className?: string;
+  showGenderFilter?: boolean;
+}
