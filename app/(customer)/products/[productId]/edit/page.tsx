@@ -23,10 +23,18 @@ export default async function RoutePage(
     notFound();
   }
 
+  const transformedProduct = {
+    ...product,
+    venueName: product.venueName ?? undefined,
+    venueAddress: product.venueAddress ?? undefined,
+    venueLat: product.venueLat ?? undefined,
+    venueLng: product.venueLng ?? undefined,
+  };
+
   return (
     <Layout>
       <LayoutTitle>Edit product</LayoutTitle>
-      <ProductForm defaultValues={product} productId={product.id} />
+      <ProductForm defaultValues={transformedProduct} productId={product.id} />
     </Layout>
   );
 }
