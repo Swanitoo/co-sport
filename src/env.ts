@@ -10,6 +10,7 @@ export const env = createEnv({
     STRIPE_SECRET_KEY: z.string(),
     STRIPE_WEBHOOK_SECRET: z.string(),
     RESEND_API_KEY: z.string(),
+    GOOGLE_MAPS_API_KEY: z.string(),
   },
   client: {
     // NEXT_PUBLIC_PUSHER_KEY: z.string(),

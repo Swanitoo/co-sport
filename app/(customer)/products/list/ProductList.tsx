@@ -40,11 +40,7 @@ export function ProductList({ products, userId }: ProductListProps) {
             </CardContent>
             {(product.venueName || product.venueAddress) && (
               <CardContent className="line-clamp-2 text-center text-sm text-muted-foreground">
-                <span>
-                  {product.venueName}
-                  {product.venueName && product.venueAddress && " - "}
-                  {product.venueAddress}
-                </span>
+                <span>{product.venueName}</span>
               </CardContent>
             )}
             <CardContent className="p-4 text-center">

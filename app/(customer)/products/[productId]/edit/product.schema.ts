@@ -40,6 +40,8 @@ export type MembershipType = z.infer<typeof MembershipSchema>;
 export const SPORT_CLASSES = [
   "Alpinisme",
   "Athlétisme",
+  "Badminton",
+  "Basketball",
   "BMX",
   "Boxe",
   "Danse",

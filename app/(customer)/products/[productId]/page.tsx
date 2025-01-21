@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
-import { CheckCircle, Link2 } from "lucide-react";
+import { CheckCircle, Link2, MapPin } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AcceptRequestButton } from "./AcceptButton";
@@ -160,8 +160,15 @@ export default async function RoutePage(
             <CardTitle>Détails</CardTitle>
           </CardHeader>
           <CardHeader>
-            <CardTitle>Détails</CardTitle>
             <p>Sport : {product.sport}</p>
+            {product.venueName && (
+              <div className="mt-2 flex items-start gap-2">
+                <MapPin className="mt-1 size-4 shrink-0 text-muted-foreground" />
+                <div>
+                  <p className="font-medium">{product.venueName}</p>
+                </div>
+              </div>
+            )}
           </CardHeader>
           <CardContent className="flex flex-col items-start gap-2">
             {isClient && membership && membership.status === "APPROVED" && (
