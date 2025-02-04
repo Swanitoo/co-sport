@@ -74,6 +74,7 @@ model Product {
   sport       String
   description String
   level       String
+  onlyGirls   Boolean      @default(false)
   slug        String       @unique
   memberships Membership[]
   venueName    String?

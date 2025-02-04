@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -35,12 +36,14 @@ import {
 export type ProductFormProps = {
   defaultValues?: ProductType;
   productId?: string;
+  userSex?: string | null;
 };
 
 export const ProductForm = (props: ProductFormProps) => {
   const transformedValues = props.defaultValues
     ? {
         ...props.defaultValues,
+        onlyGirls: props.defaultValues.onlyGirls ?? false,
         venueName: props.defaultValues.venueName ?? undefined,
         venueAddress: props.defaultValues.venueAddress ?? undefined,
         venueLat: props.defaultValues.venueLat ?? undefined,
@@ -73,6 +76,7 @@ export const ProductForm = (props: ProductFormProps) => {
       router.refresh();
     },
   });
+  console.log("User sex:", props.userSex);
   return (
     <Card>
       <CardHeader>
@@ -208,6 +212,33 @@ export const ProductForm = (props: ProductFormProps) => {
                   </FormItem>
                 )}
               />
+
+              {props.userSex === "F" && (
+                <FormField
+                  control={form.control}
+                  name="onlyGirls"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="lg"
+                          onClick={() => field.onChange(!field.value)}
+                          className={cn(
+                            "w-full font-medium border-pink-300 transition-all duration-200",
+                            field.value
+                              ? "bg-pink-100 text-pink-900 hover:bg-pink-200 border-pink-500"
+                              : "text-pink-700 hover:bg-pink-50 hover:text-pink-900 hover:border-pink-500"
+                          )}
+                        >
+                          👩 Only Girls
+                        </Button>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
             </TabsContent>
           </Tabs>
 

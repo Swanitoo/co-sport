@@ -67,19 +67,22 @@ export async function getUniqueVenues() {
 }
 
 export async function fetchMoreProducts(skip: number, filters: FilterType) {
-  const where: any = {};
+  const where: any = {
+    OR: [
+      { onlyGirls: false },
+      {
+        onlyGirls: true,
+        user: { sex: "F" },
+      },
+    ],
+  };
 
+  // Ajouter les filtres existants
   if (filters.sport) where.sport = filters.sport;
   if (filters.level) where.level = filters.level;
-
-  const userWhere: any = {};
-  if (filters.onlyGirls) userWhere.sex = "F";
+  if (filters.onlyGirls) where.user = { ...where.user, sex: "F" };
   if (filters.countries.length > 0) {
-    userWhere.country = { in: filters.countries };
-  }
-
-  if (Object.keys(userWhere).length > 0) {
-    where.user = userWhere;
+    where.user = { ...where.user, country: { in: filters.countries } };
   }
 
   return await prisma.product.findMany({

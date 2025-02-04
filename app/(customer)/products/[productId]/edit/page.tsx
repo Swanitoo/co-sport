@@ -1,9 +1,9 @@
-import { Layout, LayoutTitle } from "@/components/layout";
-import type { PageParams } from "@/types/next";
-import { ProductForm } from "./ProductForm";
 import { requiredCurrentUser } from "@/auth/current-user";
+import { Layout, LayoutTitle } from "@/components/layout";
 import { prisma } from "@/prisma";
+import type { PageParams } from "@/types/next";
 import { notFound } from "next/navigation";
+import { ProductForm } from "./ProductForm";
 
 export default async function RoutePage(
   props: PageParams<{
@@ -25,6 +25,7 @@ export default async function RoutePage(
 
   const transformedProduct = {
     ...product,
+    onlyGirls: false,
     venueName: product.venueName ?? undefined,
     venueAddress: product.venueAddress ?? undefined,
     venueLat: product.venueLat ?? undefined,
@@ -34,7 +35,11 @@ export default async function RoutePage(
   return (
     <Layout>
       <LayoutTitle>Edit product</LayoutTitle>
-      <ProductForm defaultValues={transformedProduct} productId={product.id} />
+      <ProductForm
+        defaultValues={transformedProduct}
+        productId={product.id}
+        userSex={user.sex ?? undefined}
+      />
     </Layout>
   );
 }
