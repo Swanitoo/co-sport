@@ -34,10 +34,12 @@ import Link from "next/link";
 import { ReviewItem } from "../../(user)/wall/[slug]/ReviewCard";
 import {
   updateBio,
+  updateBirthDate,
   updateCountry,
   updateLocation,
   updateName,
 } from "./dashboard.action";
+import { ProfileDataCheck } from "./ProfileDataCheck";
 
 export default async function RoutePage(props: PageParams<{}>) {
   const user = await requiredCurrentUser();
@@ -63,6 +65,7 @@ export default async function RoutePage(props: PageParams<{}>) {
 
   return (
     <Layout>
+      <ProfileDataCheck needsSex={!user.sex} needsCountry={!user.country} />
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -217,6 +220,41 @@ export default async function RoutePage(props: PageParams<{}>) {
                             ))}
                           </SelectContent>
                         </Select>
+                        <DialogClose asChild>
+                          <Button type="submit">Enregistrer</Button>
+                        </DialogClose>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Date de naissance</span>
+                <div className="flex items-center gap-2">
+                  <span>
+                    {user.birthDate
+                      ? new Date(user.birthDate).toLocaleDateString("fr-FR")
+                      : "Non renseignée"}
+                  </span>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="text-muted-foreground hover:text-foreground">
+                        <Pencil className="size-4" />
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Modifier ma date de naissance</DialogTitle>
+                      </DialogHeader>
+                      <form action={updateBirthDate} className="space-y-4">
+                        <Input
+                          type="date"
+                          name="birthDate"
+                          defaultValue={user.birthDate
+                            ? new Date(user.birthDate).toISOString().split("T")[0]
+                            : undefined}
+                        />
                         <DialogClose asChild>
                           <Button type="submit">Enregistrer</Button>
                         </DialogClose>

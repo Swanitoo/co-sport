@@ -66,3 +66,9 @@ export const SPORT_CLASSES = [
   "VTT",
   "Yoga",
 ];
+
+export const MessageSchema = z.object({
+  text: z.string().min(1, "Le message ne peut pas être vide"),
+  productId: z.string(),
+  replyToId: z.string().optional(),
+});

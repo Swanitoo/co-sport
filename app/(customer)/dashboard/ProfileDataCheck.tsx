@@ -51,17 +51,20 @@ export function ProfileDataCheck({
   const handleSubmit = async (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-    if (field === "sex" && needsCountry) {
-      setCurrentStep("country");
-      return;
-    }
+    try {
+      await updateUserProfile({ [field]: value });
+      
+      if (field === "sex" && needsCountry) {
+        setCurrentStep("country");
+        return;
+      }
 
-    await updateUserProfile(formData);
-    setShowSuccess(true);
-    setTimeout(() => {
-      setShowSuccess(false);
-      setOpen(false);
-    }, 1500);
+      setShowSuccess(true);
+      // Revalider la session
+      window.location.reload();
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour:", error);
+    }
   };
 
   return (

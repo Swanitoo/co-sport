@@ -1,13 +1,14 @@
 "use server";
 
-import { ActionError, userAction } from "@/safe-actions";
-import { ProductSchema } from "./product.schema";
-import { prisma } from "@/prisma";
-import { z } from "zod";
-import { Status, User } from "@prisma/client";
-import { resend } from "@/resend";
+import { requiredCurrentUser } from "@/auth/current-user";
 import { EMAIL_FROM } from "@/config";
+import { prisma } from "@/prisma";
+import { resend } from "@/resend";
+import { userAction } from "@/safe-actions";
+import { Prisma, Status, User } from "@prisma/client";
+import { z } from "zod";
 import FirstProductCreatedEmail from "../../../../../emails/FirstProductCreatedEmail";
+import { ProductSchema } from "./product.schema";
 
 const generateSlug = (name: string, level: string) => {
   const slugBase = `${name.replace(/\s+/g, "-").toLowerCase()}-${level
@@ -260,3 +261,161 @@ export async function removeMemberAction({
     return { success: false, error: "Erreur lors du retrait du membre." };
   }
 }
+
+// Liste de mots interdits (à compléter selon vos besoins)
+const BANNED_WORDS = [
+  "merde", "putain", "connard", "connasse", "enculé", "pute",
+  // Ajoutez d'autres mots selon vos besoins
+];
+
+const sanitizeMessage = (text: string): { text: string; isValid: boolean; error?: string } => {
+  console.log("🔍 Vérification du message:", text);
+  
+  // Supprime les caractères de contrôle et les caractères non imprimables
+  const sanitized = text
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/javascript:/gi, '')
+    .replace(/data:/gi, '')
+    .replace(/vbscript:/gi, '')
+    .replace(/on\w+=/gi, '')
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/'/g, "\\'")
+    .trim();
+
+  // Vérifie la longueur
+  if (sanitized.length === 0) {
+    console.log("❌ Message vide");
+    return { text: sanitized, isValid: false, error: "Le message ne peut pas être vide" };
+  }
+  if (sanitized.length > 1000) {
+    console.log("❌ Message trop long");
+    return { text: sanitized, isValid: false, error: "Le message est trop long (maximum 1000 caractères)" };
+  }
+
+  // Vérifie les mots interdits avec une regex plus robuste
+  const containsBannedWord = BANNED_WORDS.some(word => {
+    const hasWord = new RegExp(`\\b${word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i').test(sanitized);
+    if (hasWord) {
+      console.log(`🚫 Mot interdit trouvé: ${word}`);
+    }
+    return hasWord;
+  });
+  
+  if (containsBannedWord) {
+    console.log("❌ Message contient des mots interdits");
+    return { text: sanitized, isValid: false, error: "Le message contient des mots interdits" };
+  }
+
+  // Vérifie les caractères répétés (spam potentiel)
+  if (/(.)\1{10,}/.test(sanitized)) {
+    console.log("❌ Trop de caractères répétés");
+    return { text: sanitized, isValid: false, error: "Le message contient trop de caractères répétés" };
+  }
+
+  console.log("✅ Message valide");
+  return { text: sanitized, isValid: true };
+};
+
+export async function sendMessageAction({
+  text,
+  productId,
+  replyToId,
+}: {
+  text: string;
+  productId: string;
+  replyToId?: string;
+}) {
+  try {
+    console.log("🔄 Début de sendMessageAction avec:", { text, productId, replyToId });
+    const user = await requiredCurrentUser();
+    const sanitized = sanitizeMessage(text);
+
+    if (!sanitized.isValid) {
+      console.log("❌ Message invalide:", sanitized.error);
+      return { error: sanitized.error };
+    }
+
+    const messageData: Prisma.MessageCreateInput = {
+      text: sanitized.text,
+      user: { connect: { id: user.id } },
+      product: { connect: { id: productId } },
+      ...(replyToId && { replyTo: { connect: { id: replyToId } } }),
+    };
+
+    const message = await prisma.message.create({
+      data: messageData,
+      include: {
+        user: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+        replyTo: {
+          select: {
+            id: true,
+            text: true,
+            userId: true,
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    console.log("✅ Message créé avec succès:", message);
+    return { data: message };
+  } catch (error) {
+    console.error("❌ Erreur dans sendMessageAction:", error);
+    return { error: error instanceof Error ? error.message : "Une erreur est survenue" };
+  }
+}
+
+export const getMessagesAction = userAction(
+  z.object({
+    productId: z.string(),
+    page: z.number().optional().default(1),
+    limit: z.number().optional().default(20),
+  }),
+  async (input, context) => {
+    const skip = (input.page - 1) * input.limit;
+
+    const messages = await prisma.message.findMany({
+      where: {
+        productId: input.productId,
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+        replyTo: {
+          select: {
+            id: true,
+            text: true,
+            userId: true,
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip,
+      take: input.limit,
+    });
+
+    return messages.reverse();
+  }
+);

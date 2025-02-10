@@ -72,3 +72,17 @@ export async function updateCountry(formData: FormData) {
 
   revalidatePath("/dashboard");
 }
+
+export async function updateBirthDate(formData: FormData) {
+  const user = await requiredCurrentUser();
+  const birthDate = formData.get("birthDate") as string;
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { 
+      birthDate: UpdateProfileSchema.shape.birthDate.parse(birthDate)
+    },
+  });
+
+  revalidatePath("/dashboard");
+}

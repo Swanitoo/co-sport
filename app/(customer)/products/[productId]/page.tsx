@@ -1,4 +1,4 @@
-import { requiredCurrentUser } from "@/auth/current-user";
+import { currentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,22 +14,26 @@ import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
 import { CheckCircle, Link2, MapPin } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { AcceptRequestButton } from "./AcceptButton";
+import { ChatComponent } from "./Chat";
 import { DeleteButton } from "./DeleteButton";
 import { JoinButton } from "./JoinButton";
 import { LeaveButton } from "./LeaveButton";
 import { RemoveMemberButton } from "./RemoveMemberButton";
 
-export default async function RoutePage(
-  props: PageParams<{
-    productId: string;
-  }>
-) {
-  const user = await requiredCurrentUser();
+export default async function RoutePage({
+  params: { productId },
+}: PageParams<{ productId: string }>) {
+  const user = await currentUser();
+
+  if (!user) {
+    redirect("/auth/signin");
+  }
+
   const product = await prisma.product.findUnique({
     where: {
-      id: props.params.productId,
+      id: productId,
     },
     include: {
       user: {
@@ -80,8 +84,8 @@ export default async function RoutePage(
   return (
     <Layout>
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
-        <div className="space-y-0.5">
-          <LayoutTitle>{product.name}</LayoutTitle>
+        <div className="space-y-0.5 max-w-[90%]">
+          <LayoutTitle className="break-words">{product.name}</LayoutTitle>
           {product.user.socialLink ? (
             <Link
               href={product.user.socialLink}
@@ -254,6 +258,9 @@ export default async function RoutePage(
             </Table>
           </CardContent>
         </Card>
+      )}
+      {(isOwner || (isClient && membership?.status === "APPROVED")) && (
+        <ChatComponent productId={productId} userId={user.id} />
       )}
     </Layout>
   );

@@ -57,11 +57,15 @@ model User {
   country          String?
   sex              String?
   state            String?
+  birthDate        DateTime?
+  nationality      String?
+  profileCompleted Boolean          @default(false)
   accounts         Account[]
   memberships      Membership[]
   products         Product[]
   sessions         Session[]
   StravaActivity   StravaActivity[]
+  messages         Message[]        @relation("UserMessages")
 }
 
 model Product {
@@ -83,6 +87,7 @@ model Product {
   venueLng     Float?
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   reviews     Review[]
+  messages    Message[]    @relation("ProductMessages")
 }
 
 model Review {
@@ -120,6 +125,22 @@ model StravaActivity {
   date     DateTime
   distance Float
   User     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  text      String
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  replyToId String?  @map("reply_to_id")
+  
+  user      User     @relation("UserMessages", fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation("ProductMessages", fields: [productId], references: [id], onDelete: Cascade)
+  replyTo   Message? @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies   Message[] @relation("MessageReplies")
+
+  @@map("messages")
 }
 
 enum Plan {

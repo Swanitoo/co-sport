@@ -56,7 +56,50 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
   }
+}
+
+/* Styles pour le chat */
+.message-container {
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 0 1rem;
+}
+
+@media (max-width: 640px) {
+  .message-container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+.highlight {
+  animation: highlight 2s ease-in-out;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: hsl(var(--primary) / 0.2);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Styles pour les messages */
+.message-content {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+.message-reply {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .citation {
