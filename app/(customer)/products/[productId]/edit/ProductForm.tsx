@@ -22,6 +22,7 @@ import {
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { SportVenueSearch } from "../SportVenueSearch";
@@ -242,8 +243,15 @@ export const ProductForm = (props: ProductFormProps) => {
             </TabsContent>
           </Tabs>
 
-          <Button>
-            {isCreate ? "Créer ton annonce" : "Enregistre ton annonce"}
+          <Button disabled={mutation.isPending}>
+            {mutation.isPending ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="size-4 animate-spin" />
+                <span>Création en cours...</span>
+              </div>
+            ) : (
+              isCreate ? "Créer ton annonce" : "Enregistre ton annonce"
+            )}
           </Button>
         </Form>
       </CardContent>

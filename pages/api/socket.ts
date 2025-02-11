@@ -30,21 +30,16 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseWithSocket) => {
     });
 
     io.on("connection", (socket) => {
-      console.log("🔌 Client connecté:", socket.id);
-
       socket.on("join-room", (roomId: string) => {
-        console.log("👥 Rejoindre la salle:", roomId);
         socket.join(roomId);
         socket.emit("room-joined", { roomId });
       });
 
       socket.on("leave-room", (roomId: string) => {
-        console.log("👋 Quitter la salle:", roomId);
         socket.leave(roomId);
       });
 
       socket.on("send-message", (message) => {
-        console.log("💬 Nouveau message:", message);
         io.to(message.productId).emit("new-message", message);
       });
 
@@ -57,7 +52,6 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseWithSocket) => {
       });
 
       socket.on("disconnect", () => {
-        console.log("❌ Client déconnecté:", socket.id);
       });
     });
 

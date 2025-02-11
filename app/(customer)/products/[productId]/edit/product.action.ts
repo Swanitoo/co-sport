@@ -139,10 +139,22 @@ export const updateProductAction = userAction(
     const slugBase = generateSlug(input.data.name, input.data.level);
     const slug = await verifySlugUniqueness(slugBase, input.id);
 
+    const product = await prisma.product.findUnique({
+      where: { id: input.id },
+      select: { userId: true },
+    });
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    if (product.userId !== context.user.id && !context.user.isAdmin) {
+      throw new Error("Not authorized");
+    }
+
     const updatedProduct = await prisma.product.update({
       where: {
         id: input.id,
-        userId: context.user.id,
       },
       data: {
         ...input.data,
@@ -157,10 +169,22 @@ export const updateProductAction = userAction(
 export const deleteProductAction = userAction(
   z.string(),
   async (productId, context) => {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { userId: true },
+    });
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    if (product.userId !== context.user.id && !context.user.isAdmin) {
+      throw new Error("Not authorized");
+    }
+
     await prisma.product.delete({
       where: {
         id: productId,
-        userId: context.user.id,
       },
     });
   }
@@ -269,9 +293,6 @@ const BANNED_WORDS = [
 ];
 
 const sanitizeMessage = (text: string): { text: string; isValid: boolean; error?: string } => {
-  console.log("🔍 Vérification du message:", text);
-  
-  // Supprime les caractères de contrôle et les caractères non imprimables
   const sanitized = text
     .replace(/[\u0000-\u001F\u007F-\u009F]/g, '')
     .replace(/<[^>]*>/g, '')
@@ -284,37 +305,26 @@ const sanitizeMessage = (text: string): { text: string; isValid: boolean; error?
     .replace(/'/g, "\\'")
     .trim();
 
-  // Vérifie la longueur
   if (sanitized.length === 0) {
-    console.log("❌ Message vide");
     return { text: sanitized, isValid: false, error: "Le message ne peut pas être vide" };
   }
   if (sanitized.length > 1000) {
-    console.log("❌ Message trop long");
     return { text: sanitized, isValid: false, error: "Le message est trop long (maximum 1000 caractères)" };
   }
 
-  // Vérifie les mots interdits avec une regex plus robuste
   const containsBannedWord = BANNED_WORDS.some(word => {
     const hasWord = new RegExp(`\\b${word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i').test(sanitized);
-    if (hasWord) {
-      console.log(`🚫 Mot interdit trouvé: ${word}`);
-    }
     return hasWord;
   });
   
   if (containsBannedWord) {
-    console.log("❌ Message contient des mots interdits");
     return { text: sanitized, isValid: false, error: "Le message contient des mots interdits" };
   }
 
-  // Vérifie les caractères répétés (spam potentiel)
   if (/(.)\1{10,}/.test(sanitized)) {
-    console.log("❌ Trop de caractères répétés");
     return { text: sanitized, isValid: false, error: "Le message contient trop de caractères répétés" };
   }
 
-  console.log("✅ Message valide");
   return { text: sanitized, isValid: true };
 };
 
@@ -328,12 +338,10 @@ export async function sendMessageAction({
   replyToId?: string;
 }) {
   try {
-    console.log("🔄 Début de sendMessageAction avec:", { text, productId, replyToId });
     const user = await requiredCurrentUser();
     const sanitized = sanitizeMessage(text);
 
     if (!sanitized.isValid) {
-      console.log("❌ Message invalide:", sanitized.error);
       return { error: sanitized.error };
     }
 
@@ -368,10 +376,8 @@ export async function sendMessageAction({
       },
     });
 
-    console.log("✅ Message créé avec succès:", message);
     return { data: message };
   } catch (error) {
-    console.error("❌ Erreur dans sendMessageAction:", error);
     return { error: error instanceof Error ? error.message : "Une erreur est survenue" };
   }
 }
@@ -419,3 +425,29 @@ export const getMessagesAction = userAction(
     return messages.reverse();
   }
 );
+
+export async function deleteMessageAction(messageId: string) {
+  try {
+    const user = await requiredCurrentUser();
+    const message = await prisma.message.findUnique({
+      where: { id: messageId },
+      select: { userId: true },
+    });
+
+    if (!message) {
+      return { error: "Message non trouvé" };
+    }
+
+    if (message.userId !== user.id && !user.isAdmin) {
+      return { error: "Non autorisé" };
+    }
+
+    await prisma.message.delete({
+      where: { id: messageId },
+    });
+
+    return { success: true };
+  } catch (error) {
+    return { error: "Erreur lors de la suppression du message" };
+  }
+}

@@ -1,5 +1,6 @@
 import { currentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
-import { CheckCircle, Link2, MapPin } from "lucide-react";
+import { CheckCircle, Crown, Link2, MapPin } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AcceptRequestButton } from "./AcceptButton";
@@ -70,6 +71,9 @@ export default async function RoutePage({
 
   const isOwner = product.userId === user.id;
   const isClient = product.userId !== user.id;
+  const isMember = product.memberships.some(m => m.userId === user.id && m.status === "APPROVED");
+  const canManageProduct = isOwner || user.isAdmin;
+  const canViewMessages = isOwner || isMember || user.isAdmin;
 
   const activeMemberships = product.memberships.filter(
     (m) => m.status === "APPROVED"
@@ -83,185 +87,209 @@ export default async function RoutePage({
 
   return (
     <Layout>
-      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
-        <div className="space-y-0.5 max-w-[90%]">
-          <LayoutTitle className="break-words">{product.name}</LayoutTitle>
-          {product.user.socialLink ? (
-            <Link
-              href={product.user.socialLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:underline"
-            >
-              {product.user.name}
-            </Link>
-          ) : (
-            <p className="text-sm text-gray-600">{product.user.name}</p>
-          )}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Link href="/products" className="hover:text-foreground">
+            Annonces
+          </Link>
+          <span>/</span>
+          <span>{product.name}</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          {isOwner && pendingMemberships.length > 0 && (
-            <AcceptRequestButton
-              membership={pendingMemberships[0]}
-              count={pendingCount}
-            />
-          )}
-
-          {isOwner && (
-            <>
-              <Link
-                href={`/products/${product.id}/edit`}
-                className={buttonVariants({ size: "sm", variant: "secondary" })}
-              >
-                Edit
-              </Link>
-              <DeleteButton productId={product.id} />
-            </>
-          )}
-        </div>
-
-        {isClient && !membership && (
-          <JoinButton productId={product.id} userId={user.id} />
-        )}
-
-        {isClient && membership && membership.status === "PENDING" && (
-          <div className="flex items-center gap-2">
-            <button
-              className={buttonVariants({ size: "sm", variant: "secondary" })}
-              disabled
-            >
-              En attente d'acceptation...
-            </button>
+        <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
+          <div className="space-y-0.5 max-w-[90%]">
+            <LayoutTitle className="break-words">{product.name}</LayoutTitle>
+            <div className="flex items-center gap-2">
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={product.user.image || undefined} />
+                <AvatarFallback>{product.user.name?.[0]}</AvatarFallback>
+              </Avatar>
+              {product.user.socialLink ? (
+                <Link
+                  href={product.user.socialLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm hover:underline cursor-pointer"
+                >
+                  {product.user.name}
+                </Link>
+              ) : (
+                <Link
+                  href={`/profile/${product.userId}`}
+                  className="text-sm hover:underline cursor-pointer"
+                >
+                  {product.user.name}
+                </Link>
+              )}
+            </div>
           </div>
-        )}
 
-        {isClient && membership && membership.status === "APPROVED" && (
           <div className="flex items-center gap-2">
-            <span className="flex items-center">
-              <CheckCircle size={16} className="mr-2 text-green-600" />
-              Tu es membre
-            </span>
-            <LeaveButton productId={product.id} userId={user.id} />
-          </div>
-        )}
-
-        {isClient && membership && membership.status === "REMOVED" && (
-          <div className="flex items-center gap-2">
-            <button
-              className={buttonVariants({ size: "sm", variant: "destructive" })}
-              disabled
-            >
-              Adhésion refusée
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className="flex gap-4 max-lg:flex-col">
-        <Card className="flex-1">
-          <CardHeader>
-            <CardTitle>Détails</CardTitle>
-          </CardHeader>
-          <CardHeader>
-            <p>Sport : {product.sport}</p>
-            {product.venueName && (
-              <div className="mt-2 flex items-start gap-2">
-                <MapPin className="mt-1 size-4 shrink-0 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">{product.venueName}</p>
-                </div>
-              </div>
+            {canManageProduct && pendingMemberships.length > 0 && (
+              <AcceptRequestButton
+                membership={pendingMemberships[0]}
+                count={pendingCount}
+              />
             )}
-          </CardHeader>
-          <CardContent className="flex flex-col items-start gap-2">
-            {isClient && membership && membership.status === "APPROVED" && (
+
+            {canManageProduct && (
+              <>
+                {isOwner && (
+                  <Crown size={16} className="text-yellow-500" />
+                )}
+                <Link
+                  href={`/products/${product.id}/edit`}
+                  className={buttonVariants({ size: "sm", variant: "secondary" })}
+                >
+                  Edit
+                </Link>
+                <DeleteButton productId={product.id} />
+              </>
+            )}
+          </div>
+
+          {isClient && !membership && (
+            <JoinButton productId={product.id} userId={user.id} />
+          )}
+
+          {isClient && membership && membership.status === "PENDING" && (
+            <div className="flex items-center gap-2">
+              <button
+                className={buttonVariants({ size: "sm", variant: "secondary" })}
+                disabled
+              >
+                En attente d'acceptation...
+              </button>
+            </div>
+          )}
+
+          {isClient && membership && membership.status === "APPROVED" && (
+            <div className="flex items-center gap-2">
+              <span className="flex items-center">
+                <CheckCircle size={16} className="mr-2 text-green-600" />
+                Tu es membre
+              </span>
+              <LeaveButton productId={product.id} userId={user.id} />
+            </div>
+          )}
+
+          {isClient && membership && membership.status === "REMOVED" && (
+            <div className="flex items-center gap-2">
+              <button
+                className={buttonVariants({ size: "sm", variant: "destructive" })}
+                disabled
+              >
+                Adhésion refusée
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-4 max-lg:flex-col">
+          <Card className="flex-1">
+            <CardHeader>
+              <CardTitle>Détails</CardTitle>
+            </CardHeader>
+            <CardHeader>
+              <p>Sport : {product.sport}</p>
+              {product.venueName && (
+                <div className="mt-2 flex items-start gap-2">
+                  <MapPin className="mt-1 size-4 shrink-0 text-muted-foreground" />
+                  <div>
+                    <p className="font-medium">{product.venueName}</p>
+                  </div>
+                </div>
+              )}
+            </CardHeader>
+            <CardContent className="flex flex-col items-start gap-2">
+              {isClient && membership && membership.status === "APPROVED" && (
+                <Link
+                  href={`/r/${product.slug}`}
+                  className={buttonVariants({
+                    size: "sm",
+                  })}
+                >
+                  <Link2 size={16} className="mr-2" />
+                  Écris un avis
+                </Link>
+              )}
               <Link
-                href={`/r/${product.slug}`}
+                href={`/wall/${product.slug}`}
                 className={buttonVariants({
                   size: "sm",
                 })}
               >
                 <Link2 size={16} className="mr-2" />
-                Écris un avis
+                Découvre tous les avis
               </Link>
-            )}
-            <Link
-              href={`/wall/${product.slug}`}
-              className={buttonVariants({
-                size: "sm",
-              })}
-            >
-              <Link2 size={16} className="mr-2" />
-              Découvre tout les avis
-            </Link>
-            <p>Description : {product.description}</p>
-          </CardContent>
-        </Card>
-        <Card className="flex-1">
-          <CardHeader>
-            <CardTitle>Avis</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader className="pointer-events-none">
-                <TableRow>
-                  <TableHead>Nom</TableHead>
-                  <TableHead>Text</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {product.reviews.map((review) => (
-                  <TableRow key={product.id}>
-                    <TableCell>
-                      <Link href={`/reviews/${product.id}`} key={product.id}>
-                        {product.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{review.text}</TableCell>
+              <p>Description : {product.description}</p>
+            </CardContent>
+          </Card>
+          <Card className="flex-1">
+            <CardHeader>
+              <CardTitle>Avis</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader className="pointer-events-none">
+                  <TableRow>
+                    <TableHead>Nom</TableHead>
+                    <TableHead>Text</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
-      {isOwner && (
-        <Card className="flex-1">
-          <CardHeader>
-            <CardTitle>Membres</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableBody>
-                {activeMemberships.map((membership) => (
-                  <TableRow key={membership.id}>
-                    <TableCell>
-                      <p>{membership.user.name}</p>
-                      {membership.user.socialLink && (
-                        <Link
-                          href={membership.user.socialLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-blue-600 hover:underline"
-                        >
-                          Réseau social
+                </TableHeader>
+                <TableBody>
+                  {product.reviews.map((review) => (
+                    <TableRow key={product.id}>
+                      <TableCell>
+                        <Link href={`/reviews/${product.id}`} key={product.id}>
+                          {product.name}
                         </Link>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <RemoveMemberButton membershipId={membership.id} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
-      {(isOwner || (isClient && membership?.status === "APPROVED")) && (
-        <ChatComponent productId={productId} userId={user.id} />
-      )}
+                      </TableCell>
+                      <TableCell>{review.text}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+        {isOwner && (
+          <Card className="flex-1">
+            <CardHeader>
+              <CardTitle>Membres</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableBody>
+                  {activeMemberships.map((membership) => (
+                    <TableRow key={membership.id}>
+                      <TableCell>
+                        <p>{membership.user.name}</p>
+                        {membership.user.socialLink && (
+                          <Link
+                            href={membership.user.socialLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 hover:underline"
+                          >
+                            Réseau social
+                          </Link>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <RemoveMemberButton membershipId={membership.id} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+        {canViewMessages && (
+          <ChatComponent productId={productId} userId={user.id} isAdmin={user.isAdmin} />
+        )}
+      </div>
     </Layout>
   );
 }

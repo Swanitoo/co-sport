@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { prisma } from "@/prisma";
 import { baseAuth } from "./auth";
 
 export const currentUser = async () => {
@@ -8,7 +8,30 @@ export const currentUser = async () => {
     return null;
   }
 
-  const user = session.user as User;
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      emailVerified: true,
+      image: true,
+      createdAt: true,
+      plan: true,
+      updatedAt: true,
+      stripeCustomerId: true,
+      socialLink: true,
+      bio: true,
+      city: true,
+      country: true,
+      sex: true,
+      state: true,
+      birthDate: true,
+      nationality: true,
+      isAdmin: true,
+      profileCompleted: true,
+    },
+  });
 
   return user;
 };

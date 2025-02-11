@@ -1,18 +1,18 @@
 "use client"
 
-import { Product, Review } from "@prisma/client";
-import { useState } from "react";
-import ReviewSelector from "./RatingSelector";
-import { motion, AnimatePresence } from "framer-motion";
-import { SocialSelector } from "./SocialSelector";
-import { ReviewTextSelector } from "./ReviewTextSelector";
-import { useLocalStorage } from "react-use";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getReviewAction, updateReviewAction } from "./reviews.action";
-import { ReviewType } from "./review.schema";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { Product, Review } from "@prisma/client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AnimatePresence, motion } from "framer-motion";
+import { useLocalStorage } from "react-use";
+import { toast } from "sonner";
+import ReviewSelector from "./RatingSelector";
+import { ReviewType } from "./review.schema";
+import { getReviewAction, updateReviewAction } from "./reviews.action";
+import { ReviewTextSelector } from "./ReviewTextSelector";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 
 const getCurrentStep = (data?: Review) => {
@@ -22,15 +22,11 @@ const getCurrentStep = (data?: Review) => {
         return 0;
     }
 
-    if (!data.name || !data.socialLink) {
+    if (!data.text) {
         return 1;
     }
 
-    if (!data.text) {
-        return 2;
-    }
-
-    return 3
+    return 2;
 };
 
 export const ProcessReviewStep = ({ product } : { product: Product }) => {
@@ -128,8 +124,8 @@ export const ProcessReviewStep = ({ product } : { product: Product }) => {
                                 opacity: 1,
                                 x: 0,
                             }}
-                                className="flex h-full flex-col items-center justify-center gap-4"
-                            >
+                            className="flex h-full flex-col items-center justify-center gap-4"
+                        >
                             <h2 className="text-lg font-bold">
                                 {`Dis-moi ce que tu as aimé et ce que tu n'as pas aimé`}
                             </h2>
@@ -143,7 +139,7 @@ export const ProcessReviewStep = ({ product } : { product: Product }) => {
                             />
                         </motion.div>
                     )}
-                    {step === 3 && (
+                    {step === 2 && (
                         <motion.div
                             key="step-3"
                             exit={{
@@ -170,6 +166,9 @@ export const ProcessReviewStep = ({ product } : { product: Product }) => {
                                     </CardDescription>
                                 </CardHeader>
                             </Card>
+                            <Button>
+                                <Link href={`/products/${product.id}`}>Retour sur l'annonce</Link>
+                            </Button>
                         </motion.div>
                     )}
                 </AnimatePresence>

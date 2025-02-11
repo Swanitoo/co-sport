@@ -1,6 +1,9 @@
 import { Layout } from "@/components/layout";
+import { Button } from "@/components/ui/button";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReviewItem } from "./ReviewCard";
 
@@ -77,6 +80,12 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
           />
         ))}
       </div>
+              <Button variant="ghost" className="mb-4" asChild>
+          <Link href={`/products/${product.id}`} className="flex items-center gap-2">
+            <ArrowLeft size={16} />
+            Retour à l'annonce
+          </Link>
+        </Button>
     </Layout>
   );
 }

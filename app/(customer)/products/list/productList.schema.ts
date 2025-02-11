@@ -11,6 +11,8 @@ export interface ProductWithMemberships extends Product {
     id: string;
     sex: string | null;
     country: string | null;
+    name: string | null;
+    image: string | null;
   };
 }
 

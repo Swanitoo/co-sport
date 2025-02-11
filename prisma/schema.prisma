@@ -59,6 +59,7 @@ model User {
   state            String?
   birthDate        DateTime?
   nationality      String?
+  isAdmin          Boolean          @default(false)
   profileCompleted Boolean          @default(false)
   accounts         Account[]
   memberships      Membership[]

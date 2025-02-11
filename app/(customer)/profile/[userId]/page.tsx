@@ -1,8 +1,9 @@
+import { ReviewItem } from "@/app/(user)/wall/[slug]/ReviewCard";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/prisma";
-import type { Product } from "@prisma/client";
+import type { Product, Review } from "@prisma/client";
 import { formatDistance } from "date-fns";
 import { fr } from "date-fns/locale";
 import Link from "next/link";
@@ -21,7 +22,9 @@ type UserWithProducts = {
   city: string | null;
   bio: string | null;
   country: string | null;
-  products: Product[];
+  products: (Product & {
+    reviews: Review[];
+  })[];
 };
 
 export default async function ProfilePage({
@@ -30,14 +33,26 @@ export default async function ProfilePage({
   params: { userId: string };
 }) {
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: {
+      id: userId,
+    },
     include: {
       products: {
-        where: { enabled: true },
-        orderBy: { createdAt: "desc" },
+        include: {
+          reviews: {
+            where: {
+              text: {
+                not: null,
+              },
+              name: {
+                not: null,
+              },
+            },
+          },
+        },
       },
     },
-  }) as UserWithProducts | null;
+  });
 
   if (!user) {
     notFound();
@@ -45,34 +60,41 @@ export default async function ProfilePage({
 
   const age = user.birthDate
     ? Math.floor(
-        (new Date().getTime() - new Date(user.birthDate).getTime()) /
+        (new Date().getTime() - user.birthDate.getTime()) /
           (1000 * 60 * 60 * 24 * 365.25)
       )
     : null;
 
+  // Calculer le nombre total d'avis et la note moyenne
+  const allReviews = user.products.flatMap(product => product.reviews);
+  const totalReviews = allReviews.length;
+  const averageRating = totalReviews > 0 
+    ? (allReviews.reduce((sum, review) => sum + (review.rating || 0), 0) / totalReviews).toFixed(1)
+    : "0.0";
+
   return (
     <Layout>
       <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <LayoutTitle>Profil de {user.name}</LayoutTitle>
+            <p className="text-sm text-muted-foreground">
+              Membre depuis{" "}
+              {formatDistance(user.createdAt, new Date(), {
+                addSuffix: true,
+                locale: fr,
+              })}
+            </p>
+          </div>
+          <Avatar className="size-20">
+            <AvatarImage src={user.image || undefined} />
+            <AvatarFallback>{user.name?.[0]}</AvatarFallback>
+          </Avatar>
+        </div>
+
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src={user.image || undefined} />
-                <AvatarFallback>
-                  {user.name?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <LayoutTitle>{user.name}</LayoutTitle>
-                <div className="text-sm text-muted-foreground">
-                  Membre depuis{" "}
-                  {formatDistance(new Date(user.createdAt), new Date(), {
-                    addSuffix: true,
-                    locale: fr,
-                  })}
-                </div>
-              </div>
-            </div>
+            <CardTitle>À propos</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {user.bio && (
@@ -114,6 +136,42 @@ export default async function ProfilePage({
 
         <Card>
           <CardHeader>
+            <CardTitle>Avis reçus ({totalReviews})</CardTitle>
+            {totalReviews > 0 && (
+              <p className="text-lg font-semibold text-muted-foreground">
+                Note moyenne: {averageRating}/5
+              </p>
+            )}
+          </CardHeader>
+          <CardContent>
+            {totalReviews === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Aucun avis reçu pour le moment
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {user.products.map((product) => 
+                  product.reviews.map((review) => (
+                    <div key={review.id} className="border-b pb-4 last:border-b-0 last:pb-0">
+                      <div className="mb-2">
+                        <Link 
+                          href={`/products/${product.id}`}
+                          className="text-sm font-medium hover:underline"
+                        >
+                          {product.name}
+                        </Link>
+                      </div>
+                      <ReviewItem review={review} />
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>Annonces actives ({user.products.length})</CardTitle>
           </CardHeader>
           <CardContent>
@@ -127,9 +185,9 @@ export default async function ProfilePage({
                   <Link
                     key={product.id}
                     href={`/products/${product.id}`}
-                    className="block"
+                    className="block transition-transform hover:scale-105"
                   >
-                    <Card>
+                    <Card className="transition-shadow hover:shadow-lg">
                       <CardHeader>
                         <CardTitle className="text-base">{product.name}</CardTitle>
                         <p className="text-sm text-muted-foreground">

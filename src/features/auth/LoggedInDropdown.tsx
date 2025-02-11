@@ -6,20 +6,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMutation } from "@tanstack/react-query";
 import {
-  CreditCard,
   Home,
   LayoutDashboard,
-  Loader2,
   LogOut,
-  Square,
+  Square
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PropsWithChildren } from "react";
-import { toast } from "sonner";
-import { setupCustomerPortal, singOutAction } from "./auth.action";
+import { singOutAction } from "./auth.action";
 
 export type LoggedInDropdownProps = PropsWithChildren;
 
@@ -73,8 +69,9 @@ export const LoggedInDropdown = (props: LoggedInDropdownProps) => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => {
-            singOutAction();
+          onClick={async () => {
+            await singOutAction();
+            router.push("/");
           }}
         >
           <LogOut size={16} className="mr-2" />

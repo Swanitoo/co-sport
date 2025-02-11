@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { getSocket } from "@/lib/socket";
 import { cn } from "@/lib/utils";
 import { Message, User } from "@prisma/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { getMessagesAction, sendMessageAction } from "./edit/product.action";
+import { deleteMessageAction, getMessagesAction, sendMessageAction } from "./edit/product.action";
 import { MessageSkeleton } from "./MessageSkeleton";
 
 type MessageWithUser = Message & {
@@ -31,9 +31,11 @@ const MESSAGES_PER_PAGE = 20;
 export function ChatComponent({
   productId,
   userId,
+  isAdmin = false,
 }: {
   productId: string;
   userId: string;
+  isAdmin?: boolean;
 }) {
   const [messages, setMessages] = useState<MessageWithUser[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -120,11 +122,6 @@ export function ChatComponent({
     });
     
     const handleNewMessage = (message: MessageWithUser) => {
-      console.log("📩 Nouveau message reçu:", {
-        message,
-        from: message.userId,
-        isCurrentUser: message.userId === userId
-      });
 
       setMessages(prev => {
         const messageExists = prev.some(m => m.id === message.id);
@@ -145,12 +142,10 @@ export function ChatComponent({
     };
 
     const handleTypingStart = ({ userId: typingUserId }: { userId: string }) => {
-      console.log("⌨️ Utilisateur commence à taper:", typingUserId);
       setTypingUsers(prev => new Set(prev).add(typingUserId));
     };
 
     const handleTypingStop = ({ userId: typingUserId }: { userId: string }) => {
-      console.log("✋ Utilisateur arrête de taper:", typingUserId);
       setTypingUsers(prev => {
         const newSet = new Set(prev);
         newSet.delete(typingUserId);
@@ -161,11 +156,9 @@ export function ChatComponent({
     loadMessages(1, true);
 
     if (!socket.connected) {
-      console.log("🔌 Socket non connecté, tentative de connexion...");
       socket.connect();
     }
     
-    console.log("👥 Rejoindre la salle:", productId);
     socket.emit("join-room", productId);
     
     socket.on("new-message", handleNewMessage);
@@ -192,7 +185,6 @@ export function ChatComponent({
     if (!newMessage.trim()) return;
 
     try {
-      console.log("🚀 Envoi du message:", newMessage);
       const result = await sendMessageAction({
         text: newMessage,
         productId,
@@ -200,10 +192,8 @@ export function ChatComponent({
       });
 
       if (result.error) {
-        console.error("❌ Erreur lors de l'envoi du message:", result.error);
         toast.error(result.error);
       } else if (result.data) {
-        console.log("✅ Message envoyé avec succès:", result.data);
         const messageWithUser = result.data as MessageWithUser;
         setMessages(prev => [...prev, messageWithUser]);
         socketRef.current.emit("send-message", messageWithUser);
@@ -212,26 +202,22 @@ export function ChatComponent({
         scrollToBottom();
       }
     } catch (error) {
-      console.error("❌ Erreur lors de l'envoi du message:", error);
       toast.error(error instanceof Error ? error.message : "Une erreur est survenue lors de l'envoi du message");
     }
   };
 
   const handleReply = (message: MessageWithUser) => {
     setReplyTo(message);
-    // Focus sur l'input
     const input = document.querySelector('input[type="text"]') as HTMLInputElement;
     if (input) {
       input.focus();
     }
   };
 
-  // Fonction pour formater la date
   const formatMessageDate = (date: Date, previousMessage?: MessageWithUser) => {
     const messageDate = new Date(date);
     const now = new Date();
     
-    // Si c'est le même utilisateur et moins de 2 minutes d'écart, ne pas afficher la date
     if (previousMessage) {
       const previousDate = new Date(previousMessage.createdAt);
       if (previousMessage.userId === messages[messages.length - 1].userId &&
@@ -258,7 +244,7 @@ export function ChatComponent({
   return (
     <Card className="mt-4">
       <CardHeader>
-        <CardTitle>Chat</CardTitle>
+        <CardTitle>Chat {isAdmin && "(Mode Admin - Lecture seule)"}</CardTitle>
       </CardHeader>
       <CardContent>
         <div 
@@ -320,7 +306,6 @@ export function ChatComponent({
                       )}
                       
                       <div className="flex items-center gap-2 max-w-full">
-                        {/* Date à gauche pour mes messages */}
                         {isCurrentUser && (
                           <div className="opacity-0 group-hover/message:opacity-100 transition-opacity duration-200 text-xs text-muted-foreground whitespace-nowrap shrink-0">
                             {formatMessageDate(message.createdAt)}
@@ -375,22 +360,21 @@ export function ChatComponent({
                           <p className="break-words whitespace-pre-wrap max-w-full">{message.text}</p>
                         </div>
 
-                        {/* Date à droite pour les messages des autres */}
                         {!isCurrentUser && (
                           <div className="opacity-0 group-hover/message:opacity-100 transition-opacity duration-200 text-xs text-muted-foreground whitespace-nowrap shrink-0">
                             {formatMessageDate(message.createdAt)}
                           </div>
                         )}
 
-                        {/* Bouton répondre */}
+
                         <button
                           className={cn(
                             "opacity-0 group-hover/message:opacity-100 transition-opacity duration-200",
                             "hover:bg-accent hover:text-accent-foreground rounded-full p-2",
                             "absolute top-1/2 -translate-y-1/2",
                             isCurrentUser ? "-left-10" : "-right-10",
-                            "block", // Toujours visible
-                            "sm:opacity-0 sm:group-hover/message:opacity-100" // Visible au hover sur desktop
+                            "block", 
+                            "sm:opacity-0 sm:group-hover/message:opacity-100" 
                           )}
                           onClick={() => handleReply(message)}
                           title="Répondre"
@@ -409,6 +393,32 @@ export function ChatComponent({
                             <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
                           </svg>
                         </button>
+
+                        {isAdmin && (
+                          <button
+                            onClick={async () => {
+                              const result = await deleteMessageAction(message.id);
+                              if (result.success) {
+                                setMessages(prev => prev.filter(m => m.id !== message.id));
+                                toast.success("Message supprimé");
+                              } else {
+                                toast.error(result.error);
+                              }
+                            }}
+                            className={cn(
+                              "opacity-0 group-hover/message:opacity-100 transition-opacity duration-200",
+                              "hover:bg-accent hover:text-accent-foreground rounded-full p-2",
+                              "absolute top-1/2 -translate-y-1/2",
+                              isCurrentUser ? "-left-20" : "-right-20",
+                              "block",
+                              "sm:opacity-0 sm:group-hover/message:opacity-100",
+                              "text-red-500 hover:text-red-700"
+                            )}
+                            title="Supprimer le message"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -428,33 +438,63 @@ export function ChatComponent({
           
           <div ref={messagesEndRef} />
         </div>
-        <form onSubmit={handleSendMessage} className="mt-4 flex flex-col gap-2">
-          {replyTo && (
-            <div className="flex items-center gap-2 bg-muted p-2 rounded">
-              <span className="text-sm truncate flex-1">Réponse à: {replyTo.text}</span>
-              <button
-                type="button"
-                onClick={() => setReplyTo(null)}
-                className="text-muted-foreground hover:text-foreground shrink-0"
-              >
-                ✕
-              </button>
+        {!isAdmin ? (
+          <form onSubmit={handleSendMessage} className="mt-4 flex flex-col gap-2">
+            {replyTo && (
+              <div className="flex items-center gap-2 bg-muted p-2 rounded">
+                <span className="text-sm truncate flex-1">Réponse à: {replyTo.text}</span>
+                <button
+                  type="button"
+                  onClick={() => setReplyTo(null)}
+                  className="text-muted-foreground hover:text-foreground shrink-0"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <Input
+                value={newMessage}
+                onChange={(e) => {
+                  setNewMessage(e.target.value);
+                  handleTyping();
+                }}
+                placeholder="Écrivez votre message..."
+                className="flex-1"
+                maxLength={1000}
+              />
+              <Button type="submit">Envoyer</Button>
             </div>
-          )}
-          <div className="flex gap-2">
-            <Input
-              value={newMessage}
-              onChange={(e) => {
-                setNewMessage(e.target.value);
-                handleTyping();
-              }}
-              placeholder="Écrivez votre message..."
-              className="flex-1"
-              maxLength={1000}
-            />
-            <Button type="submit" className="shrink-0">Envoyer</Button>
-          </div>
-        </form>
+          </form>
+        ) : (
+          <form onSubmit={handleSendMessage} className="mt-4 flex flex-col gap-2">
+            {replyTo && (
+              <div className="flex items-center gap-2 bg-muted p-2 rounded">
+                <span className="text-sm truncate flex-1">Réponse à: {replyTo.text}</span>
+                <button
+                  type="button"
+                  onClick={() => setReplyTo(null)}
+                  className="text-muted-foreground hover:text-foreground shrink-0"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <Input
+                value={newMessage}
+                onChange={(e) => {
+                  setNewMessage(e.target.value);
+                  handleTyping();
+                }}
+                placeholder="Écrivez votre message (Mode Admin)..."
+                className="flex-1"
+                maxLength={1000}
+              />
+              <Button type="submit">Envoyer</Button>
+            </div>
+          </form>
+        )}
       </CardContent>
     </Card>
   );

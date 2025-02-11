@@ -15,11 +15,10 @@ export default async function RoutePage(
   const product = await prisma.product.findUnique({
     where: {
       id: props.params.productId,
-      userId: user.id,
     },
   });
 
-  if (!product) {
+  if (!product || (!user.isAdmin && product.userId !== user.id)) {
     notFound();
   }
 

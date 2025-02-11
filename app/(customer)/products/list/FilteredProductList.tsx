@@ -1,6 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { ScrollToTop } from "@/components/ui/scrollTotop";
 import { Filter, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -9,13 +16,6 @@ import { ProductFilters } from "./ProductFilters";
 import { ProductList } from "./ProductList";
 import { fetchMoreProducts, getFilteredProducts } from "./productList.actions";
 import { FilteredProductListProps, FilterType } from "./productList.schema";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 
 export function FilteredProductList({
   initialProducts,
@@ -31,10 +31,10 @@ export function FilteredProductList({
   const [products, setProducts] = useState(initialProducts);
 
   const [filters, setFilters] = useState<FilterType>({
-    sport: searchParams.get("sport") || undefined,
-    level: searchParams.get("level") || undefined,
-    onlyGirls: searchParams.get("onlyGirls") === "true",
-    countries: searchParams.get("countries")?.split(",") || [],
+    sport: searchParams?.get("sport") || undefined,
+    level: searchParams?.get("level") || undefined,
+    onlyGirls: searchParams?.get("onlyGirls") === "true",
+    countries: searchParams?.get("countries")?.split(",") || [],
     location: undefined,
   });
 
@@ -71,7 +71,7 @@ export function FilteredProductList({
   }, [products.length, loading, filters, hasMore]);
 
   const handleFilterChange = (newFilters: FilterType) => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams?.toString());
 
     if (newFilters.sport) params.set("sport", newFilters.sport);
     else params.delete("sport");
@@ -106,9 +106,9 @@ export function FilteredProductList({
 
   return (
     <>
-      {/* Bouton mobile + Sheet */}
-      <Sheet>
-        <SheetTrigger asChild className="fixed bottom-4 right-4 z-50 lg:hidden">
+      {/* Bouton mobile + Dialog */}
+      <Dialog>
+        <DialogTrigger asChild className="fixed bottom-4 right-20 z-50 lg:hidden">
           <Button
             variant="outline"
             size="icon"
@@ -122,11 +122,11 @@ export function FilteredProductList({
               <span className="absolute -right-1 -top-1 size-3 rounded-full bg-primary" />
             )}
           </Button>
-        </SheetTrigger>
-        <SheetContent side="bottom" className="h-[80vh]">
-          <SheetHeader className="space-y-4">
+        </DialogTrigger>
+        <DialogContent className="h-[80vh] overflow-y-auto">
+          <DialogHeader>
             <div className="flex items-center justify-between">
-              <SheetTitle>Filtres</SheetTitle>
+              <DialogTitle>Filtres</DialogTitle>
               {(filters.sport ||
                 filters.level ||
                 filters.onlyGirls ||
@@ -148,9 +148,9 @@ export function FilteredProductList({
               showGenderFilter={userSex === "F"}
               venues={venues}
             />
-          </SheetHeader>
-        </SheetContent>
-      </Sheet>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
 
       {/* Layout principal */}
       <div className="flex flex-col gap-6 lg:flex-row">
