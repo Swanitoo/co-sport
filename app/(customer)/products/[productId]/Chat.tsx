@@ -117,12 +117,11 @@ export function ChatComponent({
     }
   };
 
-  const handleNewMessage = useCallback((message: Message) => {
+  const handleNewMessage = useCallback((message: MessageWithUser) => {
     if (messages.some((m) => m.id === message.id)) {
-      // ⚠️ Message déjà existant
       return;
     }
-    setMessages((prev) => [...prev, message]);
+    setMessages((prev) => [...prev, message as MessageWithUser]);
   }, [messages]);
 
   useEffect(() => {
