@@ -2,7 +2,7 @@ import { Membership, Product } from "@prisma/client";
 import { z } from "zod";
 import {
   LEVEL_CLASSES,
-  SPORT_CLASSES,
+  SPORTS,
 } from "../[productId]/edit/product.schema";
 
 export interface ProductWithMemberships extends Product {
@@ -29,8 +29,8 @@ export interface FilteredProductListProps {
 }
 
 export const FilterSchema = z.object({
-  sport: z.enum(SPORT_CLASSES as [string, ...string[]]).optional(),
-  level: z.enum(LEVEL_CLASSES as [string, ...string[]]).optional(),
+  sport: z.enum(SPORTS.map(s => s.name) as [string, ...string[]]).optional(),
+  level: z.enum(LEVEL_CLASSES.map(l => l.name) as [string, ...string[]]).optional(),
   onlyGirls: z.boolean().default(false),
   countries: z.array(z.string()).default([]),
   venue: z.string().optional(),
