@@ -8,9 +8,11 @@ import { PropsWithChildren } from "react";
 
 const queryClient = new QueryClient();
 
-export type ProvidersProps = PropsWithChildren;
+export type ProvidersProps = PropsWithChildren & {
+  userId?: string;
+};
 
-export const Providers = (props: ProvidersProps) => {
+export const Providers = ({ children, userId }: ProvidersProps) => {
   return (
     <SessionProvider>
       <ThemeProvider
@@ -21,7 +23,7 @@ export const Providers = (props: ProvidersProps) => {
       >
         <QueryClientProvider client={queryClient}>
           <Toaster />
-          {props.children}
+          {children}
         </QueryClientProvider>
       </ThemeProvider>
     </SessionProvider>
