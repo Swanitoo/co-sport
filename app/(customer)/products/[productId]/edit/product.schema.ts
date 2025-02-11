@@ -22,12 +22,12 @@ export const ProductSchema = z.object({
 export type ProductType = z.infer<typeof ProductSchema>;
 
 export const LEVEL_CLASSES = [
-  "Débutant",
-  "Intermédiaire",
-  "Avancé",
-  "Expert",
-  "Pro (Coatch, Entraîneur, Guide..)",
-];
+  { name: "Débutant", icon: "🌱" },
+  { name: "Intermédiaire", icon: "⭐" },
+  { name: "Avancé", icon: "🌟" },
+  { name: "Expert", icon: "💫" },
+  { name: "Pro (Coatch, Entraîneur, Guide..)", icon: "👑" },
+] as const;
 
 export const MembershipSchema = z.object({
   userId: z.string(),
@@ -38,34 +38,34 @@ export const MembershipSchema = z.object({
 
 export type MembershipType = z.infer<typeof MembershipSchema>;
 
-export const SPORT_CLASSES = [
-  "Alpinisme",
-  "Athlétisme",
-  "Badminton",
-  "Basketball",
-  "BMX",
-  "Boxe",
-  "Danse",
-  "Escalade",
-  "Football",
-  "Kayak",
-  "Musculation",
-  "Natation",
-  "Paddle",
-  "Plongée",
-  "Randonnée",
-  "Roller",
-  "Ski",
-  "Skate",
-  "Surf",
-  "Tennis",
-  "Trail",
-  "Triathlon",
-  "Vélo de route",
-  "Voleyball",
-  "VTT",
-  "Yoga",
-];
+export const SPORTS = [
+  { name: "Alpinisme", icon: "🏔️" },
+  { name: "Athlétisme", icon: "🏃" },
+  { name: "Badminton", icon: "🏸" },
+  { name: "Basketball", icon: "🏀" },
+  { name: "BMX", icon: "🚲" },
+  { name: "Boxe", icon: "🥊" },
+  { name: "Danse", icon: "💃" },
+  { name: "Escalade", icon: "🧗" },
+  { name: "Football", icon: "⚽" },
+  { name: "Kayak", icon: "🛶" },
+  { name: "Musculation", icon: "🏋️" },
+  { name: "Natation", icon: "🏊" },
+  { name: "Paddle", icon: "🏄" },
+  { name: "Plongée", icon: "🤿" },
+  { name: "Randonnée", icon: "🥾" },
+  { name: "Roller", icon: "⛸️" },
+  { name: "Ski", icon: "⛷️" },
+  { name: "Skate", icon: "🛹" },
+  { name: "Surf", icon: "🏄‍♂️" },
+  { name: "Tennis", icon: "🎾" },
+  { name: "Trail", icon: "🏃‍♂️" },
+  { name: "Triathlon", icon: "🏊‍♂️" },
+  { name: "Vélo de route", icon: "🚴" },
+  { name: "Voleyball", icon: "🏐" },
+  { name: "VTT", icon: "🚵" },
+  { name: "Yoga", icon: "🧘" },
+] as const;
 
 export const MessageSchema = z.object({
   text: z.string().min(1, "Le message ne peut pas être vide"),

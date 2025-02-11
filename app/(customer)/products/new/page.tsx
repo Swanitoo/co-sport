@@ -1,39 +1,27 @@
-import { Layout, LayoutTitle } from "@/components/layout";
-import type { PageParams } from "@/types/next";
-import { ProductForm } from "../[productId]/edit/ProductForm";
-import { prisma } from "@/prisma";
-import { AlertTriangle } from "lucide-react";
-import { PricingSection } from "@/features/landing/PricingSection";
 import { requiredCurrentUser } from "@/auth/current-user";
+import { Layout, LayoutTitle } from "@/components/layout";
+import { ChevronRight, Home } from "lucide-react";
+import Link from "next/link";
+import { ProductForm } from "../[productId]/edit/ProductForm";
 
-export default async function RoutePage(props: PageParams<{}>) {
+export default async function RoutePage() {
   const user = await requiredCurrentUser();
 
-  // const isAutorized =
-  //     user.plan === "PREMIUM"
-  //         ? true
-  //         : (await prisma.product.count({
-  //             where: {
-  //                 userId: user.id,
-  //             },
-  //         })) < 3;
-
-  // if (!isAutorized) {
-  //     return (
-  //         <Layout>
-  //             <LayoutTitle>Créer ton annonce</LayoutTitle>
-  //             <p>
-  //                 <AlertTriangle className="inline" />
-  //                 Désolé, Tu dois passer à notre forfait premium pour créer plus de produits.
-  //             </p>
-  //             <PricingSection />
-  //         </Layout>
-  //     )
-  // }
   return (
     <Layout>
-      <LayoutTitle>Créer ton annonce</LayoutTitle>
-      <ProductForm />
+      <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+        <Link href="/home" className="hover:text-foreground">
+          <Home className="size-4" />
+        </Link>
+        <ChevronRight className="size-4" />
+        <Link href="/products" className="hover:text-foreground">
+          Annonces
+        </Link>
+        <ChevronRight className="size-4" />
+        <span className="text-foreground">Créer une annonce</span>
+      </div>
+      <LayoutTitle>Créer une annonce</LayoutTitle>
+      <ProductForm userSex={user.sex ?? undefined} />
     </Layout>
   );
 }

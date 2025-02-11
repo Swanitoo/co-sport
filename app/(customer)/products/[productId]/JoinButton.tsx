@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { Button } from "@/components/ui/button"; // Assure-toi d'importer tes composants UI
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea"; // Ajoute ton composant textarea si nécessaire
 import { useMutation } from "@tanstack/react-query";
 import { Loader2, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 import { joinProductAction } from "./edit/product.action";
-import { Button } from "@/components/ui/button"; // Assure-toi d'importer tes composants UI
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea"; // Ajoute ton composant textarea si nécessaire
 
 export type JoinButtonProps = {
   productId: string;
@@ -21,9 +21,9 @@ export const JoinButton = ({ productId, userId }: JoinButtonProps) => {
 
   const joinMutation = useMutation({
     mutationFn: () => joinProductAction({ productId, userId, comment }),
-    onSuccess: ({ data, serverError }) => {
-      if (serverError) {
-        toast.error(serverError);
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error || "Une erreur est survenue");
         return;
       }
 
@@ -53,20 +53,20 @@ export const JoinButton = ({ productId, userId }: JoinButtonProps) => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Envoye une demande</DialogTitle>
+          <DialogTitle>Envoyer une demande</DialogTitle>
           <DialogDescription>
-            Ajoute un message pour accompagner ta demande.
+            Ajoutez un message pour accompagner votre demande.
           </DialogDescription>
         </DialogHeader>
         <Textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="Ton message..."
+          placeholder="Votre message..."
           className="mt-2"
         />
         <DialogFooter>
           <Button onClick={handleSubmit}>
-            {joinMutation.isPending ? <Loader2 className="animate-spin" /> : "Envoie la Demande"}
+            {joinMutation.isPending ? <Loader2 className="animate-spin" /> : "Envoyer la demande"}
           </Button>
         </DialogFooter>
       </DialogContent>

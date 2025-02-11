@@ -1,51 +1,67 @@
+import { currentUser } from "@/auth/current-user";
 import { Layout } from "@/components/layout";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { DeleteReviewButton } from "./DeleteReviewButton";
 import { ReviewItem } from "./ReviewCard";
 
 export const maxDuration = 10;
 
 export default async function RoutePage(props: PageParams<{ slug: string }>) {
-  const product = await prisma.product.findFirst({
-    where: {
-      slug: props.params.slug,
-    },
+  const user = await currentUser();
+
+  const decodedSlug = decodeURIComponent(props.params.slug);
+  // 🔍 Slug décodé
+
+  const product = await prisma.product.findUnique({
+    where: { slug: decodedSlug },
     include: {
-      reviews: {
-        where: {
-          text: {
-            not: null,
-          },
-          name: {
-            not: null,
-          },
+      user: true,
+      memberships: {
+        include: {
+          user: true,
         },
       },
-      user: {
-        select: {
-          image: true,
-          name: true,
+      reviews: {
+        include: {
+          user: true,
         },
       },
     },
   });
+  // 📦 Produit trouvé
 
   if (!product) {
-    notFound();
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <h1 className="text-2xl font-bold mb-4">Produit non trouvé</h1>
+          <p>Désolé, nous n'avons pas pu trouver le produit demandé.</p>
+          <Button variant="ghost" className="mt-4" asChild>
+            <Link href="/products" className="flex items-center gap-2">
+              <ArrowLeft size={16} />
+              Retour aux annonces
+            </Link>
+          </Button>
+        </div>
+      </Layout>
+    );
   }
+
+  const reviewsWithUserData = product?.reviews.map((review) => ({
+    ...review,
+    user: review.user,
+  }));
+  // 📝 Avis avec données utilisateur
 
   // calcule la moyenne des reviews
   const review = await prisma.review.aggregate({
     where: {
       productId: product.id,
       text: {
-        not: null,
-      },
-      name: {
         not: null,
       },
     },
@@ -57,35 +73,55 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
     },
   });
 
+  const isAdmin = user?.isAdmin ?? false;
+
   return (
     <Layout className="my-12 flex h-full flex-col items-center justify-center gap-4">
-      <div className="flex items-center gap-2">
-        {product.user?.image ? (
-          <img className="size-12 rounded-full" src={product.user.image} alt={`${product.user.name}'s profile`} />
-        ) : (
-          <div className="size-12 bg-gray-300 rounded-full" />
-        )}
-        <h1 className="text-2xl font-bold">{product.name}</h1>
+      <div className="container mx-auto py-8">
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link
+              href={`/products/${product.id}`}
+              className={buttonVariants({
+                variant: "ghost",
+                size: "sm",
+              })}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Retour à l'annonce
+            </Link>
+            <h1 className="text-2xl font-bold">{product.name}</h1>
+          </div>
+        </div>
+
+        <div className="space-y-8">
+          {reviewsWithUserData.length === 0 ? (
+            <p className="text-center text-muted-foreground">
+              Aucun avis pour le moment
+            </p>
+          ) : (
+            reviewsWithUserData.map((review) => (
+              <div key={review.id} className="flex items-start justify-between">
+                <ReviewItem review={review} />
+                {isAdmin && (
+                  <div className="flex gap-2">
+                    <Link
+                      href={`/r/${encodeURIComponent(product.slug)}/edit/${review.id}`}
+                      className={buttonVariants({
+                        variant: "ghost",
+                        size: "sm",
+                      })}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Link>
+                    <DeleteReviewButton reviewId={review.id} />
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
-      <div>
-        <h2 className="text-4xl font-extrabold">{review._avg.rating} / 5</h2>
-        <p>{review._count._all} reviews</p>
-      </div>
-      <div className="size-full columns-1 md:columns-2 lg:columns-3">
-        {product.reviews.map((r) => (
-          <ReviewItem
-            className="mb-4 break-inside-avoid-column"
-            review={r}
-            key={r.id}
-          />
-        ))}
-      </div>
-              <Button variant="ghost" className="mb-4" asChild>
-          <Link href={`/products/${product.id}`} className="flex items-center gap-2">
-            <ArrowLeft size={16} />
-            Retour à l'annonce
-          </Link>
-        </Button>
     </Layout>
   );
 }

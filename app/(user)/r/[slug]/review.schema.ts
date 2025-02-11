@@ -7,6 +7,7 @@ export const ReviewSchema = z.object({
     socialLink: z.string().optional(),
     name: z.string().optional(),
     productId: z.string(),
+    userId: z.string().optional(),
 });
 
 export type ReviewType = z.infer<typeof ReviewSchema>;

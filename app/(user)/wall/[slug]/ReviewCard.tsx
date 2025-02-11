@@ -1,35 +1,85 @@
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Review } from "@prisma/client";
+import { formatDistance } from "date-fns";
+import { fr } from "date-fns/locale";
+import Image from "next/image";
 import Link from "next/link";
-import { ReviewStar } from "./ReviewStar";
 
-export type ReviewItemProps = {
-  review: Review;
+interface ReviewItemProps {
+  review: Review & {
+    user?: {
+      id: string;
+      name: string | null;
+      image: string | null;
+      socialLink: string | null;
+    } | null;
+  };
   className?: string;
-};
+}
 
-export const ReviewItem = ({ review, className }: ReviewItemProps) => {
+export function ReviewItem({ review, className }: ReviewItemProps) {
+  const displayName = review.user?.name || review.name;
+  const displayImage = review.user?.image || review.image;
+  const profileLink = review.user?.id ? `/profile/${review.user.id}` : review.socialLink;
+
+  const getInitials = (name?: string | null) => {
+    if (!name) return "?";
+    return name.charAt(0).toUpperCase();
+  };
+
   return (
-    <div className={cn("flex h-fit flex-col", className)}>
-      <div className="flex break-inside-avoid-column items-center gap-2">
-        {review.image ? (
-          <img
-            className="size-14 rounded-full"
-            src={review.image}
-            alt={review.name ?? ""}
-          />
-        ) : null}
-        <div className="flex flex-col gap-1">
-          <Link
-            href={review.socialLink ?? "#"}
-            className="group flex items-center gap-2"
-          >
-            <p className="text-lg group-hover:underline">{review.name}</p>
-          </Link>
-          <ReviewStar stars={review.rating} />
+    <div className={cn("space-y-2", className)}>
+      <div className="flex items-center gap-2">
+        <Avatar className="h-8 w-8">
+          {displayImage ? (
+            <Image
+              src={displayImage}
+              alt={`Avatar de ${displayName}`}
+              width={32}
+              height={32}
+              className="h-full w-full object-cover rounded-full"
+              unoptimized
+            />
+          ) : (
+            <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
+          )}
+        </Avatar>
+        <div className="flex flex-col">
+          {profileLink ? (
+            <Link 
+              href={profileLink}
+              className="text-sm font-medium hover:underline"
+            >
+              {displayName}
+            </Link>
+          ) : (
+            <span className="text-sm font-medium">{displayName}</span>
+          )}
+          <div className="flex items-center gap-1">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <span
+                key={i}
+                className={cn("text-sm", {
+                  "text-yellow-500": i < review.rating,
+                  "text-gray-300": i >= review.rating,
+                })}
+              >
+                ★
+              </span>
+            ))}
+            <span className="text-xs text-muted-foreground">
+              {formatDistance(review.createdAt, new Date(), {
+                addSuffix: true,
+                locale: fr,
+              })}
+            </span>
+          </div>
         </div>
       </div>
-      <p className="citation mt-4">{review.text}</p>
+      <div className="citation">
+        <p>{review.text}</p>
+      </div>
     </div>
   );
-};
+}

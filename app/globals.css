@@ -102,6 +102,20 @@
   white-space: nowrap;
 }
 
+.message-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 640px) {
+  .message-actions {
+    position: relative;
+    justify-content: flex-end;
+  }
+}
+
 .citation {
   position: relative;
   display: inline-block;
@@ -149,4 +163,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.typing-indicator {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  padding: 0.25rem;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
 }

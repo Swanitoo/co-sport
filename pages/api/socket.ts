@@ -17,38 +17,32 @@ interface NextApiResponseWithSocket extends NextApiResponse {
 
 const ioHandler = (req: NextApiRequest, res: NextApiResponseWithSocket) => {
   if (!res.socket.server.io) {
-    console.log("🚀 Initialisation de Socket.IO");
     const io = new IOServer(res.socket.server, {
       path: "/api/socket",
       addTrailingSlash: false,
-      transports: ["polling", "websocket"],
+      transports: ["websocket", "polling"],
       cors: {
         origin: "*",
         methods: ["GET", "POST"],
         credentials: true
       },
+      pingTimeout: 60000,
+      pingInterval: 25000,
+      connectTimeout: 20000,
+      allowEIO3: true
     });
 
     io.on("connection", (socket) => {
-      socket.on("join-room", (roomId: string) => {
+      socket.on("join-room", (roomId) => {
         socket.join(roomId);
-        socket.emit("room-joined", { roomId });
       });
 
-      socket.on("leave-room", (roomId: string) => {
+      socket.on("leave-room", (roomId) => {
         socket.leave(roomId);
       });
 
-      socket.on("send-message", (message) => {
-        io.to(message.productId).emit("new-message", message);
-      });
-
-      socket.on("typing", ({ productId, userId }) => {
-        socket.to(productId).emit("user-typing", { userId });
-      });
-
-      socket.on("stop-typing", ({ productId, userId }) => {
-        socket.to(productId).emit("user-stop-typing", { userId });
+      socket.on("message", (message) => {
+        io.to(message.productId).emit("message", message);
       });
 
       socket.on("disconnect", () => {

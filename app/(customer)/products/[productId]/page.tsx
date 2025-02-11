@@ -22,6 +22,7 @@ import { DeleteButton } from "./DeleteButton";
 import { JoinButton } from "./JoinButton";
 import { LeaveButton } from "./LeaveButton";
 import { RemoveMemberButton } from "./RemoveMemberButton";
+import { LEVEL_CLASSES, SPORTS } from "./edit/product.schema";
 
 export default async function RoutePage({
   params: { productId },
@@ -85,9 +86,19 @@ export default async function RoutePage({
   );
   const pendingCount = pendingMemberships.length;
 
+  const getSportIcon = (sportName: string) => {
+    const sport = SPORTS.find(s => s.name === sportName);
+    return sport?.icon || "🎯";
+  };
+
+  const getLevelIcon = (levelName: string) => {
+    const level = LEVEL_CLASSES.find(l => l.name === levelName);
+    return level?.icon || "🎯";
+  };
+
   return (
     <Layout>
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Link href="/products" className="hover:text-foreground">
             Annonces
@@ -185,13 +196,24 @@ export default async function RoutePage({
           )}
         </div>
 
+        <div className="flex items-center gap-4 text-lg">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">{getSportIcon(product.sport)}</span>
+            <span>{product.sport}</span>
+          </div>
+          <span className="text-muted-foreground">•</span>
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">{getLevelIcon(product.level)}</span>
+            <span>{product.level}</span>
+          </div>
+        </div>
+
         <div className="flex gap-4 max-lg:flex-col">
           <Card className="flex-1">
             <CardHeader>
               <CardTitle>Détails</CardTitle>
             </CardHeader>
             <CardHeader>
-              <p>Sport : {product.sport}</p>
               {product.venueName && (
                 <div className="mt-2 flex items-start gap-2">
                   <MapPin className="mt-1 size-4 shrink-0 text-muted-foreground" />
@@ -202,26 +224,6 @@ export default async function RoutePage({
               )}
             </CardHeader>
             <CardContent className="flex flex-col items-start gap-2">
-              {isClient && membership && membership.status === "APPROVED" && (
-                <Link
-                  href={`/r/${product.slug}`}
-                  className={buttonVariants({
-                    size: "sm",
-                  })}
-                >
-                  <Link2 size={16} className="mr-2" />
-                  Écris un avis
-                </Link>
-              )}
-              <Link
-                href={`/wall/${product.slug}`}
-                className={buttonVariants({
-                  size: "sm",
-                })}
-              >
-                <Link2 size={16} className="mr-2" />
-                Découvre tous les avis
-              </Link>
               <p>Description : {product.description}</p>
             </CardContent>
           </Card>
@@ -234,22 +236,47 @@ export default async function RoutePage({
                 <TableHeader className="pointer-events-none">
                   <TableRow>
                     <TableHead>Nom</TableHead>
-                    <TableHead>Text</TableHead>
+                    <TableHead>Note</TableHead>
+                    <TableHead>Avis</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {product.reviews.map((review) => (
-                    <TableRow key={product.id}>
+                    <TableRow key={review.id}>
                       <TableCell>
-                        <Link href={`/reviews/${product.id}`} key={product.id}>
-                          {product.name}
-                        </Link>
+                        {review.name}
                       </TableCell>
+                      <TableCell>{review.rating}/5</TableCell>
                       <TableCell>{review.text}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+              {isClient && membership && membership.status === "APPROVED" && (
+                <div className="mt-4">
+                  <Link
+                    href={`/r/${encodeURIComponent(product.slug)}`}
+                    className={buttonVariants({
+                      size: "sm",
+                    })}
+                  >
+                    <Link2 size={16} className="mr-2" />
+                    Écrire un avis
+                  </Link>
+                </div>
+              )}
+              <div className="mt-2">
+                <Link
+                  href={`/wall/${encodeURIComponent(product.slug)}`}
+                  className={buttonVariants({
+                    size: "sm",
+                    variant: "outline"
+                  })}
+                >
+                  <Link2 size={16} className="mr-2" />
+                  Voir tous les avis
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>

@@ -5,13 +5,22 @@ import { EMAIL_FROM } from "@/config";
 import { prisma } from "@/prisma";
 import { resend } from "@/resend";
 import { userAction } from "@/safe-actions";
-import { Prisma, Status, User } from "@prisma/client";
+import { getSocketIO } from "@/socketio";
+import { User } from "@prisma/client";
 import { z } from "zod";
 import FirstProductCreatedEmail from "../../../../../emails/FirstProductCreatedEmail";
 import { ProductSchema } from "./product.schema";
 
 const generateSlug = (name: string, level: string) => {
-  const slugBase = `${name.replace(/\s+/g, "-").toLowerCase()}-${level
+  const slugBase = `${name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9\s-]/g, '')
+    .replace(/\s+/g, "-")
+    .toLowerCase()}-${level
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9\s-]/g, '')
     .replace(/\s+/g, "-")
     .toLowerCase()}`;
   return slugBase;
@@ -111,10 +120,12 @@ const sendEmailIfUserCreatedFirstProduct = async (user: User) => {
 export const createProductAction = userAction(
   ProductSchema,
   async (input, context) => {
+    if (input.onlyGirls && context.user.sex !== "F") {
+      throw new Error("Seules les femmes peuvent créer des annonces 'only girls'");
+    }
+
     const slugBase = generateSlug(input.name, input.level);
     const slug = await verifySlugUniqueness(slugBase);
-
-    // await verifyUserPlan(context.user);
 
     const product = await prisma.product.create({
       data: {
@@ -136,6 +147,10 @@ export const updateProductAction = userAction(
     data: ProductSchema,
   }),
   async (input, context) => {
+    if (input.data.onlyGirls && context.user.sex !== "F") {
+      throw new Error("Seules les femmes peuvent créer des annonces 'only girls'");
+    }
+
     const slugBase = generateSlug(input.data.name, input.data.level);
     const slug = await verifySlugUniqueness(slugBase, input.id);
 
@@ -199,40 +214,66 @@ export async function joinProductAction({
   userId: string;
   comment: string;
 }) {
-  const membershipData = {
-    userId,
-    productId,
-    comment,
-    status: Status.PENDING,
-  };
-
   try {
-    await prisma.membership.create({
-      data: membershipData,
+    const membership = await prisma.membership.create({
+      data: {
+        productId,
+        userId,
+        comment,
+        status: "PENDING",
+      },
+      include: {
+        product: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
-    return { data: "success" };
-  } catch (error) {
-    console.error("Erreur lors de la demande d'adhésion:", error);
-    return {
-      serverError: "Une erreur est survenue. Veuillez réessayer plus tard.",
-    };
+
+    return { success: true };
+  } catch (error: any) {
+    if (error?.code === "P2002") {
+      return { success: false, error: "Vous avez déjà fait une demande pour ce groupe" };
+    }
+    console.error("Erreur lors de la création de la demande:", error);
+    return { success: false, error: "Une erreur est survenue lors de la demande d'adhésion" };
   }
 }
 
 export async function acceptMembershipAction(membershipId: string) {
   try {
-    await prisma.membership.update({
+    const membership = await prisma.membership.update({
       where: { id: membershipId },
       data: { status: "APPROVED" },
+      include: {
+        product: true,
+        user: true,
+      },
     });
 
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erreur lors de l'acceptation de la demande:", error);
-    return {
-      success: false,
-      error: "Erreur lors de l'acceptation de la demande.",
-    };
+    return { success: false, error: "Une erreur est survenue lors de l'acceptation de la demande" };
+  }
+}
+
+export async function refuseMembershipAction(membershipId: string) {
+  try {
+    const membership = await prisma.membership.update({
+      where: { id: membershipId },
+      data: { status: "REFUSED" },
+      include: {
+        product: true,
+        user: true,
+      },
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Erreur lors du refus de la demande:", error);
+    return { success: false, error: "Une erreur est survenue lors du refus de la demande" };
   }
 }
 
@@ -248,18 +289,6 @@ export async function leaveGroupAction(productId: string, userId: string) {
     return { data: membership };
   } catch (error) {
     return { serverError: "Erreur lors de la suppression de l'adhésion." };
-  }
-}
-
-export async function refuseMembershipAction(membershipId: string) {
-  try {
-    const deletedMembership = await prisma.membership.delete({
-      where: { id: membershipId },
-    });
-    return { success: true, data: deletedMembership };
-  } catch (error) {
-    console.error("Erreur lors du refus de la demande:", error);
-    return { success: false, error: "Erreur lors du refus de la demande." };
   }
 }
 
@@ -337,35 +366,36 @@ export async function sendMessageAction({
   productId: string;
   replyToId?: string;
 }) {
-  try {
-    const user = await requiredCurrentUser();
-    const sanitized = sanitizeMessage(text);
+  const user = await requiredCurrentUser();
 
+  if (!user) {
+    throw new Error("Vous devez être connecté");
+  }
+
+  try {
+    const sanitized = sanitizeMessage(text);
     if (!sanitized.isValid) {
-      return { error: sanitized.error };
+      return { success: false, error: sanitized.error };
     }
 
-    const messageData: Prisma.MessageCreateInput = {
-      text: sanitized.text,
-      user: { connect: { id: user.id } },
-      product: { connect: { id: productId } },
-      ...(replyToId && { replyTo: { connect: { id: replyToId } } }),
-    };
-
+    // Créer le message dans la base de données
     const message = await prisma.message.create({
-      data: messageData,
+      data: {
+        text: sanitized.text,
+        productId,
+        userId: user.id,
+        replyToId,
+      },
       include: {
         user: {
           select: {
+            id: true,
             name: true,
             image: true,
           },
         },
         replyTo: {
-          select: {
-            id: true,
-            text: true,
-            userId: true,
+          include: {
             user: {
               select: {
                 name: true,
@@ -376,9 +406,14 @@ export async function sendMessageAction({
       },
     });
 
-    return { data: message };
+    // Émettre l'événement via Socket.IO à tous les membres de la salle
+    const io = getSocketIO();
+    io.to(productId).emit("new-message", message);
+
+    return { success: true, data: message };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "Une erreur est survenue" };
+    console.error("Erreur lors de l'envoi du message:", error);
+    return { success: false, error: "Erreur lors de l'envoi du message" };
   }
 }
 

@@ -18,11 +18,11 @@ export function getSocket() {
     });
 
     socket.on("connect", () => {
-      console.log("✅ Socket connecté avec ID:", socket.id);
+      // ✅ Socket connecté
     });
 
     socket.on("room-joined", ({ roomId }) => {
-      console.log("✅ Salle rejointe:", roomId);
+      // ✅ Salle rejointe
     });
 
     socket.on("connect_error", (error) => {
@@ -30,7 +30,7 @@ export function getSocket() {
     });
 
     socket.on("disconnect", (reason) => {
-      console.log("⚠️ Socket déconnecté:", reason);
+      // ⚠️ Socket déconnecté
       
       // Tentative de reconnexion automatique
       if (reason === "io server disconnect" || reason === "transport close") {
@@ -39,11 +39,11 @@ export function getSocket() {
     });
 
     socket.io.on("reconnect", (attempt) => {
-      console.log("✅ Reconnecté après", attempt, "tentatives");
+      // ✅ Reconnecté
     });
 
     socket.io.on("reconnect_attempt", (attempt) => {
-      console.log("🔄 Tentative de reconnexion #", attempt);
+      // 🔄 Tentative de reconnexion
     });
 
     socket.io.on("reconnect_error", (error) => {

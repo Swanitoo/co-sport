@@ -39,6 +39,7 @@ import {
   updateLocation,
   updateName,
 } from "./dashboard.action";
+import { NotificationsCard } from "./NotificationsCard";
 import { ProfileDataCheck } from "./ProfileDataCheck";
 
 export default async function RoutePage(props: PageParams<{}>) {
@@ -62,6 +63,67 @@ export default async function RoutePage(props: PageParams<{}>) {
       orderBy: { createdAt: "desc" },
     }),
   ]);
+
+  const userProducts = await prisma.product.findMany({
+    where: {
+      userId: user.id,
+    },
+    include: {
+      memberships: {
+        where: { status: "PENDING" }
+      }
+    },
+  });
+
+  const productsWithPendingCount = userProducts.map(product => ({
+    ...product,
+    pendingRequests: product.memberships.length
+  }));
+
+  const approvedRequests = await prisma.membership.findMany({
+    where: {
+      userId: user.id,
+      status: "APPROVED",
+      read: false,
+      createdAt: {
+        gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 derniers jours
+      }
+    },
+    include: {
+      product: true,
+      user: true
+    }
+  });
+
+  const formattedApprovedRequests = approvedRequests.map(request => ({
+    id: request.id,
+    productId: request.productId,
+    productName: request.product.name,
+    userName: request.user.name || "Utilisateur inconnu",
+    createdAt: request.createdAt
+  }));
+
+  const pendingRequests = await prisma.membership.findMany({
+    where: {
+      product: {
+        userId: user.id
+      },
+      status: "PENDING",
+      read: false
+    },
+    include: {
+      product: true,
+      user: true
+    }
+  });
+
+  const formattedPendingRequests = pendingRequests.map(request => ({
+    id: request.id,
+    productId: request.productId,
+    productName: request.product.name,
+    userName: request.user.name || "Utilisateur inconnu",
+    createdAt: request.createdAt
+  }));
 
   return (
     <Layout>
@@ -316,37 +378,45 @@ export default async function RoutePage(props: PageParams<{}>) {
               )}
             </CardContent>
           </Card>
-          {/* <Card className="min-w-52">
-          <CardHeader>
-            <CardTitle>Plan</CardTitle>
-            <CardDescription>{user.plan}</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-2">
-          <p>Annonces Max Rejointes : {user.plan === "FREE" ? `3 (Restantes: ${3 - joinedSessionsCount})` : "illimité"}</p>
-          <Progress value={(joinedSessionsCount / (user.plan === "FREE" ? 3 : joinedSessionsCount)) * 100} />
 
-          {user.plan === "FREE" && joinedSessionsCount >= 3 && (
-            <p className="text-red-500">Tu as atteint la limite de 3 annonces rejointes pour le plan gratuit. Passes au plan Premium pour rejoindre plus de séances.</p>
-          )}
-            <p>Annonce Max : {user.plan === "FREE" ? 1 : "illimité"}</p>
-            <Progress value={(productsCount * 1) / 1} />
-            {productsCount === 1}
-            {user.plan === "FREE" &&
-              (productsCount === 1 || joinedSessionsCount === 3) && (
-                <Alert>
-                  <AlertTitle>
-                    Tu as atteint la limite de ton forfait gratuit
-                  </AlertTitle>
+          <NotificationsCard 
+            pendingRequests={formattedPendingRequests} 
+            approvedRequests={formattedApprovedRequests}
+          />
+
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle>Mes annonces</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {productsWithPendingCount.map((product) => (
                   <Link
-                    className={buttonVariants({ size: "sm" })}
-                    href="/upgrade"
+                    key={product.id}
+                    href={`/products/${product.id}`}
+                    className="block p-4 rounded-lg border hover:bg-accent/50 transition-colors"
                   >
-                    Passes au premium
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium">{product.name}</h3>
+                      {product.pendingRequests > 0 && (
+                        <span className="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                          {product.pendingRequests}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {product.description}
+                    </p>
+                    <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                      <span>{product.sport}</span>
+                      <span>•</span>
+                      <span>{product.level}</span>
+                    </div>
                   </Link>
-                </Alert>
-              )}
-          </CardContent>
-        </Card> */}
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </Layout>

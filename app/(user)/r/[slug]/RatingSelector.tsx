@@ -1,67 +1,66 @@
+"use client";
+
+import { cn } from "@/lib/utils";
 import { Star } from "lucide-react";
 import { useState } from "react";
 
-const RatingSelector = ({onSelect}: {
-    onSelect: (rating: number) => void;
-}) => {
-    const [rating, setRating] = useState<number | null>(null);
-    const [hoverRating, setHoverRating] = useState<number | null>(null);
+interface ReviewSelectorProps {
+  onSelect: (rating: number) => void;
+  initialRating?: number;
+}
 
-    const starRatings: Record<number, string> = {
-        1: "Poor",
-        2: "Fair",
-        3: "Good",
-        4: "Very Good",
-        5: "Perfect",
-    };
+export default function ReviewSelector({ onSelect, initialRating = 0 }: ReviewSelectorProps) {
+  const [rating, setRating] = useState(initialRating);
+  const [hover, setHover] = useState(0);
 
-    const handleMousseEnter = (index: number) => {
-        setHoverRating(index);
-    };
+  const starRatings: Record<number, string> = {
+    1: "Poor",
+    2: "Fair",
+    3: "Good",
+    4: "Very Good",
+    5: "Perfect",
+  };
 
-    const handleMousseLeave = () => {
-        setHoverRating(null);
-    };
+  const handleMousseEnter = (index: number) => {
+    setHover(index);
+  };
 
-    const handleClick = (index: number) => {
-        setRating(index);
-        onSelect(index);
-    };
+  const handleMousseLeave = () => {
+    setHover(0);
+  };
 
-    return (
-        <div className="flex flex-col gap-1">
-            <div className="flex items-center">
-                {[1, 2, 3, 4, 5].map((index) => (
-                    <div
-                        key={index}
-                        onMouseEnter={() => handleMousseEnter(index)}
-                        onMouseLeave={handleMousseLeave}
-                        onClick={() => handleClick(index)}
-                        className="cursor-pointer p-1 drop-shadow-md"
-                    >
-                    
-                        <Star
-                            size={32}
-                            key={index}
-                            fill={
-                                (hoverRating ? index <= hoverRating : index <= rating!)
-                                    ? "#FFD700"
-                                    : "transparent"
-                            }
-                            color={"#FFD700"}
-                        />
-                    </div>
-                    ))}
-            </div>
-            <p className="w-full text-center text-sm font-light text-muted-foreground">
-                {rating
-                    ? starRatings[rating]
-                    : hoverRating
-                    ? starRatings[hoverRating]
-                    : '\u00A0'}
-            </p>
-        </div>
-    );
-};
+  const handleClick = (index: number) => {
+    setRating(index);
+    onSelect(index);
+  };
 
-export default RatingSelector;
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center">
+        {[1, 2, 3, 4, 5].map((index) => (
+          <div
+            key={index}
+            onMouseEnter={() => handleMousseEnter(index)}
+            onMouseLeave={handleMousseLeave}
+            onClick={() => handleClick(index)}
+            className={cn(
+              "cursor-pointer p-1 drop-shadow-md",
+              index <= (hover || rating)
+                ? "text-yellow-500 hover:text-yellow-600"
+                : "text-gray-300 hover:text-gray-400"
+            )}
+          >
+            <Star className="h-8 w-8 fill-current" />
+          </div>
+        ))}
+      </div>
+      <p className="w-full text-center text-sm font-light text-muted-foreground">
+        {rating
+          ? starRatings[rating]
+          : hover
+          ? starRatings[hover]
+          : '\u00A0'}
+      </p>
+    </div>
+  );
+}

@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { Message, User } from "@prisma/client";
 import { Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   deleteMessageAction,
@@ -117,29 +117,16 @@ export function ChatComponent({
     }
   };
 
+  const handleNewMessage = useCallback((message: Message) => {
+    if (messages.some((m) => m.id === message.id)) {
+      // ⚠️ Message déjà existant
+      return;
+    }
+    setMessages((prev) => [...prev, message]);
+  }, [messages]);
+
   useEffect(() => {
     const socket = socketRef.current;
-
-    const handleNewMessage = (message: MessageWithUser) => {
-      setMessages((prev) => {
-        const messageExists = prev.some((m) => m.id === message.id);
-        if (messageExists) {
-          console.log("⚠️ Message déjà existant, ignoré");
-          return prev;
-        }
-        return [...prev, message];
-      });
-
-      const container = messagesContainerRef.current;
-      if (container) {
-        const isAtBottom =
-          container.scrollHeight - container.scrollTop <=
-          container.clientHeight + 100;
-        if (isAtBottom) {
-          scrollToBottom();
-        }
-      }
-    };
 
     const handleTypingStart = ({
       userId: typingUserId,
@@ -170,7 +157,7 @@ export function ChatComponent({
     socket.on("user-stop-typing", handleTypingStop);
 
     return () => {
-      console.log("👋 Nettoyage du chat");
+      // 👋 Nettoyage du chat
       socket.off("new-message", handleNewMessage);
       socket.off("user-typing", handleTypingStart);
       socket.off("user-stop-typing", handleTypingStop);
@@ -279,211 +266,215 @@ export function ChatComponent({
         <CardTitle>Chat {isAdmin && "(Mode Admin - Lecture seule)"}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div
-          ref={messagesContainerRef}
-          onScroll={handleScroll}
-          className="h-[400px] space-y-4 overflow-y-auto relative scroll-smooth px-4"
-        >
-          {isLoadingMore && (
-            <div className="absolute top-2 left-1/2 -translate-x-1/2">
-              <Loader2 className="h-6 w-6 animate-spin" />
-            </div>
-          )}
+        <div className="relative">
+          <div
+            ref={messagesContainerRef}
+            onScroll={handleScroll}
+            className="h-[400px] space-y-4 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-12"
+          >
+            {isLoadingMore && (
+              <div className="absolute top-2 left-1/2 -translate-x-1/2">
+                <Loader2 className="h-6 w-6 animate-spin" />
+              </div>
+            )}
 
-          {isLoading ? (
-            <div className="space-y-4">
-              <MessageSkeleton isCurrentUser={true} />
-              <MessageSkeleton isCurrentUser={false} />
-              <MessageSkeleton isCurrentUser={true} />
-            </div>
-          ) : messages.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-muted-foreground">
-              Pas de messages pour le moment
-            </div>
-          ) : (
-            messages.map((message, index) => {
-              const isCurrentUser = message.userId === userId;
-              const previousMessage =
-                index > 0 ? messages[index - 1] : undefined;
-              const showDate = formatMessageDate(
-                message.createdAt,
-                previousMessage
-              );
-              const isConsecutive = previousMessage?.userId === message.userId;
+            {isLoading ? (
+              <div className="space-y-4">
+                <MessageSkeleton isCurrentUser={true} />
+                <MessageSkeleton isCurrentUser={false} />
+                <MessageSkeleton isCurrentUser={true} />
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="flex h-full items-center justify-center text-muted-foreground">
+                Pas de messages pour le moment
+              </div>
+            ) : (
+              messages.map((message, index) => {
+                const isCurrentUser = message.userId === userId;
+                const previousMessage =
+                  index > 0 ? messages[index - 1] : undefined;
+                const showDate = formatMessageDate(
+                  message.createdAt,
+                  previousMessage
+                );
+                const isConsecutive = previousMessage?.userId === message.userId;
 
-              return (
-                <div key={message.id}>
-                  <div
-                    className={cn(
-                      "flex w-full items-start gap-2 group/message",
-                      {
-                        "justify-end": isCurrentUser,
-                        "justify-start": !isCurrentUser,
-                        "mt-1": isConsecutive,
-                        "mt-4": !isConsecutive,
-                      }
-                    )}
-                  >
-                    {!isCurrentUser && !isConsecutive && (
-                      <Avatar className="h-8 w-8 flex-shrink-0">
-                        <AvatarImage src={message.user.image || undefined} />
-                        <AvatarFallback>
-                          {message.user.name?.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
-                    {!isCurrentUser && isConsecutive && <div className="w-8" />}
-
-                    <div className="flex flex-col gap-1 max-w-[80%] group relative">
-                      {!isCurrentUser && !isConsecutive && (
-                        <Link
-                          href={`/profile/${message.userId}`}
-                          className="text-sm font-bold hover:underline"
-                        >
-                          {message.user.name}
-                        </Link>
+                return (
+                  <div key={message.id}>
+                    <div
+                      className={cn(
+                        "flex w-full items-start gap-2 group/message",
+                        {
+                          "justify-end": isCurrentUser,
+                          "justify-start": !isCurrentUser,
+                          "mt-1": isConsecutive,
+                          "mt-4": !isConsecutive,
+                        }
                       )}
+                    >
+                      {!isCurrentUser && !isConsecutive && (
+                        <Avatar className="h-8 w-8 flex-shrink-0">
+                          <AvatarImage src={message.user.image || undefined} />
+                          <AvatarFallback>
+                            {message.user.name?.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      )}
+                      {!isCurrentUser && isConsecutive && <div className="w-8" />}
 
-                      <div className="flex items-center gap-2 max-w-full">
-                        {isCurrentUser && (
-                          <div className="opacity-0 group-hover/message:opacity-100 transition-opacity duration-200 text-xs text-muted-foreground whitespace-nowrap shrink-0">
-                            {formatMessageDate(message.createdAt)}
-                          </div>
+                      <div className="flex flex-col gap-1 max-w-[80%] group relative">
+                        {!isCurrentUser && !isConsecutive && (
+                          <Link
+                            href={`/profile/${message.userId}`}
+                            className="text-sm font-bold hover:underline"
+                          >
+                            {message.user.name}
+                          </Link>
                         )}
 
-                        <div
-                          className={cn(
-                            "rounded-lg p-3 break-words relative w-full max-w-full overflow-hidden",
-                            isCurrentUser
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted"
-                          )}
-                          id={`message-${message.id}`}
-                        >
-                          {message.replyTo && (
-                            <div
-                              className={cn(
-                                "text-sm mb-1 cursor-pointer hover:opacity-80 flex items-center gap-1 max-w-full",
-                                isCurrentUser
-                                  ? "text-primary-foreground/70"
-                                  : "text-muted-foreground"
-                              )}
-                              onClick={() => {
-                                const element = document.getElementById(
-                                  `message-${message.replyTo?.id}`
-                                );
-                                if (element) {
-                                  element.scrollIntoView({
-                                    behavior: "smooth",
-                                    block: "center",
-                                  });
-                                  element.classList.add("highlight");
-                                  setTimeout(
-                                    () => element.classList.remove("highlight"),
-                                    2000
-                                  );
-                                }
-                              }}
-                            >
-                              <svg
-                                width="12"
-                                height="12"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="shrink-0"
-                              >
-                                <polyline points="9 17 4 12 9 7" />
-                                <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
-                              </svg>
-                              <div className="truncate min-w-0 flex-1 max-w-[200px]">
-                                <span className="font-medium">
-                                  {message.replyTo.user.name}
-                                </span>
-                                : {message.replyTo.text}
-                              </div>
+                        <div className="flex items-center gap-2 max-w-full">
+                          {isCurrentUser && (
+                            <div className="opacity-0 group-hover/message:opacity-100 transition-opacity duration-200 text-xs text-muted-foreground whitespace-nowrap shrink-0">
+                              {formatMessageDate(message.createdAt)}
                             </div>
                           )}
-                          <p className="break-words whitespace-pre-wrap max-w-full">
-                            {message.text}
-                          </p>
-                        </div>
 
-                        {!isCurrentUser && (
-                          <div className="opacity-0 group-hover/message:opacity-100 transition-opacity duration-200 text-xs text-muted-foreground whitespace-nowrap shrink-0">
-                            {formatMessageDate(message.createdAt)}
-                          </div>
-                        )}
-
-                        <button
-                          className={cn(
-                            "opacity-0 group-hover/message:opacity-100 transition-opacity duration-200",
-                            "hover:bg-accent hover:text-accent-foreground rounded-full p-2",
-                            "absolute top-1/2 -translate-y-1/2",
-                            isCurrentUser ? "-left-10" : "-right-10",
-                            "block",
-                            "sm:opacity-0 sm:group-hover/message:opacity-100"
-                          )}
-                          onClick={() => handleReply(message)}
-                          title="Répondre"
-                        >
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
+                          <div
+                            className={cn(
+                              "rounded-lg p-3 break-words relative w-full max-w-full overflow-hidden",
+                              isCurrentUser
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted"
+                            )}
+                            id={`message-${message.id}`}
                           >
-                            <polyline points="9 17 4 12 9 7" />
-                            <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
-                          </svg>
-                        </button>
+                            {message.replyTo && (
+                              <div
+                                className={cn(
+                                  "text-sm mb-1 cursor-pointer hover:opacity-80 flex items-center gap-1 max-w-full",
+                                  isCurrentUser
+                                    ? "text-primary-foreground/70"
+                                    : "text-muted-foreground"
+                                )}
+                                onClick={() => {
+                                  const element = document.getElementById(
+                                    `message-${message.replyTo?.id}`
+                                  );
+                                  if (element) {
+                                    element.scrollIntoView({
+                                      behavior: "smooth",
+                                      block: "center",
+                                    });
+                                    element.classList.add("highlight");
+                                    setTimeout(
+                                      () => element.classList.remove("highlight"),
+                                      2000
+                                    );
+                                  }
+                                }}
+                              >
+                                <svg
+                                  width="12"
+                                  height="12"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="shrink-0"
+                                >
+                                  <polyline points="9 17 4 12 9 7" />
+                                  <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
+                                </svg>
+                                <div className="truncate min-w-0 flex-1 max-w-[200px]">
+                                  <span className="font-medium">
+                                    {message.replyTo.user.name}
+                                  </span>
+                                  : {message.replyTo.text}
+                                </div>
+                              </div>
+                            )}
+                            <p className="break-words whitespace-pre-wrap max-w-full">
+                              {message.text}
+                            </p>
+                          </div>
 
-                        {isAdmin && (
+                          {!isCurrentUser && (
+                            <div className="opacity-0 group-hover/message:opacity-100 transition-opacity duration-200 text-xs text-muted-foreground whitespace-nowrap shrink-0">
+                              {formatMessageDate(message.createdAt)}
+                            </div>
+                          )}
+
                           <button
-                            onClick={async () => {
-                              const result = await deleteMessageAction(
-                                message.id
-                              );
-                              if (result.success) {
-                                setMessages((prev) =>
-                                  prev.filter((m) => m.id !== message.id)
-                                );
-                                toast.success("Message supprimé");
-                              } else {
-                                toast.error(result.error);
-                              }
-                            }}
                             className={cn(
                               "opacity-0 group-hover/message:opacity-100 transition-opacity duration-200",
                               "hover:bg-accent hover:text-accent-foreground rounded-full p-2",
                               "absolute top-1/2 -translate-y-1/2",
-                              isCurrentUser ? "-left-20" : "-right-20",
+                              isCurrentUser ? "-left-10" : "-right-10",
                               "block",
-                              "sm:opacity-0 sm:group-hover/message:opacity-100",
-                              "text-red-500 hover:text-red-700"
+                              "sm:opacity-0 sm:group-hover/message:opacity-100"
                             )}
-                            title="Supprimer le message"
+                            onClick={() => handleReply(message)}
+                            title="Répondre"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="9 17 4 12 9 7" />
+                              <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
+                            </svg>
                           </button>
-                        )}
+
+                          {isAdmin && (
+                            <button
+                              onClick={async () => {
+                                const result = await deleteMessageAction(
+                                  message.id
+                                );
+                                if (result.success) {
+                                  setMessages((prev) =>
+                                    prev.filter((m) => m.id !== message.id)
+                                  );
+                                  toast.success("Message supprimé");
+                                } else {
+                                  toast.error(result.error);
+                                }
+                              }}
+                              className={cn(
+                                "opacity-0 group-hover/message:opacity-100 transition-opacity duration-200",
+                                "hover:bg-accent hover:text-accent-foreground rounded-full p-2",
+                                "absolute top-1/2 -translate-y-1/2",
+                                isCurrentUser ? "-left-20" : "-right-20",
+                                "block",
+                                "sm:opacity-0 sm:group-hover/message:opacity-100",
+                                "text-red-500 hover:text-red-700"
+                              )}
+                              title="Supprimer le message"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })
-          )}
+                );
+              })
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
 
           {typingUsers.size > 0 && (
-            <div className="text-sm text-muted-foreground italic flex items-center gap-2">
+            <div className="absolute bottom-[60px] left-0 right-0 bg-background/80 backdrop-blur-sm p-2 border-t text-sm text-muted-foreground italic flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
               {Array.from(typingUsers)
                 .map(
@@ -494,9 +485,8 @@ export function ChatComponent({
               est en train d'écrire...
             </div>
           )}
-
-          <div ref={messagesEndRef} />
         </div>
+
         {!isAdmin ? (
           <form
             onSubmit={handleSendMessage}

@@ -17,9 +17,12 @@ import { useRouter } from "next/navigation";
 import { PropsWithChildren } from "react";
 import { singOutAction } from "./auth.action";
 
-export type LoggedInDropdownProps = PropsWithChildren;
+export type LoggedInDropdownProps = PropsWithChildren & {
+  userId: string;
+  pendingRequestsCount?: number;
+};
 
-export const LoggedInDropdown = (props: LoggedInDropdownProps) => {
+export const LoggedInDropdown = ({ userId, pendingRequestsCount = 0, children }: LoggedInDropdownProps) => {
   const router = useRouter();
 
   // const stripeSettingsMutation = useMutation({
@@ -36,7 +39,16 @@ export const LoggedInDropdown = (props: LoggedInDropdownProps) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>{props.children}</DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
+        <div className="relative">
+          {children}
+          {pendingRequestsCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
+              {pendingRequestsCount}
+            </span>
+          )}
+        </div>
+      </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem asChild>
           <Link href="/home" className="w-full">

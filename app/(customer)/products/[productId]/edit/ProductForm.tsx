@@ -3,24 +3,25 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  useZodForm,
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+    useZodForm,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -28,10 +29,10 @@ import { toast } from "sonner";
 import { SportVenueSearch } from "../SportVenueSearch";
 import { createProductAction, updateProductAction } from "./product.action";
 import {
-  LEVEL_CLASSES,
-  ProductSchema,
-  ProductType,
-  SPORT_CLASSES,
+    LEVEL_CLASSES,
+    ProductSchema,
+    ProductType,
+    SPORTS
 } from "./product.schema";
 
 export type ProductFormProps = {
@@ -77,7 +78,6 @@ export const ProductForm = (props: ProductFormProps) => {
       router.refresh();
     },
   });
-  console.log("User sex:", props.userSex);
   return (
     <Card>
       <CardHeader>
@@ -118,21 +118,18 @@ export const ProductForm = (props: ProductFormProps) => {
                     <FormLabel>Sport</FormLabel>
                     <FormControl>
                       <Select
-                        value={field.value ?? ""}
+                        value={field.value}
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger>
-                          <SelectValue></SelectValue>
+                          <SelectValue placeholder="Sélectionner un sport" />
                         </SelectTrigger>
                         <SelectContent>
-                          {SPORT_CLASSES.map((sport) => (
-                            <SelectItem
-                              value={sport}
-                              key={sport}
-                              className="flex"
-                            >
-                              <div>
-                                <span>{sport}</span>
+                          {SPORTS.map((sport) => (
+                            <SelectItem key={sport.name} value={sport.name}>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xl">{sport.icon}</span>
+                                <span>{sport.name}</span>
                               </div>
                             </SelectItem>
                           ))}
@@ -172,21 +169,18 @@ export const ProductForm = (props: ProductFormProps) => {
                     <FormLabel>Niveau</FormLabel>
                     <FormControl>
                       <Select
-                        value={field.value ?? ""}
+                        value={field.value}
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger>
-                          <SelectValue></SelectValue>
+                          <SelectValue placeholder="Sélectionner un niveau" />
                         </SelectTrigger>
                         <SelectContent>
                           {LEVEL_CLASSES.map((level) => (
-                            <SelectItem
-                              value={level}
-                              key={level}
-                              className="flex"
-                            >
-                              <div>
-                                <span>{level}</span>
+                            <SelectItem key={level.name} value={level.name}>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xl">{level.icon}</span>
+                                <span>{level.name}</span>
                               </div>
                             </SelectItem>
                           ))}
@@ -219,22 +213,18 @@ export const ProductForm = (props: ProductFormProps) => {
                   control={form.control}
                   name="onlyGirls"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">Only Girls</FormLabel>
+                        <FormDescription>
+                          Réserver cette annonce uniquement aux femmes
+                        </FormDescription>
+                      </div>
                       <FormControl>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="lg"
-                          onClick={() => field.onChange(!field.value)}
-                          className={cn(
-                            "w-full font-medium border-pink-300 transition-all duration-200",
-                            field.value
-                              ? "bg-pink-100 text-pink-900 hover:bg-pink-200 border-pink-500"
-                              : "text-pink-700 hover:bg-pink-50 hover:text-pink-900 hover:border-pink-500"
-                          )}
-                        >
-                          👩 Only Girls
-                        </Button>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
                       </FormControl>
                     </FormItem>
                   )}

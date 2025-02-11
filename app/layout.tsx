@@ -1,3 +1,5 @@
+import { currentUser } from "@/auth/current-user";
+import { Toaster } from "@/components/ui/toaster";
 import { getServerUrl } from "@/get-server-url";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -13,15 +15,20 @@ export const metadata: Metadata = {
   metadataBase: new URL(getServerUrl()),
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await currentUser();
+
   return (
     <html lang="en" className="h-full">
       <body className={cn(inter.className, "h-full")}>
-        <Providers>{children}</Providers>
+        <Providers userId={user?.id}>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

@@ -2,6 +2,8 @@ import { requiredCurrentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
+import { ChevronRight, Home } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductForm } from "./ProductForm";
 
@@ -33,7 +35,18 @@ export default async function RoutePage(
 
   return (
     <Layout>
-      <LayoutTitle>Edit product</LayoutTitle>
+      <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+        <Link href="/home" className="hover:text-foreground">
+          <Home className="size-4" />
+        </Link>
+        <ChevronRight className="size-4" />
+        <Link href="/products" className="hover:text-foreground">
+          Annonces
+        </Link>
+        <ChevronRight className="size-4" />
+        <span className="text-foreground">Créer une annonce</span>
+      </div>
+      <LayoutTitle>Créer une annonce</LayoutTitle>
       <ProductForm
         defaultValues={transformedProduct}
         productId={product.id}

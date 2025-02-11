@@ -67,6 +67,8 @@ model User {
   sessions         Session[]
   StravaActivity   StravaActivity[]
   messages         Message[]        @relation("UserMessages")
+  reviews          Review[]
+  unreadMessages   UnreadMessage[]
 }
 
 model Product {
@@ -100,9 +102,11 @@ model Review {
   name       String?
   image      String?
   productId  String
+  userId     String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 model Membership {
@@ -111,6 +115,7 @@ model Membership {
   productId String
   status    Status   @default(PENDING)
   comment   String?
+  read      Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -140,8 +145,22 @@ model Message {
   product   Product  @relation("ProductMessages", fields: [productId], references: [id], onDelete: Cascade)
   replyTo   Message? @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
   replies   Message[] @relation("MessageReplies")
+  unreadBy  UnreadMessage[]
 
   @@map("messages")
+}
+
+model UnreadMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  messageId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, messageId])
+  @@map("unread_messages")
 }
 
 enum Plan {

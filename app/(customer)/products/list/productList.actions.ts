@@ -3,37 +3,51 @@
 import { prisma } from "@/prisma";
 import { FilterType } from "./productList.schema";
 
-export async function getFilteredProducts(filters: FilterType) {
-  const where: any = {};
+export async function getFilteredProducts(filters: FilterType, userSex?: string | null) {
+  const where: any = {
+    AND: [
+      // Condition de base pour les annonces "only girls"
+      {
+        OR: [
+          { onlyGirls: false }, // Toujours montrer les annonces non "only girls"
+          {
+            AND: [
+              { onlyGirls: true },
+              { user: { sex: "F" } }, // L'annonce doit être créée par une femme
+              userSex === "F" ? {} : { id: "none" } // Ne pas montrer aux hommes
+            ]
+          }
+        ]
+      }
+    ]
+  };
 
+  // Ajouter les autres filtres
   if (filters.sport) {
-    where.sport = filters.sport;
+    where.AND.push({ sport: filters.sport });
   }
 
   if (filters.venue) {
-    where.OR = [{ venueName: filters.venue }, { venueAddress: filters.venue }];
+    where.AND.push({
+      OR: [
+        { venueName: filters.venue },
+        { venueAddress: filters.venue }
+      ]
+    });
   }
 
   if (filters.level) {
-    where.level = filters.level;
-  }
-
-  const userWhere: any = {};
-
-  if (filters.onlyGirls) {
-    userWhere.sex = "F";
+    where.AND.push({ level: filters.level });
   }
 
   if (filters.countries.length > 0) {
-    userWhere.country = {
-      in: filters.countries,
-    };
-  }
-
-  if (Object.keys(userWhere).length > 0) {
-    where.user = {
-      ...userWhere,
-    };
+    where.AND.push({
+      user: {
+        country: {
+          in: filters.countries
+        }
+      }
+    });
   }
 
   return await prisma.product.findMany({

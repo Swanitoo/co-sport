@@ -12,7 +12,7 @@ import { COUNTRIES } from "@/data/country";
 import { cn } from "@/lib/utils";
 import {
   LEVEL_CLASSES,
-  SPORT_CLASSES,
+  SPORTS
 } from "../[productId]/edit/product.schema";
 import { FilterType, ProductFiltersProps } from "./productList.schema";
 
@@ -58,9 +58,12 @@ export function ProductFilters({
             <SelectValue placeholder="Sélectionner un sport" />
           </SelectTrigger>
           <SelectContent>
-            {SPORT_CLASSES.map((sport) => (
-              <SelectItem key={sport} value={sport}>
-                {sport}
+            {SPORTS.map((sport) => (
+              <SelectItem key={sport.name} value={sport.name}>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{sport.icon}</span>
+                  <span>{sport.name}</span>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
@@ -82,7 +85,7 @@ export function ProductFilters({
               if (!displayName) return null;
               return (
                 <SelectItem key={index} value={displayName}>
-                  {displayName}
+                  <span className="truncate block max-w-[200px]">{displayName}</span>
                 </SelectItem>
               );
             })}
@@ -101,8 +104,11 @@ export function ProductFilters({
           </SelectTrigger>
           <SelectContent>
             {LEVEL_CLASSES.map((level) => (
-              <SelectItem key={level} value={level}>
-                {level}
+              <SelectItem key={level.name} value={level.name}>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{level.icon}</span>
+                  <span>{level.name}</span>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
