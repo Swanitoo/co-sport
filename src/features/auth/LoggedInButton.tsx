@@ -1,31 +1,34 @@
-import { SignInButton } from "./SignInButton"
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LoggedInDropdown } from "./LoggedInDropdown";
-import { currentUser } from "@/auth/current-user";
+import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { LoggedInDropdown } from "./LoggedInDropdown";
 
-export const LoggedInButton = async () => {
-    const user = await currentUser();
+interface ExtendedUser {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  plan?: "FREE" | "PREMIUM";
+}
 
-    if (!user) {
-        return <SignInButton />
-    }
+export const LoggedInButton = () => {
+  const { data: session } = useSession();
+  const user = session?.user as ExtendedUser | undefined;
 
-    return (
-        <LoggedInDropdown>
-            <Button variant="outline" size="sm">
-                {user.plan ==="PREMIUM" ? <Star size={14} className="mr-2" /> : null}
-                <Avatar className="size-6">
-                    <AvatarFallback>{user.name?.[0]}</AvatarFallback>
-                    {user.image ? (
-                        <AvatarImage
-                        src={user.image}
-                        alt={`${user.name ?? "-"}'s profile picture`} 
-                        />
-                    ): null}
-                </Avatar>
-            </Button>
-        </LoggedInDropdown>
-    );
+  if (!user?.id) {
+    return null;
+  }
+
+  return (
+    <LoggedInDropdown userId={user.id}>
+      <Button variant="outline" size="sm">
+        {user.plan === "PREMIUM" ? <Star size={14} className="mr-2" /> : null}
+        <Avatar className="size-6">
+          <AvatarImage src={user.image || undefined} />
+          <AvatarFallback>{user.name?.[0]}</AvatarFallback>
+        </Avatar>
+      </Button>
+    </LoggedInDropdown>
+  );
 };
