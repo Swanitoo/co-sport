@@ -1,4 +1,3 @@
-import { ReviewItem } from "@/app/(user)/wall/[slug]/ReviewCard";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +7,7 @@ import { formatDistance } from "date-fns";
 import { fr } from "date-fns/locale";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ReviewItem } from "../../../(user)/wall/[slug]/ReviewCard";
 
 type UserWithProducts = {
   id: string;
