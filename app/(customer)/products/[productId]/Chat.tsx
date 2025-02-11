@@ -11,7 +11,11 @@ import { Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { deleteMessageAction, getMessagesAction, sendMessageAction } from "./edit/product.action";
+import {
+  deleteMessageAction,
+  getMessagesAction,
+  sendMessageAction,
+} from "./edit/product.action";
 import { MessageSkeleton } from "./MessageSkeleton";
 
 type MessageWithUser = Message & {
@@ -62,18 +66,21 @@ export function ChatComponent({
     }
 
     try {
-      const result = await getMessagesAction({ 
+      const result = await getMessagesAction({
         productId,
         page: pageNum,
-        limit: MESSAGES_PER_PAGE
+        limit: MESSAGES_PER_PAGE,
       });
-      
+
       if (result.data) {
         if (initial) {
           setMessages(result.data as MessageWithUser[]);
           scrollToBottom("auto");
         } else {
-          setMessages(prev => [...result.data as MessageWithUser[], ...prev]);
+          setMessages((prev) => [
+            ...(result.data as MessageWithUser[]),
+            ...prev,
+          ]);
         }
         setHasMore(result.data.length === MESSAGES_PER_PAGE);
       }
@@ -90,7 +97,7 @@ export function ChatComponent({
     if (!container || isLoadingMore || !hasMore) return;
 
     if (container.scrollTop <= 100) {
-      setPage(prev => prev + 1);
+      setPage((prev) => prev + 1);
       loadMessages(page + 1);
     }
   };
@@ -99,13 +106,11 @@ export function ChatComponent({
     const socket = socketRef.current;
     if (socket.connected) {
       socket.emit("typing", { productId, userId });
-      
-      // Clear existing timeout
+
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
-      
-      // Set new timeout
+
       typingTimeoutRef.current = setTimeout(() => {
         socket.emit("stop-typing", { productId, userId });
       }, 1000);
@@ -114,39 +119,38 @@ export function ChatComponent({
 
   useEffect(() => {
     const socket = socketRef.current;
-    console.log("🔄 Initialisation du chat avec:", {
-      productId,
-      userId,
-      socketConnected: socket.connected,
-      socketId: socket.id
-    });
-    
-    const handleNewMessage = (message: MessageWithUser) => {
 
-      setMessages(prev => {
-        const messageExists = prev.some(m => m.id === message.id);
+    const handleNewMessage = (message: MessageWithUser) => {
+      setMessages((prev) => {
+        const messageExists = prev.some((m) => m.id === message.id);
         if (messageExists) {
           console.log("⚠️ Message déjà existant, ignoré");
           return prev;
         }
         return [...prev, message];
       });
-      
+
       const container = messagesContainerRef.current;
       if (container) {
-        const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+        const isAtBottom =
+          container.scrollHeight - container.scrollTop <=
+          container.clientHeight + 100;
         if (isAtBottom) {
           scrollToBottom();
         }
       }
     };
 
-    const handleTypingStart = ({ userId: typingUserId }: { userId: string }) => {
-      setTypingUsers(prev => new Set(prev).add(typingUserId));
+    const handleTypingStart = ({
+      userId: typingUserId,
+    }: {
+      userId: string;
+    }) => {
+      setTypingUsers((prev) => new Set(prev).add(typingUserId));
     };
 
     const handleTypingStop = ({ userId: typingUserId }: { userId: string }) => {
-      setTypingUsers(prev => {
+      setTypingUsers((prev) => {
         const newSet = new Set(prev);
         newSet.delete(typingUserId);
         return newSet;
@@ -158,9 +162,9 @@ export function ChatComponent({
     if (!socket.connected) {
       socket.connect();
     }
-    
+
     socket.emit("join-room", productId);
-    
+
     socket.on("new-message", handleNewMessage);
     socket.on("user-typing", handleTypingStart);
     socket.on("user-stop-typing", handleTypingStop);
@@ -195,20 +199,26 @@ export function ChatComponent({
         toast.error(result.error);
       } else if (result.data) {
         const messageWithUser = result.data as MessageWithUser;
-        setMessages(prev => [...prev, messageWithUser]);
+        setMessages((prev) => [...prev, messageWithUser]);
         socketRef.current.emit("send-message", messageWithUser);
         setNewMessage("");
         setReplyTo(null);
         scrollToBottom();
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Une erreur est survenue lors de l'envoi du message");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Une erreur est survenue lors de l'envoi du message"
+      );
     }
   };
 
   const handleReply = (message: MessageWithUser) => {
     setReplyTo(message);
-    const input = document.querySelector('input[type="text"]') as HTMLInputElement;
+    const input = document.querySelector(
+      'input[type="text"]'
+    ) as HTMLInputElement;
     if (input) {
       input.focus();
     }
@@ -217,28 +227,50 @@ export function ChatComponent({
   const formatMessageDate = (date: Date, previousMessage?: MessageWithUser) => {
     const messageDate = new Date(date);
     const now = new Date();
-    
+
     if (previousMessage) {
       const previousDate = new Date(previousMessage.createdAt);
-      if (previousMessage.userId === messages[messages.length - 1].userId &&
-          messageDate.getTime() - previousDate.getTime() < 120000) {
+      if (
+        previousMessage.userId === messages[messages.length - 1].userId &&
+        messageDate.getTime() - previousDate.getTime() < 120000
+      ) {
         return null;
       }
     }
 
     if (messageDate.toDateString() === now.toDateString()) {
-      return messageDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      return messageDate.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     }
-    
+
     if (messageDate.getFullYear() === now.getFullYear()) {
-      return messageDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) + 
-             ' à ' + 
-             messageDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      return (
+        messageDate.toLocaleDateString("fr-FR", {
+          day: "numeric",
+          month: "long",
+        }) +
+        " à " +
+        messageDate.toLocaleTimeString("fr-FR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      );
     }
-    
-    return messageDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) +
-           ' à ' +
-           messageDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+    return (
+      messageDate.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }) +
+      " à " +
+      messageDate.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
   };
 
   return (
@@ -247,7 +279,7 @@ export function ChatComponent({
         <CardTitle>Chat {isAdmin && "(Mode Admin - Lecture seule)"}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div 
+        <div
           ref={messagesContainerRef}
           onScroll={handleScroll}
           className="h-[400px] space-y-4 overflow-y-auto relative scroll-smooth px-4"
@@ -271,19 +303,26 @@ export function ChatComponent({
           ) : (
             messages.map((message, index) => {
               const isCurrentUser = message.userId === userId;
-              const previousMessage = index > 0 ? messages[index - 1] : undefined;
-              const showDate = formatMessageDate(message.createdAt, previousMessage);
+              const previousMessage =
+                index > 0 ? messages[index - 1] : undefined;
+              const showDate = formatMessageDate(
+                message.createdAt,
+                previousMessage
+              );
               const isConsecutive = previousMessage?.userId === message.userId;
-              
+
               return (
                 <div key={message.id}>
                   <div
-                    className={cn("flex w-full items-start gap-2 group/message", {
-                      "justify-end": isCurrentUser,
-                      "justify-start": !isCurrentUser,
-                      "mt-1": isConsecutive,
-                      "mt-4": !isConsecutive,
-                    })}
+                    className={cn(
+                      "flex w-full items-start gap-2 group/message",
+                      {
+                        "justify-end": isCurrentUser,
+                        "justify-start": !isCurrentUser,
+                        "mt-1": isConsecutive,
+                        "mt-4": !isConsecutive,
+                      }
+                    )}
                   >
                     {!isCurrentUser && !isConsecutive && (
                       <Avatar className="h-8 w-8 flex-shrink-0">
@@ -294,24 +333,24 @@ export function ChatComponent({
                       </Avatar>
                     )}
                     {!isCurrentUser && isConsecutive && <div className="w-8" />}
-                    
+
                     <div className="flex flex-col gap-1 max-w-[80%] group relative">
                       {!isCurrentUser && !isConsecutive && (
-                        <Link 
+                        <Link
                           href={`/profile/${message.userId}`}
                           className="text-sm font-bold hover:underline"
                         >
                           {message.user.name}
                         </Link>
                       )}
-                      
+
                       <div className="flex items-center gap-2 max-w-full">
                         {isCurrentUser && (
                           <div className="opacity-0 group-hover/message:opacity-100 transition-opacity duration-200 text-xs text-muted-foreground whitespace-nowrap shrink-0">
                             {formatMessageDate(message.createdAt)}
                           </div>
                         )}
-                        
+
                         <div
                           className={cn(
                             "rounded-lg p-3 break-words relative w-full max-w-full overflow-hidden",
@@ -322,7 +361,7 @@ export function ChatComponent({
                           id={`message-${message.id}`}
                         >
                           {message.replyTo && (
-                            <div 
+                            <div
                               className={cn(
                                 "text-sm mb-1 cursor-pointer hover:opacity-80 flex items-center gap-1 max-w-full",
                                 isCurrentUser
@@ -330,11 +369,19 @@ export function ChatComponent({
                                   : "text-muted-foreground"
                               )}
                               onClick={() => {
-                                const element = document.getElementById(`message-${message.replyTo?.id}`);
+                                const element = document.getElementById(
+                                  `message-${message.replyTo?.id}`
+                                );
                                 if (element) {
-                                  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                  element.classList.add('highlight');
-                                  setTimeout(() => element.classList.remove('highlight'), 2000);
+                                  element.scrollIntoView({
+                                    behavior: "smooth",
+                                    block: "center",
+                                  });
+                                  element.classList.add("highlight");
+                                  setTimeout(
+                                    () => element.classList.remove("highlight"),
+                                    2000
+                                  );
                                 }
                               }}
                             >
@@ -353,11 +400,16 @@ export function ChatComponent({
                                 <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
                               </svg>
                               <div className="truncate min-w-0 flex-1 max-w-[200px]">
-                                <span className="font-medium">{message.replyTo.user.name}</span>: {message.replyTo.text}
+                                <span className="font-medium">
+                                  {message.replyTo.user.name}
+                                </span>
+                                : {message.replyTo.text}
                               </div>
                             </div>
                           )}
-                          <p className="break-words whitespace-pre-wrap max-w-full">{message.text}</p>
+                          <p className="break-words whitespace-pre-wrap max-w-full">
+                            {message.text}
+                          </p>
                         </div>
 
                         {!isCurrentUser && (
@@ -366,15 +418,14 @@ export function ChatComponent({
                           </div>
                         )}
 
-
                         <button
                           className={cn(
                             "opacity-0 group-hover/message:opacity-100 transition-opacity duration-200",
                             "hover:bg-accent hover:text-accent-foreground rounded-full p-2",
                             "absolute top-1/2 -translate-y-1/2",
                             isCurrentUser ? "-left-10" : "-right-10",
-                            "block", 
-                            "sm:opacity-0 sm:group-hover/message:opacity-100" 
+                            "block",
+                            "sm:opacity-0 sm:group-hover/message:opacity-100"
                           )}
                           onClick={() => handleReply(message)}
                           title="Répondre"
@@ -397,9 +448,13 @@ export function ChatComponent({
                         {isAdmin && (
                           <button
                             onClick={async () => {
-                              const result = await deleteMessageAction(message.id);
+                              const result = await deleteMessageAction(
+                                message.id
+                              );
                               if (result.success) {
-                                setMessages(prev => prev.filter(m => m.id !== message.id));
+                                setMessages((prev) =>
+                                  prev.filter((m) => m.id !== message.id)
+                                );
                                 toast.success("Message supprimé");
                               } else {
                                 toast.error(result.error);
@@ -426,23 +481,32 @@ export function ChatComponent({
               );
             })
           )}
-          
+
           {typingUsers.size > 0 && (
             <div className="text-sm text-muted-foreground italic flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
-              {Array.from(typingUsers).map(userId => 
-                messages.find(m => m.userId === userId)?.user.name
-              ).join(", ")} est en train d'écrire...
+              {Array.from(typingUsers)
+                .map(
+                  (userId) =>
+                    messages.find((m) => m.userId === userId)?.user.name
+                )
+                .join(", ")}{" "}
+              est en train d'écrire...
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
         {!isAdmin ? (
-          <form onSubmit={handleSendMessage} className="mt-4 flex flex-col gap-2">
+          <form
+            onSubmit={handleSendMessage}
+            className="mt-4 flex flex-col gap-2"
+          >
             {replyTo && (
               <div className="flex items-center gap-2 bg-muted p-2 rounded">
-                <span className="text-sm truncate flex-1">Réponse à: {replyTo.text}</span>
+                <span className="text-sm truncate flex-1">
+                  Réponse à: {replyTo.text}
+                </span>
                 <button
                   type="button"
                   onClick={() => setReplyTo(null)}
@@ -467,10 +531,15 @@ export function ChatComponent({
             </div>
           </form>
         ) : (
-          <form onSubmit={handleSendMessage} className="mt-4 flex flex-col gap-2">
+          <form
+            onSubmit={handleSendMessage}
+            className="mt-4 flex flex-col gap-2"
+          >
             {replyTo && (
               <div className="flex items-center gap-2 bg-muted p-2 rounded">
-                <span className="text-sm truncate flex-1">Réponse à: {replyTo.text}</span>
+                <span className="text-sm truncate flex-1">
+                  Réponse à: {replyTo.text}
+                </span>
                 <button
                   type="button"
                   onClick={() => setReplyTo(null)}
@@ -498,4 +567,4 @@ export function ChatComponent({
       </CardContent>
     </Card>
   );
-} 
+}
