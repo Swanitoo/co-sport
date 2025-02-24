@@ -1,1 +1,0 @@
-DELETE FROM "_prisma_migrations" WHERE migration_name = '20250223223835_add_user_id_to_review'; 

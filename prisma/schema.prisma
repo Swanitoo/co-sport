@@ -62,6 +62,8 @@ model User {
   profileCompleted Boolean          @default(false)
   isAdmin          Boolean          @default(false)
   accounts         Account[]
+  contactMessages  ContactMessage[]
+  feedbacks        Feedback[]
   memberships      Membership[]
   products         Product[]
   reviews          Review[]
@@ -69,8 +71,6 @@ model User {
   StravaActivity   StravaActivity[]
   messages         Message[]        @relation("UserMessages")
   unreadMessages   UnreadMessage[]
-  contactMessages  ContactMessage[]
-  feedbacks        Feedback[]
 }
 
 model Product {
@@ -106,10 +106,10 @@ model Review {
   productId  String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  read       Boolean  @default(false)
   userId     String
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  read       Boolean  @default(false)
 }
 
 model Membership {
