@@ -52,6 +52,7 @@ export const SPORTS = [
   { name: "Musculation", icon: "🏋️" },
   { name: "Natation", icon: "🏊" },
   { name: "Paddle", icon: "🏄" },
+  { name: "Paintball", icon: "🎯" },
   { name: "Pétanque", icon: "⚫" },
   { name: "Plongée", icon: "🤿" },
   { name: "Randonnée", icon: "🥾" },
