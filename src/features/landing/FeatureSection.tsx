@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, UsersRound } from "lucide-react";
+import { Filter, Loader2, UsersRound } from "lucide-react";
 import { useState } from "react";
 import { CTASection } from "./CTASection";
 import { Section } from "./Section";
@@ -49,91 +49,173 @@ export const FeatureSection = () => {
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
                 <h2 className="mb-4 rounded-lg bg-gray-800 p-4 text-lg font-bold text-white shadow-md lg:mt-16">
+                  {`Filtre les annonces selon tes critères pour trouver le partenaire idéal.`}
+                </h2>
+                <Card className="w-full max-w-2xl">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Filter className="size-5" />
+                      Filtres
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <h3 className="font-medium">Sports</h3>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          🏋️ Musculation
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          ⛰️ Alpinisme
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          🏃 Trail
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          ⚽ Football
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          🎾 Tennis
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full opacity-50"
+                          onClick={() => setStep(1)}
+                        >
+                          ...
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="font-medium">Niveau</h3>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          🌱 Débutant
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          ⭐ Intermédiaire
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          🌟 Avancé
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="font-medium">Nationalité</h3>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          🇫🇷 France
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          🇨🇭 Suisse
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          🇵🇪 Pérou
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full opacity-50"
+                          onClick={() => setStep(1)}
+                        >
+                          ...
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="font-medium">Options</h3>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          👩 Entre filles
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          onClick={() => setStep(1)}
+                        >
+                          👑 Pro (Coach, Guide)
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {step === 1 && (
+              <motion.div
+                key="step-1"
+                exit={{
+                  opacity: 0,
+                  x: -100,
+                }}
+                className="flex h-full flex-col items-center justify-center gap-4"
+              >
+                <h2 className="mb-4 rounded-lg bg-gray-800 p-4 text-lg font-bold text-white shadow-md">
                   {`Trouve ton sport et ton partenaire en cliquant sur une annonce qui t'intéresse.`}
                 </h2>
-                {/* <Table>
-                  <TableHeader className="pointer-events-none">
-                    <TableRow>
-                      <TableHead className="text-white dark:text-white">
-                        Nom de la séance
-                      </TableHead>
-                      <TableHead className="text-white dark:text-white">
-                        Sport
-                      </TableHead>
-                      <TableHead className="text-white dark:text-white">
-                        Lieux
-                      </TableHead>
-                      <TableHead className="text-white dark:text-white">
-                        Avis
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow
-                      onClick={() => {
-                        setStep((s) => s + 1);
-                      }}
-                      className="cursor-pointer hover:bg-blue-900"
-                    >
-                      <TableCell className="text-white">
-                        Séance jambes
-                      </TableCell>
-                      <TableCell className="font-mono text-white">
-                        Musculation
-                      </TableCell>
-                      <TableCell className="font-mono text-white">
-                        Onair Lyon 3
-                      </TableCell>
-                      <TableCell className="font-mono text-white">8</TableCell>
-                    </TableRow>
-                    <TableRow
-                      onClick={() => {
-                        setStep((s) => s + 1);
-                      }}
-                      className="cursor-pointer hover:bg-blue-900"
-                    >
-                      <TableCell className="text-white">SaintéLyon</TableCell>
-                      <TableCell className="font-mono text-white">
-                        Trail
-                      </TableCell>
-                      <TableCell className="font-mono text-white">
-                        Lyon
-                      </TableCell>
-                      <TableCell className="font-mono text-white">1</TableCell>
-                    </TableRow>
-                    <TableRow
-                      onClick={() => {
-                        setStep((s) => s + 1);
-                      }}
-                      className="cursor-pointer hover:bg-blue-900"
-                    >
-                      <TableCell className="text-white">Coatching</TableCell>
-                      <TableCell className="font-mono text-white">
-                        Boxe Anglaise
-                      </TableCell>
-                      <TableCell className="font-mono text-white">
-                        Club du Rhône
-                      </TableCell>
-                      <TableCell className="font-mono text-white">3</TableCell>
-                    </TableRow>
-                    <TableRow
-                      onClick={() => {
-                        setStep((s) => s + 1);
-                      }}
-                      className="cursor-pointer hover:bg-blue-900"
-                    >
-                      <TableCell className="text-white">3 monts</TableCell>
-                      <TableCell className="font-mono text-white">
-                        Alpinisme
-                      </TableCell>
-                      <TableCell className="font-mono text-white">
-                        Mont blanc
-                      </TableCell>
-                      <TableCell className="font-mono text-white">12</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table> */}
-
                 <div className="flex flex-col gap-2 space-y-4">
                   <Card
                     onClick={() => {
@@ -164,9 +246,9 @@ export const FeatureSection = () => {
               </motion.div>
             )}
 
-            {step === 1 && (
+            {step === 2 && (
               <motion.div
-                key="step-1"
+                key="step-2"
                 exit={{
                   opacity: 0,
                   x: -100,
@@ -206,8 +288,8 @@ export const FeatureSection = () => {
                       <p>Niveau : Moyen (3 ans)</p>
                       <div>
                         Salut ! Je fais les jambes tous les lundis, et je serais
-                        super ravie de partager mon programme avec quelqu’un !
-                        Si tu veux qu’on se motive ensemble, n’hésite pas à me
+                        super ravie de partager mon programme avec quelqu'un !
+                        Si tu veux qu'on se motive ensemble, n'hésite pas à me
                         rejoindre ! 😊
                       </div>
                     </CardContent>
@@ -215,7 +297,7 @@ export const FeatureSection = () => {
                 </div>
               </motion.div>
             )}
-            {step === 2 && (
+            {step === 3 && (
               <motion.div
                 key="step-3"
                 exit={{

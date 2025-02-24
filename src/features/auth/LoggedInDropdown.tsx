@@ -7,10 +7,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  HelpCircle,
   Home,
   LayoutDashboard,
   LogOut,
-  Square
+  Square,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,10 +21,25 @@ import { singOutAction } from "./auth.action";
 export type LoggedInDropdownProps = PropsWithChildren & {
   userId: string;
   pendingRequestsCount?: number;
+  unreadMessagesCount?: number;
+  approvedRequestsCount?: number;
+  unreadReviewsCount?: number;
 };
 
-export const LoggedInDropdown = ({ userId, pendingRequestsCount = 0, children }: LoggedInDropdownProps) => {
+export const LoggedInDropdown = ({
+  userId,
+  pendingRequestsCount = 0,
+  unreadMessagesCount = 0,
+  approvedRequestsCount = 0,
+  unreadReviewsCount = 0,
+  children,
+}: LoggedInDropdownProps) => {
   const router = useRouter();
+  const totalNotifications =
+    pendingRequestsCount +
+    unreadMessagesCount +
+    approvedRequestsCount +
+    unreadReviewsCount;
 
   // const stripeSettingsMutation = useMutation({
   //   mutationFn: () => setupCustomerPortal(""),
@@ -42,9 +58,9 @@ export const LoggedInDropdown = ({ userId, pendingRequestsCount = 0, children }:
       <DropdownMenuTrigger asChild>
         <div className="relative">
           {children}
-          {pendingRequestsCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
-              {pendingRequestsCount}
+          {totalNotifications > 0 && (
+            <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+              {totalNotifications}
             </span>
           )}
         </div>
@@ -57,9 +73,14 @@ export const LoggedInDropdown = ({ userId, pendingRequestsCount = 0, children }:
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/dashboard" className="w-full">
+          <Link href="/dashboard" className="relative flex w-full items-center">
             <LayoutDashboard size={16} className="mr-2" />
             Tableau de bord
+            {totalNotifications > 0 && (
+              <span className="ml-2 flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                {totalNotifications}
+              </span>
+            )}
           </Link>
         </DropdownMenuItem>
         {/* <DropdownMenuItem
@@ -78,6 +99,12 @@ export const LoggedInDropdown = ({ userId, pendingRequestsCount = 0, children }:
           <Link href="/products" className="w-full">
             <Square size={16} className="mr-2" />
             Annonces
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/support" className="w-full">
+            <HelpCircle size={16} className="mr-2" />
+            Support
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem

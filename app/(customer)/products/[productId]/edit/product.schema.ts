@@ -60,6 +60,7 @@ export const SPORTS = [
   { name: "Surf", icon: "🏄‍♂️" },
   { name: "Tennis", icon: "🎾" },
   { name: "Trail", icon: "🏃‍♂️" },
+  { name: "Trek", icon: "🥾" },
   { name: "Triathlon", icon: "🏊‍♂️" },
   { name: "Vélo de route", icon: "🚴" },
   { name: "Voleyball", icon: "🏐" },

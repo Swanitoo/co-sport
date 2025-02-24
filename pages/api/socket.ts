@@ -17,36 +17,41 @@ interface NextApiResponseWithSocket extends NextApiResponse {
 
 const ioHandler = (req: NextApiRequest, res: NextApiResponseWithSocket) => {
   if (!res.socket.server.io) {
+    console.log("🚀 Initialisation de Socket.IO");
     const io = new IOServer(res.socket.server, {
       path: "/api/socket",
       addTrailingSlash: false,
-      transports: ["websocket", "polling"],
+      transports: ["polling", "websocket"],
       cors: {
         origin: "*",
         methods: ["GET", "POST"],
-        credentials: true
+        credentials: true,
       },
-      pingTimeout: 60000,
-      pingInterval: 25000,
-      connectTimeout: 20000,
-      allowEIO3: true
     });
 
     io.on("connection", (socket) => {
-      socket.on("join-room", (roomId) => {
+      socket.on("join-room", (roomId: string) => {
         socket.join(roomId);
+        socket.emit("room-joined", { roomId });
       });
 
-      socket.on("leave-room", (roomId) => {
+      socket.on("leave-room", (roomId: string) => {
         socket.leave(roomId);
       });
 
-      socket.on("message", (message) => {
-        io.to(message.productId).emit("message", message);
+      socket.on("send-message", (message) => {
+        io.to(message.productId).emit("new-message", message);
       });
 
-      socket.on("disconnect", () => {
+      socket.on("typing", ({ productId, userId }) => {
+        socket.to(productId).emit("user-typing", { userId });
       });
+
+      socket.on("stop-typing", ({ productId, userId }) => {
+        socket.to(productId).emit("user-stop-typing", { userId });
+      });
+
+      socket.on("disconnect", () => {});
     });
 
     res.socket.server.io = io;
@@ -60,4 +65,4 @@ export const config = {
   },
 };
 
-export default ioHandler; 
+export default ioHandler;

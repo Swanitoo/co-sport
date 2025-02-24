@@ -11,21 +11,56 @@ export async function Header() {
   const user = await currentUser();
 
   let pendingRequestsCount = 0;
+  let unreadMessagesCount = 0;
+  let approvedRequestsCount = 0;
+  let unreadReviewsCount = 0;
   if (user) {
-    const pendingRequests = await prisma.membership.count({
-      where: {
-        product: {
-          userId: user.id
-        },
-        status: "PENDING"
-      }
-    });
+    const [pendingRequests, unreadMessages, approvedRequests, unreadReviews] =
+      await Promise.all([
+        prisma.membership.count({
+          where: {
+            product: {
+              userId: user.id,
+            },
+            status: "PENDING",
+          },
+        }),
+        prisma.unreadMessage.count({
+          where: {
+            userId: user.id,
+          },
+        }),
+        prisma.membership.count({
+          where: {
+            userId: user.id,
+            status: "APPROVED",
+            read: false,
+            createdAt: {
+              gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 derniers jours
+            },
+          },
+        }),
+        prisma.review.count({
+          where: {
+            product: {
+              userId: user.id,
+            },
+            read: false,
+            createdAt: {
+              gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 derniers jours
+            },
+          },
+        }),
+      ]);
     pendingRequestsCount = pendingRequests;
+    unreadMessagesCount = unreadMessages;
+    approvedRequestsCount = approvedRequests;
+    unreadReviewsCount = unreadReviews;
   }
 
   return (
     <header className="w-full border-b border-border py-1">
-      <div className="max-w-5xl w-full mx-auto px-4 flex items-center flex-row gap-4 py-0">
+      <div className="mx-auto flex w-full max-w-5xl flex-row items-center gap-4 px-4 py-0">
         <div className="flex-1">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <Image src="/icon.png" alt="Logo" width={32} height={32} />
@@ -35,10 +70,19 @@ export async function Header() {
         <div className="flex items-center justify-end space-x-2">
           <ModeToggle />
           {user ? (
-            <LoggedInDropdown userId={user.id} pendingRequestsCount={pendingRequestsCount}>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.image || undefined} alt={user.name || ""} />
+            <LoggedInDropdown
+              userId={user.id}
+              pendingRequestsCount={pendingRequestsCount}
+              unreadMessagesCount={unreadMessagesCount}
+              approvedRequestsCount={approvedRequestsCount}
+              unreadReviewsCount={unreadReviewsCount}
+            >
+              <Button variant="ghost" className="relative size-8 rounded-full">
+                <Avatar className="size-8">
+                  <AvatarImage
+                    src={user.image || undefined}
+                    alt={user.name || ""}
+                  />
                   <AvatarFallback>{user.name?.[0]}</AvatarFallback>
                 </Avatar>
               </Button>

@@ -117,12 +117,15 @@ export function ChatComponent({
     }
   };
 
-  const handleNewMessage = useCallback((message: MessageWithUser) => {
-    if (messages.some((m) => m.id === message.id)) {
-      return;
-    }
-    setMessages((prev) => [...prev, message as MessageWithUser]);
-  }, [messages]);
+  const handleNewMessage = useCallback(
+    (message: MessageWithUser) => {
+      if (messages.some((m) => m.id === message.id)) {
+        return;
+      }
+      setMessages((prev) => [...prev, message as MessageWithUser]);
+    },
+    [messages]
+  );
 
   useEffect(() => {
     const socket = socketRef.current;
@@ -272,8 +275,8 @@ export function ChatComponent({
             className="h-[400px] space-y-4 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-12"
           >
             {isLoadingMore && (
-              <div className="absolute top-2 left-1/2 -translate-x-1/2">
-                <Loader2 className="h-6 w-6 animate-spin" />
+              <div className="absolute left-1/2 top-2 -translate-x-1/2">
+                <Loader2 className="size-6 animate-spin" />
               </div>
             )}
 
@@ -296,7 +299,8 @@ export function ChatComponent({
                   message.createdAt,
                   previousMessage
                 );
-                const isConsecutive = previousMessage?.userId === message.userId;
+                const isConsecutive =
+                  previousMessage?.userId === message.userId;
 
                 return (
                   <div key={message.id}>
@@ -312,16 +316,18 @@ export function ChatComponent({
                       )}
                     >
                       {!isCurrentUser && !isConsecutive && (
-                        <Avatar className="h-8 w-8 flex-shrink-0">
+                        <Avatar className="size-8 shrink-0">
                           <AvatarImage src={message.user.image || undefined} />
                           <AvatarFallback>
                             {message.user.name?.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                       )}
-                      {!isCurrentUser && isConsecutive && <div className="w-8" />}
+                      {!isCurrentUser && isConsecutive && (
+                        <div className="w-8" />
+                      )}
 
-                      <div className="flex flex-col gap-1 max-w-[80%] group relative">
+                      <div className="group relative flex max-w-[80%] flex-col gap-1">
                         {!isCurrentUser && !isConsecutive && (
                           <Link
                             href={`/profile/${message.userId}`}
@@ -331,9 +337,9 @@ export function ChatComponent({
                           </Link>
                         )}
 
-                        <div className="flex items-center gap-2 max-w-full">
+                        <div className="flex max-w-full items-center gap-2">
                           {isCurrentUser && (
-                            <div className="opacity-0 group-hover/message:opacity-100 transition-opacity duration-200 text-xs text-muted-foreground whitespace-nowrap shrink-0">
+                            <div className="shrink-0 whitespace-nowrap text-xs text-muted-foreground opacity-0 transition-opacity duration-200 group-hover/message:opacity-100">
                               {formatMessageDate(message.createdAt)}
                             </div>
                           )}
@@ -366,7 +372,8 @@ export function ChatComponent({
                                     });
                                     element.classList.add("highlight");
                                     setTimeout(
-                                      () => element.classList.remove("highlight"),
+                                      () =>
+                                        element.classList.remove("highlight"),
                                       2000
                                     );
                                   }
@@ -386,7 +393,7 @@ export function ChatComponent({
                                   <polyline points="9 17 4 12 9 7" />
                                   <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
                                 </svg>
-                                <div className="truncate min-w-0 flex-1 max-w-[200px]">
+                                <div className="min-w-0 max-w-[200px] flex-1 truncate">
                                   <span className="font-medium">
                                     {message.replyTo.user.name}
                                   </span>
@@ -394,13 +401,13 @@ export function ChatComponent({
                                 </div>
                               </div>
                             )}
-                            <p className="break-words whitespace-pre-wrap max-w-full">
+                            <p className="max-w-full whitespace-pre-wrap break-words">
                               {message.text}
                             </p>
                           </div>
 
                           {!isCurrentUser && (
-                            <div className="opacity-0 group-hover/message:opacity-100 transition-opacity duration-200 text-xs text-muted-foreground whitespace-nowrap shrink-0">
+                            <div className="shrink-0 whitespace-nowrap text-xs text-muted-foreground opacity-0 transition-opacity duration-200 group-hover/message:opacity-100">
                               {formatMessageDate(message.createdAt)}
                             </div>
                           )}
@@ -458,7 +465,7 @@ export function ChatComponent({
                               )}
                               title="Supprimer le message"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="size-4" />
                             </button>
                           )}
                         </div>
@@ -473,8 +480,8 @@ export function ChatComponent({
           </div>
 
           {typingUsers.size > 0 && (
-            <div className="absolute bottom-[60px] left-0 right-0 bg-background/80 backdrop-blur-sm p-2 border-t text-sm text-muted-foreground italic flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
+            <div className="flex items-center gap-2 text-sm italic text-muted-foreground">
+              <Loader2 className="size-4 animate-spin" />
               {Array.from(typingUsers)
                 .map(
                   (userId) =>
@@ -492,14 +499,14 @@ export function ChatComponent({
             className="mt-4 flex flex-col gap-2"
           >
             {replyTo && (
-              <div className="flex items-center gap-2 bg-muted p-2 rounded">
-                <span className="text-sm truncate flex-1">
+              <div className="flex items-center gap-2 rounded bg-muted p-2">
+                <span className="flex-1 truncate text-sm">
                   Réponse à: {replyTo.text}
                 </span>
                 <button
                   type="button"
                   onClick={() => setReplyTo(null)}
-                  className="text-muted-foreground hover:text-foreground shrink-0"
+                  className="shrink-0 text-muted-foreground hover:text-foreground"
                 >
                   ✕
                 </button>
@@ -525,14 +532,14 @@ export function ChatComponent({
             className="mt-4 flex flex-col gap-2"
           >
             {replyTo && (
-              <div className="flex items-center gap-2 bg-muted p-2 rounded">
-                <span className="text-sm truncate flex-1">
+              <div className="flex items-center gap-2 rounded bg-muted p-2">
+                <span className="flex-1 truncate text-sm">
                   Réponse à: {replyTo.text}
                 </span>
                 <button
                   type="button"
                   onClick={() => setReplyTo(null)}
-                  className="text-muted-foreground hover:text-foreground shrink-0"
+                  className="shrink-0 text-muted-foreground hover:text-foreground"
                 >
                   ✕
                 </button>

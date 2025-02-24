@@ -33,6 +33,10 @@ import { Globe, MapPin, Pencil } from "lucide-react";
 import Link from "next/link";
 import { ReviewItem } from "../../(user)/wall/[slug]/ReviewCard";
 import {
+  LEVEL_CLASSES,
+  SPORTS,
+} from "../products/[productId]/edit/product.schema";
+import {
   updateBio,
   updateBirthDate,
   updateCountry,
@@ -64,20 +68,47 @@ export default async function RoutePage(props: PageParams<{}>) {
     }),
   ]);
 
+  // Récupérer les messages non lus
+  const unreadMessages = await prisma.unreadMessage.findMany({
+    where: {
+      userId: user.id,
+    },
+    include: {
+      message: {
+        include: {
+          product: true,
+          user: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const formattedUnreadMessages = unreadMessages.map((unread) => ({
+    id: unread.id,
+    productId: unread.message.productId,
+    productName: unread.message.product.name,
+    userName: unread.message.user.name || "Utilisateur inconnu",
+    createdAt: unread.createdAt,
+    messageText: unread.message.text,
+  }));
+
   const userProducts = await prisma.product.findMany({
     where: {
       userId: user.id,
     },
     include: {
       memberships: {
-        where: { status: "PENDING" }
-      }
+        where: { status: "PENDING" },
+      },
     },
   });
 
-  const productsWithPendingCount = userProducts.map(product => ({
+  const productsWithPendingCount = userProducts.map((product) => ({
     ...product,
-    pendingRequests: product.memberships.length
+    pendingRequests: product.memberships.length,
   }));
 
   const approvedRequests = await prisma.membership.findMany({
@@ -86,44 +117,95 @@ export default async function RoutePage(props: PageParams<{}>) {
       status: "APPROVED",
       read: false,
       createdAt: {
-        gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 derniers jours
-      }
+        gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 derniers jours
+      },
     },
     include: {
       product: true,
-      user: true
-    }
+      user: true,
+    },
   });
 
-  const formattedApprovedRequests = approvedRequests.map(request => ({
+  const formattedApprovedRequests = approvedRequests.map((request) => ({
     id: request.id,
     productId: request.productId,
     productName: request.product.name,
     userName: request.user.name || "Utilisateur inconnu",
-    createdAt: request.createdAt
+    createdAt: request.createdAt,
   }));
 
   const pendingRequests = await prisma.membership.findMany({
     where: {
       product: {
-        userId: user.id
+        userId: user.id,
       },
       status: "PENDING",
-      read: false
+      read: false,
     },
     include: {
       product: true,
-      user: true
-    }
+      user: true,
+    },
   });
 
-  const formattedPendingRequests = pendingRequests.map(request => ({
+  const formattedPendingRequests = pendingRequests.map((request) => ({
     id: request.id,
     productId: request.productId,
     productName: request.product.name,
     userName: request.user.name || "Utilisateur inconnu",
-    createdAt: request.createdAt
+    createdAt: request.createdAt,
   }));
+
+  // Récupérer les avis non lus
+  const unreadReviews = await prisma.review.findMany({
+    where: {
+      product: {
+        userId: user.id,
+      },
+      read: false,
+      createdAt: {
+        gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 derniers jours
+      },
+    },
+    include: {
+      product: true,
+      user: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const formattedUnreadReviews = unreadReviews.map((review) => ({
+    id: review.id,
+    productId: review.productId,
+    productName: review.product.name,
+    userName: review.user.name || "Utilisateur inconnu",
+    createdAt: review.createdAt,
+    rating: review.rating,
+    text: review.text || "",
+    level: review.product.level,
+  }));
+
+  // Récupérer les annonces rejointes
+  const joinedProducts = await prisma.product.findMany({
+    where: {
+      memberships: {
+        some: {
+          userId: user.id,
+          status: "APPROVED",
+        },
+      },
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+          country: true,
+        },
+      },
+    },
+  });
 
   return (
     <Layout>
@@ -313,9 +395,13 @@ export default async function RoutePage(props: PageParams<{}>) {
                         <Input
                           type="date"
                           name="birthDate"
-                          defaultValue={user.birthDate
-                            ? new Date(user.birthDate).toISOString().split("T")[0]
-                            : undefined}
+                          defaultValue={
+                            user.birthDate
+                              ? new Date(user.birthDate)
+                                  .toISOString()
+                                  .split("T")[0]
+                              : undefined
+                          }
                         />
                         <DialogClose asChild>
                           <Button type="submit">Enregistrer</Button>
@@ -379,9 +465,11 @@ export default async function RoutePage(props: PageParams<{}>) {
             </CardContent>
           </Card>
 
-          <NotificationsCard 
-            pendingRequests={formattedPendingRequests} 
+          <NotificationsCard
+            pendingRequests={formattedPendingRequests}
             approvedRequests={formattedApprovedRequests}
+            unreadMessages={formattedUnreadMessages}
+            unreadReviews={formattedUnreadReviews}
           />
 
           <Card className="md:col-span-2">
@@ -394,23 +482,72 @@ export default async function RoutePage(props: PageParams<{}>) {
                   <Link
                     key={product.id}
                     href={`/products/${product.id}`}
-                    className="block p-4 rounded-lg border hover:bg-accent/50 transition-colors"
+                    className="block rounded-lg border p-4 transition-colors hover:bg-accent/50"
                   >
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="mb-2 flex items-center justify-between">
                       <h3 className="font-medium">{product.name}</h3>
                       {product.pendingRequests > 0 && (
-                        <span className="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                        <span className="flex size-6 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                           {product.pendingRequests}
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
+                    <p className="line-clamp-2 text-sm text-muted-foreground">
                       {product.description}
                     </p>
                     <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>{product.sport}</span>
+                      <span className="flex items-center gap-1">
+                        {SPORTS.find((s) => s.name === product.sport)?.icon ||
+                          "🎯"}{" "}
+                        {product.sport}
+                      </span>
                       <span>•</span>
-                      <span>{product.level}</span>
+                      <span className="flex items-center gap-1">
+                        {LEVEL_CLASSES.find((l) => l.name === product.level)
+                          ?.icon || "🎯"}{" "}
+                        {product.level}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle>Mes annonces rejointes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {joinedProducts.map((product) => (
+                  <Link
+                    key={product.id}
+                    href={`/products/${product.id}`}
+                    className="block rounded-lg border p-4 transition-colors hover:bg-accent/50"
+                  >
+                    <div className="mb-2">
+                      <h3 className="font-medium">{product.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Par {product.user.name}
+                      </p>
+                    </div>
+                    <p className="line-clamp-2 text-sm text-muted-foreground">
+                      {product.description}
+                    </p>
+                    <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        {SPORTS.find((s) => s.name === product.sport)?.icon}{" "}
+                        {product.sport}
+                      </span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        {
+                          LEVEL_CLASSES.find((l) => l.name === product.level)
+                            ?.icon
+                        }{" "}
+                        {product.level}
+                      </span>
                     </div>
                   </Link>
                 ))}

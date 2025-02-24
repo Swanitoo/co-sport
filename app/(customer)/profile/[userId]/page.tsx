@@ -66,18 +66,22 @@ export default async function ProfilePage({
     : null;
 
   // Calculer le nombre total d'avis et la note moyenne
-  const allReviews = user.products.flatMap(product => product.reviews);
+  const allReviews = user.products.flatMap((product) => product.reviews);
   const totalReviews = allReviews.length;
-  const averageRating = totalReviews > 0 
-    ? (allReviews.reduce((sum, review) => sum + (review.rating || 0), 0) / totalReviews).toFixed(1)
-    : "0.0";
+  const averageRating =
+    totalReviews > 0
+      ? (
+          allReviews.reduce((sum, review) => sum + (review.rating || 0), 0) /
+          totalReviews
+        ).toFixed(1)
+      : "0.0";
 
   return (
     <Layout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <LayoutTitle>Profil de {user.name}</LayoutTitle>
+            <LayoutTitle>{user.name}</LayoutTitle>
             <p className="text-sm text-muted-foreground">
               Membre depuis{" "}
               {formatDistance(user.createdAt, new Date(), {
@@ -150,11 +154,14 @@ export default async function ProfilePage({
               </p>
             ) : (
               <div className="space-y-4">
-                {user.products.map((product) => 
+                {user.products.map((product) =>
                   product.reviews.map((review) => (
-                    <div key={review.id} className="border-b pb-4 last:border-b-0 last:pb-0">
+                    <div
+                      key={review.id}
+                      className="border-b pb-4 last:border-b-0 last:pb-0"
+                    >
                       <div className="mb-2">
-                        <Link 
+                        <Link
                           href={`/products/${product.id}`}
                           className="text-sm font-medium hover:underline"
                         >
@@ -189,7 +196,9 @@ export default async function ProfilePage({
                   >
                     <Card className="transition-shadow hover:shadow-lg">
                       <CardHeader>
-                        <CardTitle className="text-base">{product.name}</CardTitle>
+                        <CardTitle className="text-base">
+                          {product.name}
+                        </CardTitle>
                         <p className="text-sm text-muted-foreground">
                           {product.sport} - {product.level}
                         </p>
@@ -209,4 +218,4 @@ export default async function ProfilePage({
       </div>
     </Layout>
   );
-} 
+}

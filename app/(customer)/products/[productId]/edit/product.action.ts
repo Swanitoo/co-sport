@@ -13,14 +13,14 @@ import { ProductSchema } from "./product.schema";
 
 const generateSlug = (name: string, level: string) => {
   const slugBase = `${name
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9\s-]/g, '')
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .toLowerCase()}-${level
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-zA-Z0-9\s-]/g, '')
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .toLowerCase()}`;
   return slugBase;
@@ -121,7 +121,9 @@ export const createProductAction = userAction(
   ProductSchema,
   async (input, context) => {
     if (input.onlyGirls && context.user.sex !== "F") {
-      throw new Error("Seules les femmes peuvent créer des annonces 'only girls'");
+      throw new Error(
+        "Seules les femmes peuvent créer des annonces 'only girls'"
+      );
     }
 
     const slugBase = generateSlug(input.name, input.level);
@@ -148,7 +150,9 @@ export const updateProductAction = userAction(
   }),
   async (input, context) => {
     if (input.data.onlyGirls && context.user.sex !== "F") {
-      throw new Error("Seules les femmes peuvent créer des annonces 'only girls'");
+      throw new Error(
+        "Seules les femmes peuvent créer des annonces 'only girls'"
+      );
     }
 
     const slugBase = generateSlug(input.data.name, input.data.level);
@@ -234,10 +238,16 @@ export async function joinProductAction({
     return { success: true };
   } catch (error: any) {
     if (error?.code === "P2002") {
-      return { success: false, error: "Vous avez déjà fait une demande pour ce groupe" };
+      return {
+        success: false,
+        error: "Vous avez déjà fait une demande pour ce groupe",
+      };
     }
     console.error("Erreur lors de la création de la demande:", error);
-    return { success: false, error: "Une erreur est survenue lors de la demande d'adhésion" };
+    return {
+      success: false,
+      error: "Une erreur est survenue lors de la demande d'adhésion",
+    };
   }
 }
 
@@ -255,7 +265,10 @@ export async function acceptMembershipAction(membershipId: string) {
     return { success: true };
   } catch (error: any) {
     console.error("Erreur lors de l'acceptation de la demande:", error);
-    return { success: false, error: "Une erreur est survenue lors de l'acceptation de la demande" };
+    return {
+      success: false,
+      error: "Une erreur est survenue lors de l'acceptation de la demande",
+    };
   }
 }
 
@@ -273,7 +286,10 @@ export async function refuseMembershipAction(membershipId: string) {
     return { success: true };
   } catch (error: any) {
     console.error("Erreur lors du refus de la demande:", error);
-    return { success: false, error: "Une erreur est survenue lors du refus de la demande" };
+    return {
+      success: false,
+      error: "Une erreur est survenue lors du refus de la demande",
+    };
   }
 }
 
@@ -317,41 +333,67 @@ export async function removeMemberAction({
 
 // Liste de mots interdits (à compléter selon vos besoins)
 const BANNED_WORDS = [
-  "merde", "putain", "connard", "connasse", "enculé", "pute",
+  "merde",
+  "putain",
+  "connard",
+  "connasse",
+  "enculé",
+  "pute",
   // Ajoutez d'autres mots selon vos besoins
 ];
 
-const sanitizeMessage = (text: string): { text: string; isValid: boolean; error?: string } => {
+const sanitizeMessage = (
+  text: string
+): { text: string; isValid: boolean; error?: string } => {
   const sanitized = text
-    .replace(/[\u0000-\u001F\u007F-\u009F]/g, '')
-    .replace(/<[^>]*>/g, '')
-    .replace(/javascript:/gi, '')
-    .replace(/data:/gi, '')
-    .replace(/vbscript:/gi, '')
-    .replace(/on\w+=/gi, '')
-    .replace(/\\/g, '\\\\')
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/javascript:/gi, "")
+    .replace(/data:/gi, "")
+    .replace(/vbscript:/gi, "")
+    .replace(/on\w+=/gi, "")
+    .replace(/\\/g, "\\\\")
     .replace(/"/g, '\\"')
     .replace(/'/g, "\\'")
     .trim();
 
   if (sanitized.length === 0) {
-    return { text: sanitized, isValid: false, error: "Le message ne peut pas être vide" };
+    return {
+      text: sanitized,
+      isValid: false,
+      error: "Le message ne peut pas être vide",
+    };
   }
   if (sanitized.length > 1000) {
-    return { text: sanitized, isValid: false, error: "Le message est trop long (maximum 1000 caractères)" };
+    return {
+      text: sanitized,
+      isValid: false,
+      error: "Le message est trop long (maximum 1000 caractères)",
+    };
   }
 
-  const containsBannedWord = BANNED_WORDS.some(word => {
-    const hasWord = new RegExp(`\\b${word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i').test(sanitized);
+  const containsBannedWord = BANNED_WORDS.some((word) => {
+    const hasWord = new RegExp(
+      `\\b${word.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")}\\b`,
+      "i"
+    ).test(sanitized);
     return hasWord;
   });
-  
+
   if (containsBannedWord) {
-    return { text: sanitized, isValid: false, error: "Le message contient des mots interdits" };
+    return {
+      text: sanitized,
+      isValid: false,
+      error: "Le message contient des mots interdits",
+    };
   }
 
   if (/(.)\1{10,}/.test(sanitized)) {
-    return { text: sanitized, isValid: false, error: "Le message contient trop de caractères répétés" };
+    return {
+      text: sanitized,
+      isValid: false,
+      error: "Le message contient trop de caractères répétés",
+    };
   }
 
   return { text: sanitized, isValid: true };
@@ -404,6 +446,38 @@ export async function sendMessageAction({
           },
         },
       },
+    });
+
+    // Créer les messages non lus pour tous les membres du produit sauf l'expéditeur
+    const memberships = await prisma.membership.findMany({
+      where: {
+        productId,
+        status: "APPROVED",
+        userId: {
+          not: user.id,
+        },
+      },
+      select: {
+        userId: true,
+      },
+    });
+
+    // Ajouter le propriétaire du produit s'il n'est pas l'expéditeur
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { userId: true },
+    });
+
+    if (product && product.userId !== user.id) {
+      memberships.push({ userId: product.userId });
+    }
+
+    // Créer les messages non lus
+    await prisma.unreadMessage.createMany({
+      data: memberships.map((membership) => ({
+        userId: membership.userId,
+        messageId: message.id,
+      })),
     });
 
     // Émettre l'événement via Socket.IO à tous les membres de la salle

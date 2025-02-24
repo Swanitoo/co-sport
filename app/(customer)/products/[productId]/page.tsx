@@ -72,7 +72,9 @@ export default async function RoutePage({
 
   const isOwner = product.userId === user.id;
   const isClient = product.userId !== user.id;
-  const isMember = product.memberships.some(m => m.userId === user.id && m.status === "APPROVED");
+  const isMember = product.memberships.some(
+    (m) => m.userId === user.id && m.status === "APPROVED"
+  );
   const canManageProduct = isOwner || user.isAdmin;
   const canViewMessages = isOwner || isMember || user.isAdmin;
 
@@ -87,14 +89,42 @@ export default async function RoutePage({
   const pendingCount = pendingMemberships.length;
 
   const getSportIcon = (sportName: string) => {
-    const sport = SPORTS.find(s => s.name === sportName);
+    const sport = SPORTS.find((s) => s.name === sportName);
     return sport?.icon || "🎯";
   };
 
   const getLevelIcon = (levelName: string) => {
-    const level = LEVEL_CLASSES.find(l => l.name === levelName);
+    const level = LEVEL_CLASSES.find((l) => l.name === levelName);
     return level?.icon || "🎯";
   };
+
+  // Marquer les messages comme lus si l'utilisateur est membre ou propriétaire
+  if (user) {
+    if (isOwner || isMember) {
+      // Marquer les messages non lus comme lus
+      await prisma.unreadMessage.deleteMany({
+        where: {
+          userId: user.id,
+          message: {
+            productId: product.id,
+          },
+        },
+      });
+
+      // Marquer les demandes comme lues
+      await prisma.membership.updateMany({
+        where: {
+          productId: product.id,
+          userId: user.id,
+          status: "APPROVED",
+          read: false,
+        },
+        data: {
+          read: true,
+        },
+      });
+    }
+  }
 
   return (
     <Layout>
@@ -108,10 +138,10 @@ export default async function RoutePage({
         </div>
 
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
-          <div className="space-y-0.5 max-w-[90%]">
+          <div className="max-w-[90%] space-y-0.5">
             <LayoutTitle className="break-words">{product.name}</LayoutTitle>
             <div className="flex items-center gap-2">
-              <Avatar className="h-6 w-6">
+              <Avatar className="size-6">
                 <AvatarImage src={product.user.image || undefined} />
                 <AvatarFallback>{product.user.name?.[0]}</AvatarFallback>
               </Avatar>
@@ -120,14 +150,14 @@ export default async function RoutePage({
                   href={product.user.socialLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm hover:underline cursor-pointer"
+                  className="cursor-pointer text-sm hover:underline"
                 >
                   {product.user.name}
                 </Link>
               ) : (
                 <Link
                   href={`/profile/${product.userId}`}
-                  className="text-sm hover:underline cursor-pointer"
+                  className="cursor-pointer text-sm hover:underline"
                 >
                   {product.user.name}
                 </Link>
@@ -145,12 +175,13 @@ export default async function RoutePage({
 
             {canManageProduct && (
               <>
-                {isOwner && (
-                  <Crown size={16} className="text-yellow-500" />
-                )}
+                {isOwner && <Crown size={16} className="text-yellow-500" />}
                 <Link
                   href={`/products/${product.id}/edit`}
-                  className={buttonVariants({ size: "sm", variant: "secondary" })}
+                  className={buttonVariants({
+                    size: "sm",
+                    variant: "secondary",
+                  })}
                 >
                   Edit
                 </Link>
@@ -187,7 +218,10 @@ export default async function RoutePage({
           {isClient && membership && membership.status === "REMOVED" && (
             <div className="flex items-center gap-2">
               <button
-                className={buttonVariants({ size: "sm", variant: "destructive" })}
+                className={buttonVariants({
+                  size: "sm",
+                  variant: "destructive",
+                })}
                 disabled
               >
                 Adhésion refusée
@@ -243,9 +277,7 @@ export default async function RoutePage({
                 <TableBody>
                   {product.reviews.map((review) => (
                     <TableRow key={review.id}>
-                      <TableCell>
-                        {review.name}
-                      </TableCell>
+                      <TableCell>{review.name}</TableCell>
                       <TableCell>{review.rating}/5</TableCell>
                       <TableCell>{review.text}</TableCell>
                     </TableRow>
@@ -270,7 +302,7 @@ export default async function RoutePage({
                   href={`/wall/${encodeURIComponent(product.slug)}`}
                   className={buttonVariants({
                     size: "sm",
-                    variant: "outline"
+                    variant: "outline",
                   })}
                 >
                   <Link2 size={16} className="mr-2" />
@@ -314,7 +346,11 @@ export default async function RoutePage({
           </Card>
         )}
         {canViewMessages && (
-          <ChatComponent productId={productId} userId={user.id} isAdmin={user.isAdmin} />
+          <ChatComponent
+            productId={productId}
+            userId={user.id}
+            isAdmin={user.isAdmin}
+          />
         )}
       </div>
     </Layout>

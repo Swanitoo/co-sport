@@ -5,7 +5,20 @@ import { prisma } from "@/prisma";
 export async function markNotificationAsRead(notificationId: string) {
   await prisma.membership.update({
     where: { id: notificationId },
-    data: { read: true }
+    data: { read: true },
+  });
+}
+
+export async function markMessageAsRead(unreadMessageId: string) {
+  await prisma.unreadMessage.delete({
+    where: { id: unreadMessageId },
+  });
+}
+
+export async function markReviewAsRead(reviewId: string) {
+  await prisma.review.update({
+    where: { id: reviewId },
+    data: { read: true },
   });
 }
 
@@ -16,15 +29,15 @@ export async function markAllNotificationsAsRead(userId: string) {
         {
           userId,
           status: "APPROVED",
-          read: false
+          read: false,
         },
         {
           product: { userId },
           status: "PENDING",
-          read: false
-        }
-      ]
+          read: false,
+        },
+      ],
     },
-    data: { read: true }
+    data: { read: true },
   });
-} 
+}
