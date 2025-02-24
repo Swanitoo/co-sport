@@ -49,6 +49,7 @@ export function ChatComponent({
   const [page, setPage] = useState(1);
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
   const [replyTo, setReplyTo] = useState<MessageWithUser | null>(null);
+  const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef(getSocket());
@@ -175,8 +176,9 @@ export function ChatComponent({
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || isSending) return;
 
+    setIsSending(true);
     try {
       const result = await sendMessageAction({
         text: newMessage,
@@ -200,6 +202,8 @@ export function ChatComponent({
           ? error.message
           : "Une erreur est survenue lors de l'envoi du message"
       );
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -523,7 +527,13 @@ export function ChatComponent({
                 className="flex-1"
                 maxLength={1000}
               />
-              <Button type="submit">Envoyer</Button>
+              <Button type="submit" disabled={isSending}>
+                {isSending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Envoyer"
+                )}
+              </Button>
             </div>
           </form>
         ) : (
@@ -556,7 +566,13 @@ export function ChatComponent({
                 className="flex-1"
                 maxLength={1000}
               />
-              <Button type="submit">Envoyer</Button>
+              <Button type="submit" disabled={isSending}>
+                {isSending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Envoyer"
+                )}
+              </Button>
             </div>
           </form>
         )}

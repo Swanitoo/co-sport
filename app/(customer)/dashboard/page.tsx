@@ -43,8 +43,8 @@ import {
   updateLocation,
   updateName,
 } from "./dashboard.action";
-import { ProfileDataCheck } from "./ProfileDataCheck";
 import { NotificationsCard } from "./NotificationsCard";
+import { ProfileDataCheck } from "./ProfileDataCheck";
 
 export default async function RoutePage(props: PageParams<{}>) {
   const user = await requiredCurrentUser();
