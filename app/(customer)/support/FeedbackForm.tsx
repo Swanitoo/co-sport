@@ -10,10 +10,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Star } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { sendFeedback } from "./support.action";
 
@@ -25,7 +25,6 @@ const feedbackFormSchema = z.object({
 type FeedbackFormValues = z.infer<typeof feedbackFormSchema>;
 
 export const FeedbackForm = () => {
-  const { toast } = useToast();
   const form = useForm<FeedbackFormValues>({
     resolver: zodResolver(feedbackFormSchema),
     defaultValues: {
@@ -37,16 +36,13 @@ export const FeedbackForm = () => {
   const onSubmit = async (data: FeedbackFormValues) => {
     try {
       await sendFeedback(data);
-      toast({
-        title: "Feedback envoyé",
+      toast.success("Feedback envoyé", {
         description: "Merci pour votre retour !",
       });
       form.reset();
     } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de l'envoi du feedback.",
-        variant: "destructive",
+      toast.error("Une erreur est survenue lors de l'envoi du feedback.", {
+        description: "Veuillez réessayer plus tard ou contacter le support.",
       });
     }
   };

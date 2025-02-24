@@ -43,8 +43,8 @@ import {
   updateLocation,
   updateName,
 } from "./dashboard.action";
-import { NotificationsCard } from "./NotificationsCard";
 import { ProfileDataCheck } from "./ProfileDataCheck";
+import { NotificationsCard } from "./NotificationsCard";
 
 export default async function RoutePage(props: PageParams<{}>) {
   const user = await requiredCurrentUser();
@@ -414,6 +414,13 @@ export default async function RoutePage(props: PageParams<{}>) {
             </CardContent>
           </Card>
 
+          <NotificationsCard
+            pendingRequests={formattedPendingRequests}
+            approvedRequests={formattedApprovedRequests}
+            unreadMessages={formattedUnreadMessages}
+            unreadReviews={formattedUnreadReviews}
+          />
+
           <Card>
             <CardHeader>
               <CardTitle>Statistiques</CardTitle>
@@ -450,7 +457,7 @@ export default async function RoutePage(props: PageParams<{}>) {
             </CardContent>
           </Card>
 
-          <Card className="md:col-span-2 lg:col-span-3">
+          <Card>
             <CardHeader>
               <CardTitle>Dernier commentaire</CardTitle>
             </CardHeader>
@@ -464,13 +471,6 @@ export default async function RoutePage(props: PageParams<{}>) {
               )}
             </CardContent>
           </Card>
-
-          <NotificationsCard
-            pendingRequests={formattedPendingRequests}
-            approvedRequests={formattedApprovedRequests}
-            unreadMessages={formattedUnreadMessages}
-            unreadReviews={formattedUnreadReviews}
-          />
 
           <Card className="md:col-span-2">
             <CardHeader>

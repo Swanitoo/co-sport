@@ -105,8 +105,15 @@ export function NotificationsCard({
 
   return (
     <Card className="p-4">
-      <CardHeader>
-        <CardTitle>Notifications</CardTitle>
+      <CardHeader className="flex justify-between">
+        <div className="flex items-center gap-2">
+          <CardTitle>Notifications</CardTitle>
+          {totalNotifications > 0 && (
+            <span className="flex size-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
+              {totalNotifications}
+            </span>
+          )}
+        </div>
       </CardHeader>
       <div className="space-y-4">
         {pendingRequests.map((request) => (

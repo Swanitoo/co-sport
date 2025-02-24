@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { sendContactMessage } from "./support.action";
 
@@ -25,7 +25,6 @@ const contactFormSchema = z.object({
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 export const ContactForm = () => {
-  const { toast } = useToast();
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -37,16 +36,13 @@ export const ContactForm = () => {
   const onSubmit = async (data: ContactFormValues) => {
     try {
       await sendContactMessage(data);
-      toast({
-        title: "Message envoyé",
+      toast.success("Message envoyé", {
         description: "Nous vous répondrons dans les plus brefs délais.",
       });
       form.reset();
     } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de l'envoi du message.",
-        variant: "destructive",
+      toast.error("Une erreur est survenue lors de l'envoi du message.", {
+        description: "Veuillez réessayer plus tard.",
       });
     }
   };

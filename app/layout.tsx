@@ -1,5 +1,4 @@
 import { currentUser } from "@/auth/current-user";
-import { Toaster } from "@/components/ui/toaster";
 import { getServerUrl } from "@/get-server-url";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -25,10 +24,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className={cn(inter.className, "h-full")}>
-        <Providers userId={user?.id}>
-          {children}
-          <Toaster />
-        </Providers>
+        <Providers userId={user?.id}>{children}</Providers>
       </body>
     </html>
   );
