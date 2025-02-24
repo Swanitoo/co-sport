@@ -5,10 +5,10 @@ let socket: Socket | undefined;
 export function getSocket() {
   if (!socket) {
     console.log("🔄 Initialisation du client Socket.IO");
-    
+
     const url = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
     console.log("🌐 URL de connexion:", url);
-    
+
     socket = io(url, {
       path: "/api/socket",
       addTrailingSlash: false,
@@ -16,12 +16,15 @@ export function getSocket() {
       autoConnect: true,
       withCredentials: true,
       reconnection: true,
-      reconnectionAttempts: 3,
+      reconnectionAttempts: 5,
       reconnectionDelay: 2000,
       reconnectionDelayMax: 10000,
-      timeout: 10000,
+      timeout: 20000,
       forceNew: true,
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
+      extraHeaders: {
+        "Access-Control-Allow-Origin": url,
+      },
     });
 
     socket.on("connect", () => {
@@ -36,7 +39,7 @@ export function getSocket() {
 
     socket.on("disconnect", (reason) => {
       console.log("⚠️ Socket déconnecté:", reason);
-      
+
       if (reason === "io server disconnect" || reason === "transport close") {
         console.log("🔄 Tentative de reconnexion dans 2 secondes...");
         setTimeout(() => {
@@ -97,4 +100,4 @@ export function initSocket(url: string) {
   });
 
   return socket;
-} 
+}

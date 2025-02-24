@@ -23,9 +23,13 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseWithSocket) => {
       addTrailingSlash: false,
       transports: ["polling", "websocket"],
       cors: {
-        origin: "*",
+        origin:
+          process.env.VERCEL_ENV === "production"
+            ? "https://www.co-sport.com"
+            : "*",
         methods: ["GET", "POST"],
         credentials: true,
+        allowedHeaders: ["content-type"],
       },
     });
 
