@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollToTop } from "@/components/ui/scrollTotop";
-import { Filter, Plus, X } from "lucide-react";
+import { Filter, Loader2, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -31,6 +31,7 @@ export function FilteredProductList({
   const loadMoreRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState(initialProducts);
+  const [isCreating, setIsCreating] = useState(false);
 
   const [filters, setFilters] = useState<FilterType>({
     sport: searchParams?.get("sport") || undefined,
@@ -46,7 +47,10 @@ export function FilteredProductList({
       const filteredProducts = await getFilteredProducts(filters, userSex);
       setProducts(filteredProducts);
     } catch (error) {
-      console.error("Erreur lors de la récupération des produits filtrés:", error);
+      console.error(
+        "Erreur lors de la récupération des produits filtrés:",
+        error
+      );
     } finally {
       setLoading(false);
     }
@@ -116,15 +120,20 @@ export function FilteredProductList({
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <Link
           href="/products/new"
           className={buttonVariants({
             size: "lg",
-            className: "gap-2"
+            className: "gap-2",
           })}
+          onClick={() => setIsCreating(true)}
         >
-          <Plus className="h-4 w-4" />
+          {isCreating ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Plus className="size-4" />
+          )}
           Créer une annonce
         </Link>
 
@@ -161,7 +170,7 @@ export function FilteredProductList({
             )}
           </Button>
         </DialogTrigger>
-        <DialogContent className="h-[80vh] sm:max-w-[425px] max-w-[95vw] w-full overflow-hidden">
+        <DialogContent className="h-[80vh] w-full max-w-[95vw] overflow-hidden sm:max-w-[425px]">
           <DialogHeader>
             <div className="flex items-center justify-between">
               <DialogTitle>Filtres</DialogTitle>
@@ -177,7 +186,8 @@ export function FilteredProductList({
                   size="sm"
                   onClick={() => {
                     resetFilters();
-                    const dialogTrigger = document.querySelector('[role="dialog"]');
+                    const dialogTrigger =
+                      document.querySelector('[role="dialog"]');
                     if (dialogTrigger) {
                       (dialogTrigger as HTMLElement).click();
                     }
@@ -194,10 +204,10 @@ export function FilteredProductList({
               onFilterChange={handleFilterChange}
               showGenderFilter={userSex === "F"}
               venues={venues}
-              className="overflow-y-auto max-h-[calc(80vh-10rem)]"
+              className="max-h-[calc(80vh-10rem)] overflow-y-auto"
             />
-            <Button 
-              className="w-full mt-4"
+            <Button
+              className="mt-4 w-full"
               onClick={() => {
                 const dialogTrigger = document.querySelector('[role="dialog"]');
                 if (dialogTrigger) {
