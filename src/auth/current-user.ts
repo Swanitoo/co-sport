@@ -1,10 +1,10 @@
 import { prisma } from "@/prisma";
-import { baseAuth } from "./auth";
+import { auth } from "./auth";
 
-export const currentUser = async () => {
-  const session = await baseAuth();
+export async function currentUser() {
+  const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return null;
   }
 
@@ -13,28 +13,21 @@ export const currentUser = async () => {
     select: {
       id: true,
       name: true,
-      email: true,
-      emailVerified: true,
-      image: true,
-      createdAt: true,
-      plan: true,
-      updatedAt: true,
-      stripeCustomerId: true,
-      socialLink: true,
       bio: true,
       city: true,
-      country: true,
-      sex: true,
-      state: true,
       birthDate: true,
-      nationality: true,
+      email: true,
+      image: true,
+      sex: true,
+      country: true,
+      socialLink: true,
       isAdmin: true,
-      profileCompleted: true,
+      plan: true,
     },
   });
 
   return user;
-};
+}
 
 export const requiredCurrentUser = async () => {
   const user = await currentUser();

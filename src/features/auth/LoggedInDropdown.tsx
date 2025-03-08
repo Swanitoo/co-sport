@@ -4,6 +4,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -11,23 +12,30 @@ import {
   Home,
   LayoutDashboard,
   LogOut,
-  Square,
+  MessageSquare,
 } from "lucide-react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { PropsWithChildren } from "react";
-import { singOutAction } from "./auth.action";
+import React from "react";
 
-export type LoggedInDropdownProps = PropsWithChildren & {
+export type LoggedInDropdownProps = {
   userId: string;
+  user: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
   pendingRequestsCount?: number;
   unreadMessagesCount?: number;
   approvedRequestsCount?: number;
   unreadReviewsCount?: number;
+  children: React.ReactNode;
 };
 
 export const LoggedInDropdown = ({
   userId,
+  user,
   pendingRequestsCount = 0,
   unreadMessagesCount = 0,
   approvedRequestsCount = 0,
@@ -35,85 +43,90 @@ export const LoggedInDropdown = ({
   children,
 }: LoggedInDropdownProps) => {
   const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut({
+      callbackUrl: "/",
+    });
+  };
+
   const totalNotifications =
     pendingRequestsCount +
     unreadMessagesCount +
     approvedRequestsCount +
     unreadReviewsCount;
 
-  // const stripeSettingsMutation = useMutation({
-  //   mutationFn: () => setupCustomerPortal(""),
-  //   onSuccess: ({ data, serverError }) => {
-  //     if (serverError || !data) {
-  //       toast.error(serverError);
-  //       return;
-  //     }
-
-  //     router.push(data);
-  //   },
-  // });
+  const triggerElement =
+    React.isValidElement(children) && totalNotifications > 0
+      ? React.cloneElement(
+          children as React.ReactElement,
+          {},
+          React.Children.map(children.props.children, (child) => child),
+          <div
+            key="notification-badge"
+            className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white"
+          >
+            {totalNotifications}
+          </div>
+        )
+      : children;
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <div className="relative">
-          {children}
-          {totalNotifications > 0 && (
-            <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-              {totalNotifications}
-            </span>
-          )}
+      <DropdownMenuTrigger asChild>{triggerElement}</DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <div className="flex items-center justify-start gap-2 p-2">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {user.email}
+            </p>
+          </div>
         </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
+        <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/home" className="w-full">
-            <Home size={16} className="mr-2" />
+          <Link href="/" className="flex items-center gap-2">
+            <Home className="size-4" />
             Accueil
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/dashboard" className="relative flex w-full items-center">
-            <LayoutDashboard size={16} className="mr-2" />
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="relative">
+              <LayoutDashboard className="size-4" />
+              {(unreadMessagesCount > 0 ||
+                approvedRequestsCount > 0 ||
+                unreadReviewsCount > 0 ||
+                pendingRequestsCount > 0) && (
+                <span className="absolute -right-2 -top-2 flex size-3.5 items-center justify-center rounded-full bg-red-500 text-[8px] text-white">
+                  {unreadMessagesCount +
+                    approvedRequestsCount +
+                    unreadReviewsCount +
+                    pendingRequestsCount}
+                </span>
+              )}
+            </div>
             Tableau de bord
-            {totalNotifications > 0 && (
-              <span className="ml-2 flex size-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                {totalNotifications}
-              </span>
-            )}
           </Link>
         </DropdownMenuItem>
-        {/* <DropdownMenuItem
-          onClick={() => {
-            stripeSettingsMutation.mutate();
-          }}
-        >
-          {stripeSettingsMutation.isPending ? (
-            <Loader2 size={16} className="mr-2" />
-          ) : (
-            <CreditCard size={16} className="mr-2" />
-          )}
-          Infos de paiement
-        </DropdownMenuItem> */}
         <DropdownMenuItem asChild>
-          <Link href="/products" className="w-full">
-            <Square size={16} className="mr-2" />
+          <Link href="/products" className="flex items-center gap-2">
+            <MessageSquare className="size-4" />
             Annonces
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/support" className="w-full">
-            <HelpCircle size={16} className="mr-2" />
+          <Link href="/support" className="flex items-center gap-2">
+            <HelpCircle className="size-4" />
             Support
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={async () => {
-            await singOutAction();
-            router.push("/");
-          }}
+          className="flex items-center gap-2 text-red-600 focus:bg-red-50 focus:text-red-600"
+          onClick={handleSignOut}
         >
-          <LogOut size={16} className="mr-2" />
+          <LogOut className="size-4" />
           Déconnexion
         </DropdownMenuItem>
       </DropdownMenuContent>

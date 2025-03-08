@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { getCountryFlag } from "@/data/country";
 import { updateProfileImage } from "@/features/auth/auth.action";
 import imageCompression from "browser-image-compression";
 import { Pencil } from "lucide-react";
@@ -12,6 +13,8 @@ import { uploadImageAction } from "../upload.action";
 type Props = {
   currentImage?: string | null;
   userName?: string | null;
+  userCountry?: string | null;
+  size?: "default" | "lg";
 };
 
 // Types MIME autorisés pour les images
@@ -34,7 +37,12 @@ const options = {
   initialQuality: 0.8, // Qualité initiale de compression
 };
 
-export const ProfileImageUpload = ({ currentImage, userName }: Props) => {
+export const ProfileImageUpload = ({
+  currentImage,
+  userName,
+  userCountry,
+  size = "default",
+}: Props) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [localImage, setLocalImage] = useState<string | null | undefined>(
@@ -128,10 +136,15 @@ export const ProfileImageUpload = ({ currentImage, userName }: Props) => {
 
   return (
     <div className="relative">
-      <Avatar className="size-20">
+      <Avatar className={size === "lg" ? "size-32" : "size-20"}>
         <AvatarImage src={localImage || undefined} />
         <AvatarFallback>{userName?.[0]}</AvatarFallback>
       </Avatar>
+      {userCountry && (
+        <div className="absolute -bottom-2 -left-2 rounded-full bg-background p-1 shadow-sm">
+          <span className="text-lg">{getCountryFlag(userCountry)}</span>
+        </div>
+      )}
       <Button
         size="icon"
         variant="secondary"

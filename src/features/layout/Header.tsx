@@ -2,6 +2,7 @@ import { currentUser } from "@/auth/current-user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LoggedInDropdown } from "@/features/auth/LoggedInDropdown";
+import { LoginDialog } from "@/features/auth/LoginDialog";
 import { ModeToggle } from "@/features/theme/ModeToggle";
 import { prisma } from "@/prisma";
 import Image from "next/image";
@@ -72,6 +73,11 @@ export async function Header() {
           {user ? (
             <LoggedInDropdown
               userId={user.id}
+              user={{
+                name: user.name,
+                email: user.email,
+                image: user.image,
+              }}
               pendingRequestsCount={pendingRequestsCount}
               unreadMessagesCount={unreadMessagesCount}
               approvedRequestsCount={approvedRequestsCount}
@@ -88,9 +94,13 @@ export async function Header() {
               </Button>
             </LoggedInDropdown>
           ) : (
-            <Link href="/auth/signin">
-              <Button>Connexion</Button>
-            </Link>
+            <LoginDialog
+              trigger={
+                <span className="inline-block cursor-pointer">
+                  <Button>Connexion</Button>
+                </span>
+              }
+            />
           )}
         </div>
       </div>

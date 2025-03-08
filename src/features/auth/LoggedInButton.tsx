@@ -21,7 +21,14 @@ export const LoggedInButton = () => {
   }
 
   return (
-    <LoggedInDropdown userId={user.id}>
+    <LoggedInDropdown
+      userId={user.id}
+      user={{
+        name: user.name,
+        email: user.email,
+        image: user.image,
+      }}
+    >
       <Button variant="outline" size="sm">
         {user.plan === "PREMIUM" ? <Star size={14} className="mr-2" /> : null}
         <Avatar className="size-6">

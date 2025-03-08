@@ -1,48 +1,29 @@
-import { env } from "@/env";
 import { prisma } from "@/prisma";
-import { stripe } from "@/stripe";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
+import GoogleProvider from "next-auth/providers/google";
 
-export const {
-  handlers,
-  auth: baseAuth,
-  signIn,
-  signOut,
-} = NextAuth({
+export const { auth, signIn, signOut, handlers } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  theme: {
-    logo: "/opengraph-image.png",
-  },
   providers: [
-    Google({
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-  events: {
-    createUser: async (message) => {
-      const userId = message.user.id;
-      const userEmail = message.user.email;
-
-      if (!userEmail || !userId) {
-        return;
+  callbacks: {
+    async session({ session, user }) {
+      if (session.user) {
+        session.user.id = user.id;
+        // @ts-ignore
+        session.user.isAdmin = user.isAdmin;
+        // @ts-ignore
+        session.user.sex = user.sex;
       }
-
-      const stripeCustomer = await stripe.customers.create({
-        name: message.user.name ?? "",
-        email: userEmail,
-      });
-
-      await prisma.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          stripeCustomerId: stripeCustomer.id,
-        },
-      });
+      return session;
     },
+  },
+  pages: {
+    signIn: "/login",
   },
 });

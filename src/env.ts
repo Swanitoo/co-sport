@@ -7,10 +7,10 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
-    STRIPE_SECRET_KEY: z.string(),
-    STRIPE_WEBHOOK_SECRET: z.string(),
     RESEND_API_KEY: z.string(),
     GOOGLE_MAPS_API_KEY: z.string(),
+    NEXTAUTH_URL: z.string(),
+    NEXTAUTH_SECRET: z.string(),
   },
   client: {
     // NEXT_PUBLIC_PUSHER_KEY: z.string(),
