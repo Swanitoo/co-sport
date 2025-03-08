@@ -86,14 +86,69 @@ export default async function RoutePage(props: PageParams<{}>) {
     },
   });
 
-  const formattedUnreadMessages = unreadMessages.map((unread) => ({
-    id: unread.id,
-    productId: unread.message.productId,
-    productName: unread.message.product.name,
-    userName: unread.message.user.name || "Utilisateur inconnu",
-    createdAt: unread.createdAt,
-    messageText: unread.message.text,
-  }));
+  // Regrouper les messages non lus par productId
+  const groupedUnreadMessages = unreadMessages.reduce(
+    (acc, unread) => {
+      const productId = unread.message.productId;
+      if (!acc[productId]) {
+        acc[productId] = {
+          productId,
+          productName: unread.message.product.name,
+          messages: [],
+          latestMessageDate: new Date(0),
+        };
+      }
+
+      acc[productId].messages.push({
+        id: unread.id,
+        messageId: unread.message.id,
+        userName: unread.message.user.name || "Utilisateur inconnu",
+        createdAt: unread.createdAt,
+        messageText: unread.message.text,
+      });
+
+      // Mettre à jour la date du message le plus récent
+      if (new Date(unread.createdAt) > acc[productId].latestMessageDate) {
+        acc[productId].latestMessageDate = new Date(unread.createdAt);
+      }
+
+      return acc;
+    },
+    {} as Record<
+      string,
+      {
+        productId: string;
+        productName: string;
+        messages: {
+          id: string;
+          messageId: string;
+          userName: string;
+          createdAt: Date;
+          messageText: string;
+        }[];
+        latestMessageDate: Date;
+      }
+    >
+  );
+
+  // Convertir l'objet en tableau et trier par date du message le plus récent
+  const formattedUnreadMessages = Object.values(groupedUnreadMessages)
+    .map((group) => ({
+      id: group.messages[0].id, // Utiliser l'ID du premier message non lu comme ID de groupe
+      messageIds: group.messages.map((m) => m.id), // Liste de tous les IDs de messages non lus
+      productId: group.productId,
+      productName: group.productName,
+      messageCount: group.messages.length,
+      userName:
+        group.messages.length > 1
+          ? `${group.messages[0].userName} et ${
+              group.messages.length - 1
+            } autre${group.messages.length > 2 ? "s" : ""}`
+          : group.messages[0].userName,
+      createdAt: group.latestMessageDate,
+      messageText: group.messages[0].messageText,
+    }))
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   const userProducts = await prisma.product.findMany({
     where: {

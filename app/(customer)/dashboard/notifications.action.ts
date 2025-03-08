@@ -15,6 +15,18 @@ export async function markMessageAsRead(unreadMessageId: string) {
   });
 }
 
+export async function markMessagesAsRead(messageIds: string[]) {
+  if (!messageIds || messageIds.length === 0) return;
+
+  await prisma.unreadMessage.deleteMany({
+    where: {
+      id: {
+        in: messageIds,
+      },
+    },
+  });
+}
+
 export async function markReviewAsRead(reviewId: string) {
   await prisma.review.update({
     where: { id: reviewId },

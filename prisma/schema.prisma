@@ -71,6 +71,7 @@ model User {
   StravaActivity   StravaActivity[]
   messages         Message[]        @relation("UserMessages")
   unreadMessages   UnreadMessage[]
+  Message          Message[]
 }
 
 model Product {
@@ -93,6 +94,7 @@ model Product {
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   reviews      Review[]
   messages     Message[]    @relation("ProductMessages")
+  Message      Message[]
 }
 
 model Review {
@@ -137,17 +139,21 @@ model StravaActivity {
 }
 
 model Message {
-  id        String          @id @default(cuid())
+  id        String   @id @default(cuid())
   text      String
+  createdAt DateTime @default(now())
   userId    String
   productId String
-  createdAt DateTime        @default(now())
-  replyToId String?         @map("reply_to_id")
-  product   Product         @relation("ProductMessages", fields: [productId], references: [id], onDelete: Cascade)
-  replyTo   Message?        @relation("MessageReplies", fields: [replyToId], references: [id])
-  replies   Message[]       @relation("MessageReplies")
-  user      User            @relation("UserMessages", fields: [userId], references: [id], onDelete: Cascade)
-  unreadBy  UnreadMessage[]
+  replyToId String?  @map("reply_to_id")
+  isDeleted Boolean  @default(false)
+
+  product  Product         @relation("ProductMessages", fields: [productId], references: [id], onDelete: Cascade, map: "messages_product_fkey")
+  replyTo  Message?        @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies  Message[]       @relation("MessageReplies")
+  user     User            @relation("UserMessages", fields: [userId], references: [id], onDelete: Cascade, map: "messages_user_fkey")
+  unreadBy UnreadMessage[]
+  User     User            @relation(fields: [userId], references: [id])
+  Product  Product         @relation(fields: [productId], references: [id])
 
   @@map("messages")
 }

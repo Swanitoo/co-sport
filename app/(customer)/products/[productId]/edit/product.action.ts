@@ -5,7 +5,6 @@ import { EMAIL_FROM } from "@/config";
 import { prisma } from "@/prisma";
 import { resend } from "@/resend";
 import { userAction } from "@/safe-actions";
-import { getSocketIO } from "@/socketio";
 import { User } from "@prisma/client";
 import { z } from "zod";
 import FirstProductCreatedEmail from "../../../../../emails/FirstProductCreatedEmail";
@@ -262,6 +261,48 @@ export async function acceptMembershipAction(membershipId: string) {
       },
     });
 
+    // Créer un message système pour notifier que l'utilisateur a rejoint le groupe
+    // Idéalement, on utiliserait un type spécifique pour les messages système
+    // Nous utilisons une convention qui sera détectée côté client
+    const systemMessage = await prisma.message.create({
+      data: {
+        text: `👋 ${
+          membership.user.name || "Un nouvel utilisateur"
+        } a rejoint le groupe.`,
+        userId: membership.user.id,
+        productId: membership.productId,
+      },
+    });
+
+    // Créer des notifications pour tous les membres du groupe
+    const memberships = await prisma.membership.findMany({
+      where: {
+        productId: membership.productId,
+        status: "APPROVED",
+        userId: {
+          not: membership.user.id,
+        },
+      },
+      select: {
+        userId: true,
+      },
+    });
+
+    // Ajouter le propriétaire s'il n'est pas l'utilisateur qui rejoint
+    if (membership.product.userId !== membership.user.id) {
+      memberships.push({ userId: membership.product.userId });
+    }
+
+    // Créer les messages non lus
+    if (memberships.length > 0) {
+      await prisma.unreadMessage.createMany({
+        data: memberships.map((m) => ({
+          userId: m.userId,
+          messageId: systemMessage.id,
+        })),
+      });
+    }
+
     return { success: true };
   } catch (error: any) {
     console.error("Erreur lors de l'acceptation de la demande:", error);
@@ -480,13 +521,8 @@ export async function sendMessageAction({
       })),
     });
 
-    // Émettre l'événement via Socket.IO à tous les membres de la salle
-    const io = getSocketIO();
-    io.to(productId).emit("new-message", message);
-
     return { success: true, data: message };
   } catch (error) {
-    console.error("Erreur lors de l'envoi du message:", error);
     return { success: false, error: "Erreur lors de l'envoi du message" };
   }
 }
@@ -538,25 +574,49 @@ export const getMessagesAction = userAction(
 export async function deleteMessageAction(messageId: string) {
   try {
     const user = await requiredCurrentUser();
+
     const message = await prisma.message.findUnique({
       where: { id: messageId },
-      select: { userId: true },
     });
 
     if (!message) {
-      return { error: "Message non trouvé" };
+      return { success: false, error: "Message non trouvé" };
     }
 
-    if (message.userId !== user.id && !user.isAdmin) {
-      return { error: "Non autorisé" };
-    }
+    // Vérifier si l'utilisateur est le propriétaire du message
+    const isOwner = message.userId === user.id;
 
-    await prisma.message.delete({
-      where: { id: messageId },
+    // Vérifier si l'utilisateur est admin du produit
+    const product = await prisma.product.findUnique({
+      where: { id: message.productId },
     });
+
+    if (!product) {
+      return { success: false, error: "Produit non trouvé" };
+    }
+
+    const isProductAdmin = product.userId === user.id;
+
+    if (!isOwner && !isProductAdmin && !user.isAdmin) {
+      return {
+        success: false,
+        error: "Vous n'êtes pas autorisé à supprimer ce message",
+      };
+    }
+
+    // Mettre à jour isDeleted sans modifier le texte
+    await prisma.$executeRaw`
+      UPDATE "messages"
+      SET "isDeleted" = true
+      WHERE "id" = ${messageId}
+    `;
 
     return { success: true };
   } catch (error) {
-    return { error: "Erreur lors de la suppression du message" };
+    console.error("Erreur lors de la suppression du message:", error);
+    return {
+      success: false,
+      error: "Une erreur s'est produite lors de la suppression du message",
+    };
   }
 }

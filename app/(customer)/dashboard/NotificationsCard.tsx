@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   markMessageAsRead,
+  markMessagesAsRead,
   markNotificationAsRead,
   markReviewAsRead,
 } from "./notifications.action";
@@ -28,9 +29,11 @@ interface NotificationsCardProps {
   }[];
   unreadMessages: {
     id: string;
+    messageIds: string[];
     productId: string;
     productName: string;
     userName: string;
+    messageCount: number;
     createdAt: Date;
     messageText: string;
   }[];
@@ -65,8 +68,15 @@ export function NotificationsCard({
     router.refresh();
   };
 
-  const handleMessageClick = async (id: string, productId: string) => {
-    await markMessageAsRead(id);
+  const handleMessageClick = async (
+    messageIds: string[],
+    productId: string
+  ) => {
+    if (messageIds.length > 1) {
+      await markMessagesAsRead(messageIds);
+    } else if (messageIds.length === 1) {
+      await markMessageAsRead(messageIds[0]);
+    }
     router.push(`/products/${productId}`);
     router.refresh();
   };
@@ -164,7 +174,9 @@ export function NotificationsCard({
           <Link
             key={message.id}
             href={`/products/${message.productId}`}
-            onClick={() => handleMessageClick(message.id, message.productId)}
+            onClick={() =>
+              handleMessageClick(message.messageIds, message.productId)
+            }
           >
             <Button
               variant="ghost"
@@ -172,8 +184,18 @@ export function NotificationsCard({
             >
               <MessageSquare className="size-4 shrink-0" />
               <div className="flex-1 truncate">
-                <span className="font-medium">{message.userName}</span> a envoyé
-                un message dans{" "}
+                <span className="font-medium">{message.userName}</span>
+                {message.messageCount > 1 ? (
+                  <>
+                    a envoyé{" "}
+                    <span className="font-medium">
+                      {message.messageCount} nouveaux messages
+                    </span>{" "}
+                    dans{" "}
+                  </>
+                ) : (
+                  <> a envoyé un message dans </>
+                )}
                 <span className="font-medium">{message.productName}</span>
               </div>
             </Button>
