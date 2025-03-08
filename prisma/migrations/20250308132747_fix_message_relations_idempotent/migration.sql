@@ -1,5 +1,3 @@
--- This is an empty migration.
-
 -- Cette migration corrige les relations de messages de manière idempotente
 -- Elle vérifie l'état actuel de la base de données avant d'appliquer des changements
 
