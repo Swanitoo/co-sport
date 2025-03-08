@@ -31,6 +31,7 @@ export const updateUserProfile = userAction(
     });
   }
 );
+
 export const setupCustomerPortal = userAction(
   z.string(),
   async (_, context) => {
@@ -50,5 +51,19 @@ export const setupCustomerPortal = userAction(
     }
 
     return stripeSettingsLink.url;
+  }
+);
+
+export const updateProfileImage = userAction(
+  z.object({
+    imageUrl: z.string().url(),
+  }),
+  async ({ imageUrl }, { user }) => {
+    return await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        image: imageUrl,
+      },
+    });
   }
 );

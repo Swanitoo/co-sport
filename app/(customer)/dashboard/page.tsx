@@ -1,6 +1,5 @@
 import { requiredCurrentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -27,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { COUNTRIES } from "@/data/country";
+import { ProfileImageUpload } from "@/features/upload/components/ProfileImageUpload";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
 import { Globe, MapPin, Pencil } from "lucide-react";
@@ -128,7 +128,7 @@ export default async function RoutePage(props: PageParams<{}>) {
         }[];
         latestMessageDate: Date;
       }
-    >,
+    >
   );
 
   // Convertir l'objet en tableau et trier par date du message le plus récent
@@ -273,10 +273,7 @@ export default async function RoutePage(props: PageParams<{}>) {
               Content de te voir, {user.name}
             </h2>
           </div>
-          <Avatar className="size-20">
-            <AvatarImage src={user.image || undefined} />
-            <AvatarFallback>{user.name?.[0]}</AvatarFallback>
-          </Avatar>
+          <ProfileImageUpload currentImage={user.image} userName={user.name} />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
