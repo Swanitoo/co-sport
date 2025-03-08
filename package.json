@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "email": "email dev",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build"
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "update-lock": "pnpm install && git add pnpm-lock.yaml",
+    "db:fix": "prisma migrate resolve --applied 20250308122309_fix_message_relations"
   },
   "dependencies": {
     "@auth/core": "0.34.2",
