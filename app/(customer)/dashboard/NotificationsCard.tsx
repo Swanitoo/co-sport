@@ -70,7 +70,7 @@ export function NotificationsCard({
 
   const handleMessageClick = async (
     messageIds: string[],
-    productId: string
+    productId: string,
   ) => {
     if (messageIds.length > 1) {
       await markMessagesAsRead(messageIds);
@@ -85,7 +85,7 @@ export function NotificationsCard({
     id: string,
     productId: string,
     productName: string,
-    level: string
+    level: string,
   ) => {
     await markReviewAsRead(id);
     const urlProductName = productName
@@ -212,7 +212,7 @@ export function NotificationsCard({
                   review.id,
                   review.productId,
                   review.productName,
-                  review.level
+                  review.level,
                 )
               }
             >

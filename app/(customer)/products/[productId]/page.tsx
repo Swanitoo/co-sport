@@ -73,18 +73,18 @@ export default async function RoutePage({
   const isOwner = product.userId === user.id;
   const isClient = product.userId !== user.id;
   const isMember = product.memberships.some(
-    (m) => m.userId === user.id && m.status === "APPROVED"
+    (m) => m.userId === user.id && m.status === "APPROVED",
   );
   const canManageProduct = isOwner || user.isAdmin;
   const canViewMessages = isOwner || isMember || user.isAdmin;
 
   const activeMemberships = product.memberships.filter(
-    (m) => m.status === "APPROVED"
+    (m) => m.status === "APPROVED",
   );
   const membership = product.memberships.find((m) => m.userId === user.id);
 
   const pendingMemberships = product.memberships.filter(
-    (m) => m.status === "PENDING"
+    (m) => m.status === "PENDING",
   );
   const pendingCount = pendingMemberships.length;
 

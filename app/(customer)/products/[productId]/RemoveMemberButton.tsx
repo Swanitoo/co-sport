@@ -11,7 +11,9 @@ export type RemoveMemberButtonProps = {
   membershipId: string;
 };
 
-export const RemoveMemberButton = ({ membershipId }: RemoveMemberButtonProps) => {
+export const RemoveMemberButton = ({
+  membershipId,
+}: RemoveMemberButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [comment, setComment] = useState("");
@@ -36,12 +38,16 @@ export const RemoveMemberButton = ({ membershipId }: RemoveMemberButtonProps) =>
       </Button>
 
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-secondary p-6 rounded shadow-md w-full max-w-md">
-            <h2 className="text-lg font-semibold">Retirer le membre du groupe</h2>
-            <p className="mt-4 text-sm">Es-tu sûr de vouloir retirer ce membre ?</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-md rounded bg-secondary p-6 shadow-md">
+            <h2 className="text-lg font-semibold">
+              Retirer le membre du groupe
+            </h2>
+            <p className="mt-4 text-sm">
+              Es-tu sûr de vouloir retirer ce membre ?
+            </p>
             <textarea
-              className="w-full mt-4 p-2 border rounded"
+              className="mt-4 w-full rounded border p-2"
               placeholder="Ajoute un commentaire (optionnel)"
               value={comment}
               onChange={(e) => setComment(e.target.value)}

@@ -21,37 +21,41 @@ export function ProductSkeleton() {
       <CardHeader className="flex flex-col items-center gap-2 p-4">
         <Skeleton className="h-4 w-24" />
       </CardHeader>
-      <CardContent className="space-y-1.5 flex flex-col items-center gap-2 p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Skeleton className="h-6 w-6 rounded-full" />
+      <CardContent className="flex flex-col items-center gap-2 space-y-1.5 p-4">
+        <div className="mb-2 flex items-center gap-2">
+          <Skeleton className="size-6 rounded-full" />
           <Skeleton className="h-4 w-24" />
         </div>
         <Skeleton className="h-4 w-16" />
       </CardContent>
       <CardContent className="p-4 text-center">
-        <Skeleton className="h-4 w-32 mx-auto" />
+        <Skeleton className="mx-auto h-4 w-32" />
       </CardContent>
       <CardContent className="p-4 text-center">
-        <Skeleton className="h-4 w-20 mx-auto" />
+        <Skeleton className="mx-auto h-4 w-20" />
       </CardContent>
     </Card>
   );
 }
 
-export function ProductList({ products, userId, isLoading }: ProductListProps & { isLoading?: boolean }) {
+export function ProductList({
+  products,
+  userId,
+  isLoading,
+}: ProductListProps & { isLoading?: boolean }) {
   const getSportIcon = (sportName: string) => {
-    const sport = SPORTS.find(s => s.name === sportName);
+    const sport = SPORTS.find((s) => s.name === sportName);
     return sport?.icon || "🎯";
   };
 
   const getLevelIcon = (levelName: string) => {
-    const level = LEVEL_CLASSES.find(l => l.name === levelName);
+    const level = LEVEL_CLASSES.find((l) => l.name === levelName);
     return level?.icon || "🎯";
   };
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <ProductSkeleton key={i} />
         ))}
@@ -60,23 +64,26 @@ export function ProductList({ products, userId, isLoading }: ProductListProps & 
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {products.map((product, index) => {
         const isOwner = product.userId === userId;
-        const membership = product.memberships.find(m => m.userId === userId);
+        const membership = product.memberships.find((m) => m.userId === userId);
         const isApprovedMember = !isOwner && membership?.status === "APPROVED";
         const isPendingMember = !isOwner && membership?.status === "PENDING";
-        const countryFlag = product.user.country ? COUNTRIES.find(c => c.code === product.user.country)?.flag : null;
+        const countryFlag = product.user.country
+          ? COUNTRIES.find((c) => c.code === product.user.country)?.flag
+          : null;
 
         return (
-          <Link key={`product-${product.id}-${index}`} href={`/products/${product.id}`}>
+          <Link
+            key={`product-${product.id}-${index}`}
+            href={`/products/${product.id}`}
+          >
             <Card className="cursor-pointer flex-col gap-2 transition-all duration-200 ease-in-out hover:scale-[1.02] hover:bg-accent/5 hover:shadow-lg">
               <CardHeader className="flex flex-col items-center gap-2 p-4">
-                <div className="flex items-center gap-2 w-full">
+                <div className="flex w-full items-center gap-2">
                   <div className="flex items-center gap-1">
-                    {isOwner && (
-                      <Crown size={16} className="text-yellow-500" />
-                    )}
+                    {isOwner && <Crown size={16} className="text-yellow-500" />}
                     {isApprovedMember && (
                       <CheckCircle size={16} className="text-green-500" />
                     )}
@@ -84,39 +91,39 @@ export function ProductList({ products, userId, isLoading }: ProductListProps & 
                       <Hourglass size={16} className="text-yellow-500" />
                     )}
                   </div>
-                  <CardTitle className="text-center flex-1 truncate">{product.name}</CardTitle>
+                  <CardTitle className="flex-1 truncate text-center">
+                    {product.name}
+                  </CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-1.5 flex flex-col items-center gap-2 p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Avatar className="h-6 w-6">
+              <CardContent className="flex flex-col items-center gap-2 space-y-1.5 p-4">
+                <div className="mb-2 flex items-center gap-2">
+                  <Avatar className="size-6">
                     <AvatarImage src={product.user.image || undefined} />
                     <AvatarFallback>{product.user.name?.[0]}</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm text-muted-foreground truncate max-w-[150px]">
-                    {product.user.name?.split(' ')[0]}
-                    {countryFlag && (
-                      <span className="ml-1">{countryFlag}</span>
-                    )}
+                  <span className="max-w-[150px] truncate text-sm text-muted-foreground">
+                    {product.user.name?.split(" ")[0]}
+                    {countryFlag && <span className="ml-1">{countryFlag}</span>}
                   </span>
                 </div>
-                <CardDescription className="text-center flex items-center gap-2 justify-center">
+                <CardDescription className="flex items-center justify-center gap-2 text-center">
                   <span className="text-xl">{getSportIcon(product.sport)}</span>
                   <span>{product.sport}</span>
                 </CardDescription>
               </CardContent>
               {(product.venueName || product.venueAddress) && (
-                <CardContent className="text-center text-sm text-muted-foreground truncate px-4">
+                <CardContent className="truncate px-4 text-center text-sm text-muted-foreground">
                   <span>{product.venueName || product.venueAddress}</span>
                 </CardContent>
               )}
               <CardContent className="p-4 text-center">
-                <p className="truncate w-full text-sm text-muted-foreground">
+                <p className="w-full truncate text-sm text-muted-foreground">
                   {product.description}
                 </p>
               </CardContent>
               <CardContent className="p-4 text-center">
-                <p className="truncate w-full text-sm font-medium flex items-center gap-2 justify-center">
+                <p className="flex w-full items-center justify-center gap-2 truncate text-sm font-medium">
                   <span className="text-xl">{getLevelIcon(product.level)}</span>
                   <span>{product.level}</span>
                 </p>

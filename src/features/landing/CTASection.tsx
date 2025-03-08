@@ -21,7 +21,9 @@ export const CTASection = () => {
   return (
     <Section>
       <Card className="flex flex-col items-center justify-center gap-4 p-6">
-        <h2 className="text-2xl font-bold text-center">Commence dès maintenant</h2>
+        <h2 className="text-center text-2xl font-bold">
+          Commence dès maintenant
+        </h2>
         <button
           className={buttonVariants({ size: "lg" })}
           onClick={handleButtonClick}
@@ -32,4 +34,3 @@ export const CTASection = () => {
     </Section>
   );
 };
-

@@ -1,7 +1,15 @@
 "use client";
 
 import { Button } from "@/components/ui/button"; // Assure-toi d'importer tes composants UI
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea"; // Ajoute ton composant textarea si nécessaire
 import { useMutation } from "@tanstack/react-query";
 import { Loader2, Users } from "lucide-react";
@@ -66,7 +74,11 @@ export const JoinButton = ({ productId, userId }: JoinButtonProps) => {
         />
         <DialogFooter>
           <Button onClick={handleSubmit}>
-            {joinMutation.isPending ? <Loader2 className="animate-spin" /> : "Envoyer la demande"}
+            {joinMutation.isPending ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              "Envoyer la demande"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

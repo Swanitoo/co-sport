@@ -27,7 +27,7 @@ export const PricingSection = async () => {
           Un accès gratuit dans un premier temps
         </p>
       </div>
-      <div className="flex justify-center items-center gap-4 max-lg:flex-col">
+      <div className="flex items-center justify-center gap-4 max-lg:flex-col">
         <PricingCard
           title="Gratuit"
           price={0}
@@ -41,7 +41,7 @@ export const PricingSection = async () => {
                 size: "lg",
                 variant: "outline",
               }),
-              "w-full"
+              "w-full",
             )}
           >
             Inscription
@@ -54,7 +54,7 @@ export const PricingSection = async () => {
           items={[
             "Créer un nombre d'annonces ilimité",
             "Participe a un nombre d'annonces ilimité",
-            "Pas de publicité"
+            "Pas de publicité",
           ]}
         >
           {user ? (
@@ -79,7 +79,7 @@ export const PricingSection = async () => {
                   size: "lg",
                   variant: "outline",
                 }),
-                "w-full"
+                "w-full",
               )}
             >
               Inscription

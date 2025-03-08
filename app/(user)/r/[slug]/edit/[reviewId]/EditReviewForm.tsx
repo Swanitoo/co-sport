@@ -43,9 +43,9 @@ export function EditReviewForm({ review, slug }: EditReviewFormProps) {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-8">
+    <div className="mx-auto max-w-2xl py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-2">Modifier l'avis</h1>
+        <h1 className="mb-2 text-2xl font-bold">Modifier l'avis</h1>
         <p className="text-muted-foreground">
           Auteur: {review.user?.name || "Anonyme"}
         </p>
@@ -53,12 +53,12 @@ export function EditReviewForm({ review, slug }: EditReviewFormProps) {
 
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-2">Note</label>
+          <label className="mb-2 block text-sm font-medium">Note</label>
           <ReviewSelector initialRating={rating} onSelect={setRating} />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Commentaire</label>
+          <label className="mb-2 block text-sm font-medium">Commentaire</label>
           <Input
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -73,7 +73,7 @@ export function EditReviewForm({ review, slug }: EditReviewFormProps) {
           </Button>
           <Button variant="ghost" asChild>
             <Link href={`/wall/${slug}`}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
+              <ArrowLeft className="mr-2 size-4" />
               Retour
             </Link>
           </Button>
@@ -81,4 +81,4 @@ export function EditReviewForm({ review, slug }: EditReviewFormProps) {
       </div>
     </div>
   );
-} 
+}

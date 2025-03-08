@@ -23,13 +23,9 @@ import { Loader2, Reply, Trash2, User as UserIcon, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import {
-  deleteMessageAction,
-  getMessagesAction,
-  sendMessageAction,
-} from "./edit/product.action";
+import { deleteMessageAction, sendMessageAction } from "./edit/product.action";
 
 type MessageWithUser = Message & {
   user: Pick<User, "name" | "image">;
@@ -141,7 +137,7 @@ export function ChatComponent({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   // Fonction pour mettre à jour l'activité de l'utilisateur courant
-  const updateUserActivity = () => {
+  const updateUserActivity = useCallback(() => {
     userActivityMap.current.set(userId, new Date());
     // Enregistrer l'activité sur le serveur (optionnel)
     try {
@@ -155,7 +151,52 @@ export function ChatComponent({
     } catch (error) {
       // Erreur silencieuse
     }
-  };
+  }, [userId, productId]);
+
+  // Fonction pour charger les messages avec pagination
+  const loadMessages = useCallback(
+    async (pageNum: number, silent = false) => {
+      if (!silent) {
+        setIsLoading(true);
+      }
+
+      // Augmenter la limite pour charger plus de messages à la fois (de 20 à 50)
+      const messageLimit = 50;
+
+      try {
+        const response = await fetch(
+          `/api/products/${productId}/messages?page=${pageNum}&limit=${messageLimit}`
+        );
+
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Mettre à jour les messages
+        if (pageNum === 1) {
+          // Première page, remplacer tous les messages
+          setMessages(data.messages);
+        } else {
+          // Pages suivantes, ajouter au début
+          setMessages((prev) => [...data.messages, ...prev]);
+        }
+
+        // Mettre à jour l'état de pagination
+        setHasMore(data.messages.length === messageLimit);
+        setPage(pageNum);
+        setLastLoadTime(new Date());
+      } catch (error) {
+        console.error("Erreur lors du chargement des messages:", error);
+      } finally {
+        if (!silent) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [productId, setIsLoading, setMessages, setHasMore, setPage, setLastLoadTime]
+  );
 
   // Mettre à jour l'activité au chargement et périodiquement
   useEffect(() => {
@@ -166,171 +207,7 @@ export function ChatComponent({
     }, 60000); // Mettre à jour l'activité toutes les minutes
 
     return () => clearInterval(intervalId);
-  }, [userId]);
-
-  // Fonction pour vérifier si un utilisateur est actif (moins de 5 minutes)
-  const isUserActive = (lastActive?: Date): boolean => {
-    if (!lastActive) return false;
-    return differenceInMinutes(new Date(), lastActive) < 5;
-  };
-
-  // Fonction pour faire défiler vers le bas uniquement dans le conteneur de chat
-  const scrollToBottom = (behavior: "auto" | "smooth" = "smooth") => {
-    if (messagesEndRef.current && messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTo({
-        top: messagesEndRef.current.offsetTop,
-        behavior,
-      });
-    }
-  };
-
-  // Fonction pour charger les messages avec pagination
-  const loadMessages = async (pageNum: number, silent = false) => {
-    if (!silent) {
-      setIsLoading(true);
-    }
-
-    // Augmenter la limite pour charger plus de messages à la fois (de 20 à 50)
-    const messageLimit = 50;
-
-    try {
-      const response = await fetch(
-        `/api/products/${productId}/messages?page=${pageNum}&limit=${messageLimit}`
-      );
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.messages && Array.isArray(data.messages)) {
-        // Mise à jour des messages de manière sûre pour éviter les doublons
-        if (pageNum === 1) {
-          // Pour la première page, nous pouvons remplacer tout le tableau
-          // mais d'abord vérifier s'il y a de nouveaux messages
-          const currentMessageIds = new Set(messages.map((m) => m.id));
-          const hasNewMessages = data.messages.some(
-            (m: MessageWithUser) => !currentMessageIds.has(m.id)
-          );
-
-          // Remplacer complètement les messages
-          setMessages(data.messages);
-
-          // Faire défiler uniquement s'il y a de nouveaux messages
-          if (hasNewMessages && messages.length > 0) {
-            setTimeout(() => scrollToBottom("smooth"), 100);
-          }
-        } else {
-          // Pour les pages suivantes, fusionner les messages de manière sûre
-          // en évitant les doublons basés sur l'ID
-          setMessages((prev) => {
-            // Créer un ensemble des IDs existants
-            const existingIds = new Set(prev.map((m) => m.id));
-
-            // Filtrer les nouveaux messages pour exclure les doublons
-            const uniqueNewMessages = data.messages.filter(
-              (m: MessageWithUser) => !existingIds.has(m.id)
-            );
-
-            // Retourner les messages fusionnés
-            return [...uniqueNewMessages, ...prev];
-          });
-        }
-
-        // Mettre à jour les métadonnées de pagination
-        setHasMore(data.messages.length >= messageLimit);
-        setLastLoadTime(new Date());
-      } else {
-        setHasMore(false);
-      }
-    } catch (error) {
-      // Fallback: essayer getMessagesAction si l'API REST échoue
-      try {
-        const result = await getMessagesAction({
-          productId,
-          page: pageNum,
-          limit: messageLimit,
-        });
-
-        if (result.data) {
-          const loadedMessages = result.data as MessageWithUser[];
-
-          if (pageNum === 1) {
-            setMessages(loadedMessages);
-          } else {
-            // Même logique que ci-dessus pour éviter les doublons
-            setMessages((prev) => {
-              const existingIds = new Set(prev.map((m) => m.id));
-              const uniqueNewMessages = loadedMessages.filter(
-                (m: MessageWithUser) => !existingIds.has(m.id)
-              );
-              return [...uniqueNewMessages, ...prev];
-            });
-          }
-
-          setHasMore(loadedMessages.length >= messageLimit);
-          setLastLoadTime(new Date());
-        } else {
-          setHasMore(false);
-          if (!silent) {
-            toast.error("Aucun message trouvé");
-          }
-        }
-      } catch (fallbackError) {
-        if (!silent) {
-          toast.error("Erreur lors du chargement des messages");
-        }
-      }
-    } finally {
-      if (!silent) {
-        setIsLoading(false);
-      }
-    }
-  };
-
-  // Gestionnaire de défilement pour le chargement de messages plus anciens
-  const handleScroll = () => {
-    const container = messagesContainerRef.current;
-    // Rendre la détection du scroll plus sensible - déclencher le chargement quand on est plus proche du haut
-    // Aussi, vérifier le ratio de défilement pour être plus réactif
-    if (container) {
-      const scrollRatio = container.scrollTop / container.scrollHeight;
-      const nearTop = container.scrollTop < 150;
-
-      if (nearTop && hasMore && !isLoading) {
-        // Chargement automatique en cas de scroll vers le haut
-        setPage((prevPage) => {
-          const newPage = prevPage + 1;
-          loadMessages(newPage);
-          return newPage;
-        });
-      }
-    }
-  };
-
-  // Système de polling automatique (simulation temps réel)
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout | null = null;
-
-    if (isPolling && productId) {
-      intervalId = setInterval(() => {
-        // Sauvegarder les IDs des messages actuels
-        const currentMessageIds = new Set(messages.map((m) => m.id));
-
-        // Chargement silencieux des messages
-        loadMessages(1, true).then(() => {
-          // La comparaison est gérée dans loadMessages
-        });
-      }, pollInterval);
-    }
-
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [isPolling, pollInterval, productId]);
+  }, [updateUserActivity]);
 
   // Activer/désactiver le polling en fonction de la visibilité de la page
   useEffect(() => {
@@ -348,14 +225,31 @@ export function ChatComponent({
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [setIsPolling, updateUserActivity]);
+
+  // Polling pour les nouveaux messages
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+
+    if (isPolling) {
+      intervalId = setInterval(() => {
+        loadMessages(1, true);
+      }, pollInterval);
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isPolling, pollInterval, loadMessages]);
 
   // Chargement initial des messages
   useEffect(() => {
     if (productId) {
       loadMessages(1);
     }
-  }, [productId]);
+  }, [productId, loadMessages]);
 
   // Charger et actualiser les utilisateurs en ligne
   useEffect(() => {
@@ -605,6 +499,45 @@ export function ChatComponent({
     }
   };
 
+  // Fonction pour vérifier si un utilisateur est actif (moins de 5 minutes)
+  const isUserActive = useCallback((lastActive?: Date): boolean => {
+    if (!lastActive) return false;
+    return differenceInMinutes(new Date(), lastActive) < 5;
+  }, []);
+
+  // Fonction pour faire défiler vers le bas uniquement dans le conteneur de chat
+  const scrollToBottom = useCallback(
+    (behavior: "auto" | "smooth" = "smooth") => {
+      if (messagesEndRef.current && messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTo({
+          top: messagesEndRef.current.offsetTop,
+          behavior,
+        });
+      }
+    },
+    []
+  );
+
+  // Gestionnaire de défilement pour le chargement de messages plus anciens
+  const handleScroll = useCallback(() => {
+    const container = messagesContainerRef.current;
+    // Rendre la détection du scroll plus sensible - déclencher le chargement quand on est plus proche du haut
+    // Aussi, vérifier le ratio de défilement pour être plus réactif
+    if (container) {
+      const scrollRatio = container.scrollTop / container.scrollHeight;
+      const nearTop = container.scrollTop < 150;
+
+      if (nearTop && hasMore && !isLoading) {
+        // Chargement automatique en cas de scroll vers le haut
+        setPage((prevPage) => {
+          const newPage = prevPage + 1;
+          loadMessages(newPage);
+          return newPage;
+        });
+      }
+    }
+  }, [hasMore, isLoading, loadMessages, setPage]);
+
   // Remplacer la fonction existante par une qui ouvre la modale
   const handleDeleteMessage = (messageId: string) => {
     openDeleteConfirmation(messageId);
@@ -624,7 +557,7 @@ export function ChatComponent({
 
     // Mettre à jour la référence du nombre de messages
     prevMessagesLengthRef.current = messages.length;
-  }, [messages, userId]);
+  }, [messages, userId, scrollToBottom]);
 
   // Fonction pour faire défiler vers un message spécifique
   const scrollToMessage = (messageId: string) => {

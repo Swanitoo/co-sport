@@ -37,8 +37,8 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
   if (!product) {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center min-h-screen">
-          <h1 className="text-2xl font-bold mb-4">Produit non trouvé</h1>
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <h1 className="mb-4 text-2xl font-bold">Produit non trouvé</h1>
           <p>Désolé, nous n'avons pas pu trouver le produit demandé.</p>
           <Button variant="ghost" className="mt-4" asChild>
             <Link href="/products" className="flex items-center gap-2">
@@ -87,7 +87,7 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
                 size: "sm",
               })}
             >
-              <ArrowLeft className="mr-2 h-4 w-4" />
+              <ArrowLeft className="mr-2 size-4" />
               Retour à l'annonce
             </Link>
             <h1 className="text-2xl font-bold">{product.name}</h1>
@@ -112,7 +112,7 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
                         size: "sm",
                       })}
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="size-4" />
                     </Link>
                     <DeleteReviewButton reviewId={review.id} />
                   </div>

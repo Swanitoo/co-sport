@@ -128,7 +128,7 @@ export default async function RoutePage(props: PageParams<{}>) {
         }[];
         latestMessageDate: Date;
       }
-    >
+    >,
   );
 
   // Convertir l'objet en tableau et trier par date du message le plus récent

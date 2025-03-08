@@ -10,10 +10,7 @@ import {
 } from "@/components/ui/select";
 import { COUNTRIES } from "@/data/country";
 import { cn } from "@/lib/utils";
-import {
-  LEVEL_CLASSES,
-  SPORTS
-} from "../[productId]/edit/product.schema";
+import { LEVEL_CLASSES, SPORTS } from "../[productId]/edit/product.schema";
 import { FilterType, ProductFiltersProps } from "./productList.schema";
 
 export function ProductFilters({
@@ -45,7 +42,7 @@ export function ProductFilters({
     <div
       className={cn(
         "space-y-6 rounded-lg border border-border bg-card p-6 shadow-sm",
-        className
+        className,
       )}
     >
       <div className="space-y-4">
@@ -85,7 +82,9 @@ export function ProductFilters({
               if (!displayName) return null;
               return (
                 <SelectItem key={index} value={displayName}>
-                  <span className="truncate block max-w-[200px]">{displayName}</span>
+                  <span className="block max-w-[200px] truncate">
+                    {displayName}
+                  </span>
                 </SelectItem>
               );
             })}
@@ -161,7 +160,7 @@ export function ProductFilters({
             "w-full font-medium border-pink-300 transition-all duration-200",
             filters.onlyGirls
               ? "bg-pink-100 text-pink-900 hover:bg-pink-200 border-pink-500"
-              : "text-pink-700 hover:bg-pink-50 hover:text-pink-900 hover:border-pink-500"
+              : "text-pink-700 hover:bg-pink-50 hover:text-pink-900 hover:border-pink-500",
           )}
         >
           👩 Only Girls

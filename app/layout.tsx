@@ -22,7 +22,7 @@ export default async function RootLayout({
   const user = await currentUser();
 
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full" suppressHydrationWarning>
       <body className={cn(inter.className, "h-full")}>
         <Providers userId={user?.id}>{children}</Providers>
       </body>

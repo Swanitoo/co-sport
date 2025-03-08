@@ -9,7 +9,10 @@ interface ReviewSelectorProps {
   initialRating?: number;
 }
 
-export default function ReviewSelector({ onSelect, initialRating = 0 }: ReviewSelectorProps) {
+export default function ReviewSelector({
+  onSelect,
+  initialRating = 0,
+}: ReviewSelectorProps) {
   const [rating, setRating] = useState(initialRating);
   const [hover, setHover] = useState(0);
 
@@ -47,19 +50,15 @@ export default function ReviewSelector({ onSelect, initialRating = 0 }: ReviewSe
               "cursor-pointer p-1 drop-shadow-md",
               index <= (hover || rating)
                 ? "text-yellow-500 hover:text-yellow-600"
-                : "text-gray-300 hover:text-gray-400"
+                : "text-gray-300 hover:text-gray-400",
             )}
           >
-            <Star className="h-8 w-8 fill-current" />
+            <Star className="size-8 fill-current" />
           </div>
         ))}
       </div>
       <p className="w-full text-center text-sm font-light text-muted-foreground">
-        {rating
-          ? starRatings[rating]
-          : hover
-          ? starRatings[hover]
-          : '\u00A0'}
+        {rating ? starRatings[rating] : hover ? starRatings[hover] : "\u00A0"}
       </p>
     </div>
   );

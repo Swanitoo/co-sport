@@ -49,7 +49,7 @@ export function FilteredProductList({
     } catch (error) {
       console.error(
         "Erreur lors de la récupération des produits filtrés:",
-        error
+        error,
       );
     } finally {
       setLoading(false);
@@ -74,7 +74,7 @@ export function FilteredProductList({
           setLoading(false);
         }
       },
-      { threshold: 1.0 }
+      { threshold: 1.0 },
     );
 
     if (loadMoreRef.current) {

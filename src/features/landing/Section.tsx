@@ -13,7 +13,7 @@ export const Section = (props: SectionProps) => {
       <div
         className={cn(
           "mx-auto w-full max-w-screen-xl px-4 py-8 lg:px-12 lg:py-16",
-          props.className
+          props.className,
         )}
       >
         {props.children}

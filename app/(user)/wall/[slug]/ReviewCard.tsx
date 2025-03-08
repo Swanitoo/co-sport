@@ -21,7 +21,9 @@ interface ReviewItemProps {
 export function ReviewItem({ review, className }: ReviewItemProps) {
   const displayName = review.user?.name || review.name;
   const displayImage = review.user?.image || review.image;
-  const profileLink = review.user?.id ? `/profile/${review.user.id}` : review.socialLink;
+  const profileLink = review.user?.id
+    ? `/profile/${review.user.id}`
+    : review.socialLink;
 
   const getInitials = (name?: string | null) => {
     if (!name) return "?";
@@ -31,14 +33,14 @@ export function ReviewItem({ review, className }: ReviewItemProps) {
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center gap-2">
-        <Avatar className="h-8 w-8">
+        <Avatar className="size-8">
           {displayImage ? (
             <Image
               src={displayImage}
               alt={`Avatar de ${displayName}`}
               width={32}
               height={32}
-              className="h-full w-full object-cover rounded-full"
+              className="size-full rounded-full object-cover"
               unoptimized
             />
           ) : (
@@ -47,7 +49,7 @@ export function ReviewItem({ review, className }: ReviewItemProps) {
         </Avatar>
         <div className="flex flex-col">
           {profileLink ? (
-            <Link 
+            <Link
               href={profileLink}
               className="text-sm font-medium hover:underline"
             >

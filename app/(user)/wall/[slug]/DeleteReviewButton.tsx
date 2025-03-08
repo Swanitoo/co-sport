@@ -40,7 +40,7 @@ export function DeleteReviewButton({ reviewId }: DeleteReviewButtonProps) {
       onClick={handleDelete}
       disabled={isDeleting}
     >
-      <Trash className="h-4 w-4" />
+      <Trash className="size-4" />
     </Button>
   );
-} 
+}

@@ -34,7 +34,7 @@ export function ProfileDataCheck({
 }: ProfileDataCheckProps) {
   const [open, setOpen] = useState(needsSex || needsCountry);
   const [currentStep, setCurrentStep] = useState<Step>(
-    needsSex ? "sex" : "country"
+    needsSex ? "sex" : "country",
   );
   const [showSuccess, setShowSuccess] = useState(false);
   const [formData, setFormData] = useState({
@@ -53,7 +53,7 @@ export function ProfileDataCheck({
 
     try {
       await updateUserProfile({ [field]: value });
-      
+
       if (field === "sex" && needsCountry) {
         setCurrentStep("country");
         return;
@@ -74,10 +74,10 @@ export function ProfileDataCheck({
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="flex flex-col items-center justify-center p-4 space-y-2"
+            className="flex flex-col items-center justify-center space-y-2 p-4"
           >
-            <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-              <Check className="h-6 w-6 text-green-600" />
+            <div className="flex size-12 items-center justify-center rounded-full bg-green-100">
+              <Check className="size-6 text-green-600" />
             </div>
             <p className="text-lg font-medium">Profil complété !</p>
           </motion.div>
@@ -90,7 +90,7 @@ export function ProfileDataCheck({
             </DialogHeader>
             <div className="space-y-2">
               <Progress value={getProgress()} className="h-2 w-full" />
-              <p className="text-sm text-muted-foreground text-center">
+              <p className="text-center text-sm text-muted-foreground">
                 {getProgress()}% complété
               </p>
             </div>

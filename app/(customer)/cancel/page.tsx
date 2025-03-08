@@ -6,9 +6,7 @@ import Link from "next/link";
 export default async function RoutePage(props: PageParams<{}>) {
   return (
     <Layout>
-      <LayoutTitle>
-        Oh... il semble que le paiement ait été annulé.
-      </LayoutTitle>
+      <LayoutTitle>Oh... il semble que le paiement ait été annulé.</LayoutTitle>
       <div className="flex gap-4">
         <Link
           className={buttonVariants({ size: "lg", variant: "secondary" })}

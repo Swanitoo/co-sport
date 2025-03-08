@@ -11,13 +11,11 @@ export function MessageSkeleton({ isCurrentUser }: { isCurrentUser: boolean }) {
         "justify-start": !isCurrentUser,
       })}
     >
-      {!isCurrentUser && (
-        <Skeleton className="h-8 w-8 rounded-full flex-shrink-0" />
-      )}
+      {!isCurrentUser && <Skeleton className="size-8 shrink-0 rounded-full" />}
       <div className="space-y-2">
         {!isCurrentUser && <Skeleton className="h-4 w-20" />}
         <Skeleton className="h-10 w-[200px]" />
       </div>
     </div>
   );
-} 
+}

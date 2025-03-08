@@ -72,7 +72,7 @@ export function SportVenueSearch({
       setLoading(true);
       try {
         const response = await fetch(
-          `/api/webhooks/places?q=${encodeURIComponent(debouncedQuery)}`
+          `/api/webhooks/places?q=${encodeURIComponent(debouncedQuery)}`,
         );
         if (!response.ok) throw new Error("Search failed");
         const results = await response.json();
@@ -108,7 +108,7 @@ export function SportVenueSearch({
         placeholder="Rechercher un lieu (salle de sport, montagne, stade...)"
         className={cn(
           "w-full",
-          isInvalid && "border-red-500 focus-visible:ring-red-500"
+          isInvalid && "border-red-500 focus-visible:ring-red-500",
         )}
       />
 

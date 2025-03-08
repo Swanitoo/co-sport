@@ -10,7 +10,7 @@ import { ProductForm } from "./ProductForm";
 export default async function RoutePage(
   props: PageParams<{
     productId: string;
-  }>
+  }>,
 ) {
   const user = await requiredCurrentUser();
 

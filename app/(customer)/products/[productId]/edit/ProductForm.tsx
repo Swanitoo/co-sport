@@ -3,22 +3,22 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-    useZodForm,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useZodForm,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -29,10 +29,10 @@ import { toast } from "sonner";
 import { SportVenueSearch } from "../SportVenueSearch";
 import { createProductAction, updateProductAction } from "./product.action";
 import {
-    LEVEL_CLASSES,
-    ProductSchema,
-    ProductType,
-    SPORTS
+  LEVEL_CLASSES,
+  ProductSchema,
+  ProductType,
+  SPORTS,
 } from "./product.schema";
 
 export type ProductFormProps = {
@@ -239,8 +239,10 @@ export const ProductForm = (props: ProductFormProps) => {
                 <Loader2 className="size-4 animate-spin" />
                 <span>Création en cours...</span>
               </div>
+            ) : isCreate ? (
+              "Créer ton annonce"
             ) : (
-              isCreate ? "Créer ton annonce" : "Enregistre ton annonce"
+              "Enregistre ton annonce"
             )}
           </Button>
         </Form>

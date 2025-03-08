@@ -61,7 +61,7 @@ export default async function ProfilePage({
   const age = user.birthDate
     ? Math.floor(
         (new Date().getTime() - user.birthDate.getTime()) /
-          (1000 * 60 * 60 * 24 * 365.25)
+          (1000 * 60 * 60 * 24 * 365.25),
       )
     : null;
 
@@ -103,26 +103,26 @@ export default async function ProfilePage({
           <CardContent className="space-y-4">
             {user.bio && (
               <div>
-                <h3 className="font-semibold mb-2">Bio</h3>
+                <h3 className="mb-2 font-semibold">Bio</h3>
                 <p className="text-sm text-muted-foreground">{user.bio}</p>
               </div>
             )}
             <div className="grid grid-cols-2 gap-4">
               {age && (
                 <div>
-                  <h3 className="font-semibold mb-1">Âge</h3>
+                  <h3 className="mb-1 font-semibold">Âge</h3>
                   <p className="text-sm text-muted-foreground">{age} ans</p>
                 </div>
               )}
               {user.sex && (
                 <div>
-                  <h3 className="font-semibold mb-1">Genre</h3>
+                  <h3 className="mb-1 font-semibold">Genre</h3>
                   <p className="text-sm text-muted-foreground">{user.sex}</p>
                 </div>
               )}
               {user.nationality && (
                 <div>
-                  <h3 className="font-semibold mb-1">Nationalité</h3>
+                  <h3 className="mb-1 font-semibold">Nationalité</h3>
                   <p className="text-sm text-muted-foreground">
                     {user.nationality}
                   </p>
@@ -130,7 +130,7 @@ export default async function ProfilePage({
               )}
               {user.city && (
                 <div>
-                  <h3 className="font-semibold mb-1">Ville</h3>
+                  <h3 className="mb-1 font-semibold">Ville</h3>
                   <p className="text-sm text-muted-foreground">{user.city}</p>
                 </div>
               )}
@@ -170,7 +170,7 @@ export default async function ProfilePage({
                       </div>
                       <ReviewItem review={review} />
                     </div>
-                  ))
+                  )),
                 )}
               </div>
             )}
@@ -204,7 +204,7 @@ export default async function ProfilePage({
                         </p>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-muted-foreground line-clamp-2">
+                        <p className="line-clamp-2 text-sm text-muted-foreground">
                           {product.description}
                         </p>
                       </CardContent>

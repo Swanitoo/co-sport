@@ -44,7 +44,7 @@ export const LatestProducts = ({
       router.push(`/products/${productId}`);
     } else {
       router.push(
-        `/api/auth/signin?callbackUrl=http://localhost:3000/products/${productId}`
+        `/api/auth/signin?callbackUrl=http://localhost:3000/products/${productId}`,
       );
     }
   };

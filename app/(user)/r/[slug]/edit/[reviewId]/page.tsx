@@ -14,8 +14,8 @@ export default async function EditReviewPage({
   if (!user?.isAdmin) {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center min-h-screen">
-          <h1 className="text-2xl font-bold mb-4">Accès refusé</h1>
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <h1 className="mb-4 text-2xl font-bold">Accès refusé</h1>
           <p>Vous devez être administrateur pour accéder à cette page.</p>
         </div>
       </Layout>
@@ -36,4 +36,4 @@ export default async function EditReviewPage({
       <EditReviewForm review={review} slug={slug} />
     </Layout>
   );
-} 
+}

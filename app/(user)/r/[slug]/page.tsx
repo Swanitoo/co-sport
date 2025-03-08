@@ -47,8 +47,8 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
   if (!product) {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center min-h-screen">
-          <h1 className="text-2xl font-bold mb-4">Produit non trouvé</h1>
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <h1 className="mb-4 text-2xl font-bold">Produit non trouvé</h1>
           <p>Désolé, nous n'avons pas pu trouver le produit demandé.</p>
         </div>
       </Layout>
@@ -58,8 +58,8 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
   if (product.memberships.length === 0) {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center min-h-screen">
-          <h1 className="text-2xl font-bold mb-4">Accès refusé</h1>
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <h1 className="mb-4 text-2xl font-bold">Accès refusé</h1>
           <p>Vous devez être un membre approuvé pour laisser un avis.</p>
         </div>
       </Layout>
