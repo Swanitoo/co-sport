@@ -79,8 +79,8 @@ export async function updateBirthDate(formData: FormData) {
 
   await prisma.user.update({
     where: { id: user.id },
-    data: { 
-      birthDate: UpdateProfileSchema.shape.birthDate.parse(birthDate)
+    data: {
+      birthDate: UpdateProfileSchema.shape.birthDate.parse(birthDate),
     },
   });
 
