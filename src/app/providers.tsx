@@ -9,15 +9,6 @@ import { PropsWithChildren } from "react";
 
 const queryClient = new QueryClient();
 
-// Configuration du thème partagée entre les layouts
-export const THEME_CONFIG = {
-  attribute: "class",
-  defaultTheme: "system",
-  enableSystem: true,
-  disableTransitionOnChange: true,
-  storageKey: "theme", // Clé de stockage explicite
-};
-
 export type ProvidersProps = PropsWithChildren & {
   userId?: string;
 };
@@ -25,7 +16,7 @@ export type ProvidersProps = PropsWithChildren & {
 export const Providers = ({ children, userId }: ProvidersProps) => {
   return (
     <SessionProvider>
-      <ThemeProvider {...THEME_CONFIG}>
+      <ThemeProvider>
         <ThemeSync />
         <QueryClientProvider client={queryClient}>
           <Toaster />

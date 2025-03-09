@@ -1,4 +1,3 @@
-import { THEME_CONFIG } from "@/app/providers";
 import { ThemeScript } from "@/components/theme-script";
 import { ThemeSync } from "@/components/theme-sync";
 import { ThemeProvider } from "@/features/theme/ThemeProvider";
@@ -45,7 +44,7 @@ export default async function LocaleLayout({
       </head>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <ThemeProvider {...THEME_CONFIG}>
+          <ThemeProvider>
             <ThemeSync />
             {/* Pour la page principale, nous n'affichons pas le Header ici,
                 car il sera affiché par le composant LandingHeader */}

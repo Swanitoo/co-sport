@@ -55,7 +55,6 @@ export const MapComponent = ({
   // Initialiser directement avec les coordonnées de Lyon
   const [userLocation, setUserLocation] =
     useState<[number, number]>(lyonCoords);
-  const [mapCenter, setMapCenter] = useState<[number, number]>(lyonCoords);
 
   // Grouper les produits par localisation
   const productGroups = groupProductsByLocation(products);
@@ -92,7 +91,6 @@ export const MapComponent = ({
                 lng
               );
               setUserLocation([lat, lng]);
-              setMapCenter([lat, lng]);
             }
           } catch (error) {
             console.log(
@@ -144,21 +142,39 @@ export const MapComponent = ({
           .replace("{y}", y.toString());
   };
 
-  // Déterminer le centre de la carte - toujours utiliser Lyon si aucun produit
-  const getCenter = () => {
-    if (products.length === 0) {
-      return lyonCoords; // Lyon par défaut
+  // Déterminer le centre de la carte
+  const getCenter = (): [number, number] => {
+    // Pour une annonce unique (vue détaillée), centrer sur sa position
+    if (highlightSingleProduct && products.length === 1) {
+      const product = products[0];
+      return [product.venueLat as number, product.venueLng as number];
     }
 
-    // Utiliser le centre des produits
-    const lats = products.map((p) => p.venueLat as number);
-    const lngs = products.map((p) => p.venueLng as number);
+    // Pour la liste des annonces, toujours utiliser la position de l'utilisateur si disponible
+    if (userLocation && userLocation[0] !== lyonCoords[0]) {
+      return userLocation;
+    }
 
-    return [
-      lats.reduce((a, b) => a + b, 0) / lats.length,
-      lngs.reduce((a, b) => a + b, 0) / lngs.length,
-    ];
+    // Fallback sur Lyon
+    return lyonCoords;
   };
+
+  // Initialiser le centre de la carte
+  const [mapCenter, setMapCenter] = useState<[number, number]>(getCenter());
+
+  // Mettre à jour le centre quand la position utilisateur change
+  useEffect(() => {
+    if (!highlightSingleProduct) {
+      setMapCenter(getCenter());
+    }
+  }, [userLocation]);
+
+  // Mettre à jour le centre pour le mode détail quand les produits changent
+  useEffect(() => {
+    if (highlightSingleProduct) {
+      setMapCenter(getCenter());
+    }
+  }, [products]);
 
   // Helper pour obtenir les icônes des sports et niveaux
   const getSportIcon = (sportName: string) => {
@@ -172,21 +188,31 @@ export const MapComponent = ({
   };
 
   // Ajustements pour le mode miniature
-  const markerSize = miniVersion ? 20 : 40;
-  const hoverMarkerSize = miniVersion ? 25 : 50;
+  const markerSize = miniVersion ? 20 : 30;
+  const hoverMarkerSize = miniVersion ? 25 : 40;
   const defaultZoom = miniVersion ? (highlightSingleProduct ? 13 : 9) : 12;
   const showUI = !miniVersion; // N'afficher les popups que dans la version complète
 
-  // Si c'est une carte pour un seul produit, on veut désactiver certaines interactions
-  const singleProductOptions =
-    highlightSingleProduct && products.length === 1
-      ? {
-          metaWheelZoom: false,
-          touchZoom: false,
-          mouseEvents: miniVersion ? false : true,
-          zoomSnap: false,
-        }
-      : {};
+  // Style de transition pour les marqueurs
+  const markerStyle = {
+    transition: "all 0.2s ease-in-out",
+  };
+
+  const mobileOptions = {
+    touchZoom: true,
+    zoomSnap: false,
+    mouseEvents: true,
+  };
+
+  const singleProductOptions = highlightSingleProduct
+    ? {
+        touchZoom: !miniVersion, // Activer le zoom tactile sauf en mode miniature
+        zoomSnap: false,
+        mouseEvents: !miniVersion, // Activer les événements souris sauf en mode miniature
+        metaWheelZoom: !miniVersion, // Activer le zoom à la molette sauf en mode miniature
+        className: miniVersion ? "pointer-events-none" : "", // Désactiver les interactions uniquement en mode miniature
+      }
+    : {};
 
   return (
     <div
@@ -195,29 +221,33 @@ export const MapComponent = ({
       }`}
     >
       <Map
-        defaultCenter={miniVersion ? lyonCoords : mapCenter}
+        defaultCenter={getCenter()}
+        center={mapCenter}
         defaultZoom={defaultZoom}
         provider={getProvider}
-        metaWheelZoom={!miniVersion && !highlightSingleProduct}
-        metaWheelZoomWarning="Utilisez ctrl + molette pour zoomer sur la carte"
+        metaWheelZoom={!miniVersion}
+        metaWheelZoomWarning=""
         animate={true}
         attribution={false}
         onClick={() =>
           showUI && !highlightSingleProduct && setSelectedLocation(null)
         }
-        {...(miniVersion && {
-          touchZoom: false,
-          zoomSnap: false,
-          mouseEvents: false,
-        })}
+        {...(miniVersion
+          ? {
+              touchZoom: false,
+              zoomSnap: false,
+              mouseEvents: false,
+              className: "pointer-events-none",
+            }
+          : mobileOptions)}
         {...singleProductOptions}
       >
-        {/* Marqueur de localisation de l'utilisateur - visible uniquement sur la grande carte */}
-        {userLocation && !miniVersion && (
+        {/* Marqueur de localisation de l'utilisateur - visible uniquement sur la grande carte non détaillée */}
+        {userLocation && !miniVersion && !highlightSingleProduct && (
           <Marker
             width={20}
             anchor={userLocation}
-            color="#10b981" // Vert
+            color="#eab308" // Jaune pour la cohérence
           />
         )}
 
@@ -241,8 +271,13 @@ export const MapComponent = ({
                     : markerSize
                 }
                 anchor={[lat, lng]}
-                color={isSelected || forceHighlight ? "#ef4444" : "#3b82f6"}
-                onClick={() => showUI && setSelectedLocation(locationKey)}
+                color="#eab308"
+                style={markerStyle}
+                onClick={() => {
+                  if (!miniVersion) {
+                    setSelectedLocation(locationKey);
+                  }
+                }}
                 onMouseOver={() =>
                   showUI && !forceHighlight && setHoverIndex(locationKey)
                 }
@@ -263,11 +298,12 @@ export const MapComponent = ({
             offset={[120, 240]}
           >
             <div
-              className={`max-w-[280px] rounded-2xl border p-4 shadow-lg ${
+              className={`max-h-[calc(100vh-4rem)] max-w-[280px] overflow-y-auto rounded-2xl border p-4 shadow-lg ${
                 isDarkTheme
                   ? "border-gray-800 bg-black text-white"
                   : "border-gray-200 bg-white text-black"
               }`}
+              onClick={(e) => e.stopPropagation()}
             >
               {/* En-tête avec détails multiples et pagination */}
               {selectedProducts && selectedProducts.length > 1 && (
@@ -381,14 +417,19 @@ export const MapComponent = ({
               </p>
 
               <div className="mt-3 flex justify-between">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="rounded-full text-xs"
-                  onClick={() => setSelectedLocation(null)}
-                >
-                  Fermer
-                </Button>
+                {!highlightSingleProduct && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full text-xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedLocation(null);
+                    }}
+                  >
+                    Fermer
+                  </Button>
+                )}
                 <Link href={`/products/${selectedProduct.id}`} target="_blank">
                   <Button size="sm" className="rounded-full text-xs">
                     Voir l'annonce

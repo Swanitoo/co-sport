@@ -48,6 +48,11 @@ export const LocationPreviewMap = ({
     setMounted(true);
   }, []);
 
+  // Fonction explicite pour fermer la modal
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   if (!mounted || !latitude || !longitude) {
     return null;
   }
@@ -81,7 +86,7 @@ export const LocationPreviewMap = ({
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsOpen(false)}
+              onClick={handleClose}
               className="rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
             >
               <X className="size-4" />

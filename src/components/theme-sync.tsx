@@ -1,59 +1,66 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 // Ce composant synchronise le thème en utilisant localStorage
 export const ThemeSync = () => {
   const { theme, setTheme } = useTheme();
+  const initialized = useRef(false);
 
   useEffect(() => {
-    // Fonction pour appliquer le thème depuis le stockage
-    const applyStoredTheme = () => {
-      // Essayer de lire d'abord un thème de la page via un cookie (plus fiable entre les domaines)
+    if (initialized.current) return;
+    initialized.current = true;
+
+    try {
+      // Récupérer le thème stocké
       const cookieTheme = document.cookie
         .split("; ")
         .find((row) => row.startsWith("theme="))
         ?.split("=")[1];
-
-      // Ensuite essayer localStorage
       const localTheme = localStorage.getItem("theme");
+      const storedTheme = cookieTheme || localTheme || "system";
 
-      // Utiliser le cookie, puis localStorage, ou rester sur le thème actuel
-      const storedTheme = cookieTheme || localTheme || theme;
-
+      // Appliquer le thème stocké si différent
       if (storedTheme && storedTheme !== theme) {
         setTheme(storedTheme);
       }
-    };
+    } catch (error) {
+      console.error("Erreur lors de l'initialisation du thème:", error);
+    }
+  }, []); // S'exécute uniquement au montage
 
-    // Appliquer le thème stocké au montage
-    applyStoredTheme();
+  useEffect(() => {
+    if (!theme) return;
 
-    // Synchroniser les changements entre différentes instances
+    try {
+      // Sauvegarder le thème dans localStorage et cookie
+      localStorage.setItem("theme", theme);
+      document.cookie = `theme=${theme};path=/;max-age=31536000;SameSite=Lax`;
+
+      // Mettre à jour l'attribut de la balise html
+      document.documentElement.setAttribute("data-theme", theme);
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde du thème:", error);
+    }
+  }, [theme]);
+
+  // Gérer les changements de thème entre les onglets
+  useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "theme" && e.newValue && e.newValue !== theme) {
         setTheme(e.newValue);
       }
     };
 
-    // Sauvegarder le thème actuel dans localStorage ET dans un cookie quand il change
-    if (theme) {
-      localStorage.setItem("theme", theme);
-      document.cookie = `theme=${theme};path=/;max-age=31536000;SameSite=Lax`;
-    }
-
-    // Vérifier le thème toutes les secondes pour les cas où le stockage n'est pas synchronisé
-    const intervalId = setInterval(applyStoredTheme, 1000);
-
     window.addEventListener("storage", handleStorageChange);
-
-    // Nettoyer lors du démontage
-    return () => {
-      clearInterval(intervalId);
-      window.removeEventListener("storage", handleStorageChange);
-    };
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, [theme, setTheme]);
 
-  return null; // Ce composant ne rend rien
+  return null;
 };
