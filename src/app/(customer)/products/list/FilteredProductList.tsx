@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,8 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollToTop } from "@/components/ui/scrollTotop";
-import { Filter, Loader2, Plus, X } from "lucide-react";
-import Link from "next/link";
+import { Filter, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ProductFilters } from "./ProductFilters";
@@ -31,7 +30,6 @@ export function FilteredProductList({
   const loadMoreRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState(initialProducts);
-  const [isCreating, setIsCreating] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const [filters, setFilters] = useState<FilterType>({
@@ -124,27 +122,11 @@ export function FilteredProductList({
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between">
-        <Link
-          href="/products/new"
-          className={buttonVariants({
-            size: "lg",
-            className: "gap-2",
-          })}
-          onClick={() => setIsCreating(true)}
-        >
-          {isCreating ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Plus className="size-4" />
-          )}
-          Créer une annonce
-        </Link>
-
-        {(filters.sport ||
-          filters.level ||
-          filters.onlyGirls ||
-          filters.countries?.length > 0) && (
+      {(filters.sport ||
+        filters.level ||
+        filters.onlyGirls ||
+        filters.countries?.length > 0) && (
+        <div className="mb-4 flex justify-end">
           <Button
             variant="ghost"
             size="sm"
@@ -154,10 +136,9 @@ export function FilteredProductList({
             <X className="size-4" />
             Réinitialiser les filtres
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Bouton mobile + Dialog */}
       <Dialog open={filtersOpen} onOpenChange={setFiltersOpen}>
         <DialogTrigger asChild className="fixed bottom-4 left-4 z-50 lg:hidden">
           <Button
@@ -219,9 +200,7 @@ export function FilteredProductList({
         </DialogContent>
       </Dialog>
 
-      {/* Layout principal */}
       <div className="flex flex-col gap-6 lg:flex-row">
-        {/* Filtres Desktop */}
         <div className="hidden w-full lg:sticky lg:top-4 lg:block lg:h-[calc(100vh-6rem)] lg:w-64">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="font-medium">Filtres</h3>
@@ -248,7 +227,6 @@ export function FilteredProductList({
           />
         </div>
 
-        {/* Liste des produits */}
         <div className="flex-1">
           <ProductList products={products} userId={userId} />
           {loading && (

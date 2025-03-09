@@ -23,6 +23,7 @@ import { DeleteButton } from "./DeleteButton";
 import { LEVEL_CLASSES, SPORTS } from "./edit/product.schema";
 import { JoinRequestButton } from "./JoinRequestButton";
 import { LeaveButton } from "./LeaveButton";
+import { ProductLocationMap } from "./ProductLocationMap";
 import { RemoveMemberButton } from "./RemoveMemberButton";
 
 export default async function RoutePage({
@@ -263,18 +264,30 @@ export default async function RoutePage({
             <CardHeader>
               <CardTitle>Détails</CardTitle>
             </CardHeader>
-            <CardHeader>
+            <CardContent>
+              {/* Afficher la carte si des coordonnées sont disponibles */}
+              {product.venueLat && product.venueLng && (
+                <ProductLocationMap product={product} userId={user.id} />
+              )}
+
               {product.venueName && (
-                <div className="mt-2 flex items-start gap-2">
+                <div className="flex items-start gap-2">
                   <MapPin className="mt-1 size-4 shrink-0 text-muted-foreground" />
                   <div>
                     <p className="font-medium">{product.venueName}</p>
+                    {product.venueAddress &&
+                      product.venueAddress !== product.venueName && (
+                        <p className="text-sm text-muted-foreground">
+                          {product.venueAddress}
+                        </p>
+                      )}
                   </div>
                 </div>
               )}
-            </CardHeader>
-            <CardContent className="flex flex-col items-start gap-2">
-              <p>Description : {product.description}</p>
+
+              <div className="mt-4">
+                <p>Description : {product.description}</p>
+              </div>
             </CardContent>
           </Card>
           <Card className="flex-1">
