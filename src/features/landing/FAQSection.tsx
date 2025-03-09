@@ -1,3 +1,6 @@
+"use client";
+
+import { useAppTranslations } from "@/components/i18n-provider";
 import {
   Accordion,
   AccordionContent,
@@ -6,53 +9,51 @@ import {
 } from "@/components/ui/accordion";
 import { Section } from "./Section";
 
-const FAQS: { question: string; answer: string }[] = [
-  {
-    question: "Comment puis-je m'inscrire sur Co-Sport ?",
-    answer:
-      "En cliquant sur Connexion, vous pouvez vous connecter directement avec votre compte Google.",
-  },
-  {
-    question:
-      "Quels types de partenaires d'entraînement puis-je trouver sur Co-Sport ?",
-    answer:
-      "Vous pouvez trouver des partenaires pour tout types d'activités sportives comme la course à pied, le yoga, la musculation, le vélo..",
-  },
-  {
-    question: "Est-ce que l'inscription est gratuite ?",
-    answer: "Oui, l'inscription est entièrement gratuite.",
-  },
-  {
-    question: "Comment les avis sont-ils vérifiés ?",
-    answer:
-      "Les avis sont vérifiés par notre équipe pour s'assurer qu'ils sont authentiques et utiles..",
-  },
-  {
-    question:
-      "Puis-je changer de partenaire d'entraînement si je ne suis pas satisfait ?",
-    answer: "Oui, vous pouvez changer de partenaire à tout moment.",
-  },
-  {
-    question: "Comment puis-je contacter le support client ?",
-    answer:
-      "Vous pouvez nous contacter via le formulaire de contact disponible sur notre site.",
-  },
-];
-
 export const FAQSection = () => {
+  const { t } = useAppTranslations();
+
+  const FAQS = [
+    {
+      id: "faq-1",
+      question: t("FAQ.Q1"),
+      answer: t("FAQ.A1"),
+    },
+    {
+      id: "faq-2",
+      question: t("FAQ.Q2"),
+      answer: t("FAQ.A2"),
+    },
+    {
+      id: "faq-3",
+      question: t("FAQ.Q3"),
+      answer: t("FAQ.A3"),
+    },
+    {
+      id: "faq-4",
+      question: t("FAQ.Q4"),
+      answer: t("FAQ.A4"),
+    },
+    {
+      id: "faq-5",
+      question: t("FAQ.Q5"),
+      answer: t("FAQ.A5"),
+    },
+    {
+      id: "faq-6",
+      question: t("FAQ.Q6"),
+      answer: t("FAQ.A6"),
+    },
+  ];
+
   return (
     <Section className="flex w-full flex-row items-start gap-4 max-lg:flex-col max-lg:items-center">
       <div className="flex-1 max-lg:text-center">
-        <h2 className="text-3xl font-bold text-primary">FAQ</h2>
+        <h2 className="text-3xl font-bold text-primary">{t("FAQ.Title")}</h2>
       </div>
       <div className="w-full max-w-lg flex-1 text-left">
         <Accordion type="multiple">
-          {FAQS.map((faq, index) => (
-            <AccordionItem
-              value={faq.question}
-              key={faq.question}
-              className="text-left"
-            >
+          {FAQS.map((faq) => (
+            <AccordionItem value={faq.id} key={faq.id} className="text-left">
               <AccordionTrigger>
                 <span className="text-left">{faq.question}</span>
               </AccordionTrigger>

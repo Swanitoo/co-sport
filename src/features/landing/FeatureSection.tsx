@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppTranslations } from "@/components/i18n-provider";
 import { LayoutTitle } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,7 @@ import { Section } from "./Section";
 export const FeatureSection = () => {
   const [step, setStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useAppTranslations();
 
   const handleJoin = () => {
     setIsLoading(true);
@@ -31,11 +33,11 @@ export const FeatureSection = () => {
   return (
     <>
       <Section
-        className="light rounded-lg bg-customPurple py-12 md:min-h-[550px] lg:min-h-[650px]"
+        className="light rounded-lg bg-primary/90 py-12 md:min-h-[550px] lg:min-h-[650px]"
         id="features"
       >
         <h2 className="text-center text-3xl font-bold text-white">
-          Rien de plus simple ! Voici les étapes à suivre :
+          {t("Features.Title")}
         </h2>
         <div className={cn("w-full flex flex-col items-center py-4")}>
           <AnimatePresence mode="wait">
@@ -49,18 +51,18 @@ export const FeatureSection = () => {
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
                 <h2 className="mb-4 rounded-lg bg-gray-800 p-4 text-lg font-bold text-white shadow-md lg:mt-16">
-                  {`Filtre les annonces selon tes critères pour trouver le partenaire idéal.`}
+                  {t("Features.Step1.Title")}
                 </h2>
-                <Card className="w-full max-w-2xl">
+                <Card className="w-full max-w-[90vw] md:max-w-2xl">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Filter className="size-5" />
-                      Filtres
+                    <CardTitle className="flex items-center gap-2 truncate">
+                      <Filter className="size-5 shrink-0" />
+                      {t("Features.Filters")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <h3 className="font-medium">Sports</h3>
+                      <h3 className="font-medium">{t("Features.Sports")}</h3>
                       <div className="flex flex-wrap gap-2">
                         <Button
                           variant="outline"
@@ -68,7 +70,7 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          🏋️ Musculation
+                          🏋️ {t("Sports.Musculation")}
                         </Button>
                         <Button
                           variant="outline"
@@ -76,7 +78,7 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          ⛰️ Alpinisme
+                          ⛰️ {t("Sports.Alpinisme")}
                         </Button>
                         <Button
                           variant="outline"
@@ -84,7 +86,7 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          🏃 Trail
+                          🏃 {t("Sports.Trail")}
                         </Button>
                         <Button
                           variant="outline"
@@ -92,7 +94,7 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          ⚽ Football
+                          ⚽ {t("Sports.Football")}
                         </Button>
                         <Button
                           variant="outline"
@@ -100,7 +102,7 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          🎾 Tennis
+                          🎾 {t("Sports.Tennis")}
                         </Button>
                         <Button
                           variant="outline"
@@ -113,7 +115,7 @@ export const FeatureSection = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <h3 className="font-medium">Niveau</h3>
+                      <h3 className="font-medium">{t("Features.Level")}</h3>
                       <div className="flex flex-wrap gap-2">
                         <Button
                           variant="outline"
@@ -121,7 +123,7 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          🌱 Débutant
+                          🌱 {t("Levels.Débutant")}
                         </Button>
                         <Button
                           variant="outline"
@@ -129,7 +131,7 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          ⭐ Intermédiaire
+                          ⭐ {t("Levels.Intermédiaire")}
                         </Button>
                         <Button
                           variant="outline"
@@ -137,12 +139,14 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          🌟 Avancé
+                          🌟 {t("Levels.Avancé")}
                         </Button>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <h3 className="font-medium">Nationalité</h3>
+                      <h3 className="font-medium">
+                        {t("Features.Nationality")}
+                      </h3>
                       <div className="flex flex-wrap gap-2">
                         <Button
                           variant="outline"
@@ -150,7 +154,7 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          🇫🇷 France
+                          🇫🇷 {t("Countries.France")}
                         </Button>
                         <Button
                           variant="outline"
@@ -158,7 +162,7 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          🇨🇭 Suisse
+                          🇨🇭 {t("Countries.Suisse")}
                         </Button>
                         <Button
                           variant="outline"
@@ -166,7 +170,7 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          🇵🇪 Pérou
+                          🇵🇪 {t("Countries.Pérou")}
                         </Button>
                         <Button
                           variant="outline"
@@ -179,7 +183,9 @@ export const FeatureSection = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <h3 className="font-medium">Options</h3>
+                      <h3 className="font-medium">
+                        {t("Features.Options.Title")}
+                      </h3>
                       <div className="flex flex-wrap gap-2">
                         <Button
                           variant="outline"
@@ -187,7 +193,7 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          👩 Entre filles
+                          👩 {t("Features.Options.GirlsOnly")}
                         </Button>
                         <Button
                           variant="outline"
@@ -195,7 +201,7 @@ export const FeatureSection = () => {
                           className="rounded-full"
                           onClick={() => setStep(1)}
                         >
-                          👑 Pro (Coach, Guide)
+                          👑 {t("Features.Options.Pro")}
                         </Button>
                       </div>
                     </div>
@@ -213,32 +219,34 @@ export const FeatureSection = () => {
                 }}
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
-                <h2 className="mb-4 rounded-lg bg-gray-800 p-4 text-lg font-bold text-white shadow-md">
-                  {`Trouve ton sport et ton partenaire en cliquant sur une annonce qui t'intéresse.`}
+                <h2 className="mb-4 max-w-[90vw] truncate rounded-lg bg-gray-800 p-4 text-center text-lg font-bold text-white shadow-md lg:mt-16">
+                  {t("Features.Step1.Title")}
                 </h2>
                 <div className="flex flex-col gap-2 space-y-4">
                   <Card
                     onClick={() => {
                       setStep((s) => s + 1);
                     }}
-                    className="cursor-pointer flex-col gap-2 transition-all duration-200 ease-in-out hover:scale-[1.02] hover:bg-accent/5  hover:shadow-lg"
+                    className="w-full max-w-[90vw] cursor-pointer flex-col gap-2 transition-all duration-200 ease-in-out hover:scale-[1.02] hover:bg-accent/5 hover:shadow-lg md:max-w-2xl"
                   >
                     <CardHeader className="flex items-center gap-2 p-4">
-                      <CardTitle>Séance jambes</CardTitle>
+                      <CardTitle className="truncate">
+                        {t("Features.Step2.ExampleTitle")}
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="p-4">
-                      <CardDescription className="text-center">
-                        Sport : Musculation
+                      <CardDescription className="truncate text-center">
+                        {t("Features.Step2.Sport")} : {t("Sports.Musculation")}
                       </CardDescription>
                     </CardContent>
                     <CardContent className="p-4 text-center">
-                      <p className="truncate-multiline font-mono">
-                        Salut ! Je fais les <br /> jambes tous les lundis 😊
+                      <p className="line-clamp-3 font-mono">
+                        {t("Features.Step2.ExampleDescription")}
                       </p>
                     </CardContent>
                     <CardContent className="p-4 text-center">
-                      <p className="overflow-hidden text-ellipsis font-mono">
-                        Niveau : Moyen
+                      <p className="truncate font-mono">
+                        {t("Features.Step2.Level")} : {t("Levels.Moyen")}
                       </p>
                     </CardContent>
                   </Card>
@@ -255,13 +263,17 @@ export const FeatureSection = () => {
                 }}
                 className="flex h-full flex-col items-center justify-center gap-4"
               >
-                <h2 className="rounded-lg bg-gray-800 p-4 text-lg font-bold text-white shadow-md">
-                  {`Consulte les détails, découvre le profil et clique sur "Rejoindre".`}
+                <h2 className="mb-4 max-w-[90vw] truncate rounded-lg bg-gray-800 p-4 text-center text-lg font-bold text-white shadow-md">
+                  {t("Features.Step3.Title")}
                 </h2>
-                <div className="flex w-full items-center justify-between text-white">
+                <div className="flex w-full max-w-[90vw] flex-col gap-4 text-white md:max-w-2xl md:flex-row md:items-center md:justify-between">
                   <div className="space-y-0.5">
-                    <LayoutTitle>Séance Jambes</LayoutTitle>
-                    <p className="text-sm">Louise</p>
+                    <LayoutTitle className="truncate">
+                      {t("Features.Step3.ExampleTitle")}
+                    </LayoutTitle>
+                    <p className="truncate text-sm">
+                      {t("Features.Step3.ExampleName")}
+                    </p>
                   </div>
                   <div className="shrink-0">
                     <Button
@@ -274,23 +286,31 @@ export const FeatureSection = () => {
                       ) : (
                         <UsersRound />
                       )}
-                      <span>{isLoading ? "Rejoindre..." : "Rejoindre"}</span>
+                      <span>
+                        {isLoading
+                          ? t("Features.Step3.JoiningButton")
+                          : t("Features.Step3.JoinButton")}
+                      </span>
                     </Button>
                   </div>
                 </div>
-                <div className="flex gap-4 max-lg:flex-col">
+                <div className="flex w-full max-w-[90vw] gap-4 max-lg:flex-col md:max-w-2xl">
                   <Card className="flex-1 bg-white text-black dark:bg-black dark:text-white">
                     <CardHeader>
-                      <CardTitle>Détails</CardTitle>
+                      <CardTitle className="truncate">
+                        {t("Features.Step3.Details")}
+                      </CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col items-start gap-2">
-                      <p>Sport : Musculation</p>
-                      <p>Niveau : Moyen (3 ans)</p>
-                      <div>
-                        Salut ! Je fais les jambes tous les lundis, et je serais
-                        super ravie de partager mon programme avec quelqu'un !
-                        Si tu veux qu'on se motive ensemble, n'hésite pas à me
-                        rejoindre ! 😊
+                      <p className="truncate">
+                        {t("Features.Step3.Sport")} : {t("Sports.Musculation")}
+                      </p>
+                      <p className="truncate">
+                        {t("Features.Step3.Level")} :{" "}
+                        {t("Features.Step3.ExampleLevel")}
+                      </p>
+                      <div className="line-clamp-3">
+                        {t("Features.Step3.ExampleDescription")}
                       </div>
                     </CardContent>
                   </Card>
@@ -315,15 +335,14 @@ export const FeatureSection = () => {
                 className="flex h-full max-w-lg flex-col items-center justify-center gap-4"
               >
                 <h2 className="text-lg font-bold text-white lg:mt-10">
-                  {"Bravo !"}
+                  {t("Features.Step4.Title")}
                 </h2>
                 <Card>
                   <CardHeader>
-                    <CardTitle>
-                      Tu n'as plus qu'a t'organiser avec ton/ta partenaire ! ✅
-                    </CardTitle>
-
-                    <CTASection />
+                    <CardTitle>{t("Features.Step4.Description")}</CardTitle>
+                    <CTASection
+                      translations={{ cta_button: t("Home.cta_button") }}
+                    />
                   </CardHeader>
                 </Card>
               </motion.div>

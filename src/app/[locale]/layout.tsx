@@ -38,7 +38,7 @@ export default async function LocaleLayout({
   // en examinant les composants enfants rendus
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <ThemeScript />
       </head>
@@ -46,8 +46,6 @@ export default async function LocaleLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <ThemeSync />
-            {/* Pour la page principale, nous n'affichons pas le Header ici,
-                car il sera affiché par le composant LandingHeader */}
             <div className="flex min-h-screen flex-col">
               {/* Le Header sera ajouté directement dans les pages qui en ont besoin */}
               <main className="flex-1">{children}</main>

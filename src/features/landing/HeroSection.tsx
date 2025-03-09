@@ -10,7 +10,7 @@ type HeroSectionProps = {
     app_mobile: string;
     hero_title: string;
     hero_subtitle: string;
-    cta_secondary?: string;
+    cta_button: string;
   };
 };
 
@@ -33,7 +33,7 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
         {translations.hero_subtitle}
       </p>
       <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0 lg:mb-16">
-        <CTASection />
+        <CTASection translations={{ cta_button: translations.cta_button }} />
         {/* <a
           href="#"
           className={buttonVariants({

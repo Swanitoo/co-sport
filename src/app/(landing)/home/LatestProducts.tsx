@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppTranslations } from "@/components/i18n-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { getCountryFlag } from "@/data/country";
@@ -38,13 +39,14 @@ export const LatestProducts = ({
   isAuthenticated,
 }: LatestProductsProps) => {
   const router = useRouter();
+  const { t } = useAppTranslations();
 
   const handleProductClick = (productId: string) => {
     if (isAuthenticated) {
       router.push(`/products/${productId}`);
     } else {
       router.push(
-        `/api/auth/signin?callbackUrl=http://localhost:3000/products/${productId}`,
+        `/api/auth/signin?callbackUrl=http://localhost:3000/products/${productId}`
       );
     }
   };
@@ -52,7 +54,7 @@ export const LatestProducts = ({
   return (
     <div className="container py-8">
       <div>
-        <h2 className="mb-4 text-2xl font-bold">Dernières annonces</h2>
+        <h2 className="mb-4 text-2xl font-bold">{t("Home.latest_products")}</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {products.slice(0, 6).map((product) => (
             <Card
@@ -73,7 +75,7 @@ export const LatestProducts = ({
                     <span>
                       {product.user.name}
                       {product._count.reviews > 0 &&
-                        ` (${product._count.reviews})`}
+                        ` (${product._count.reviews} ${t("Products.Reviews")})`}
                     </span>
                     {product.user.country && (
                       <span>{getCountryFlag(product.user.country)}</span>
@@ -95,11 +97,16 @@ export const LatestProducts = ({
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
                   {SPORTS.find((s) => s.name === product.sport)?.icon}{" "}
-                  {product.sport}
+                  {t(
+                    `Sports.${
+                      product.sport.charAt(0).toUpperCase() +
+                      product.sport.slice(1)
+                    }`
+                  )}
                 </span>
                 <span className="flex items-center gap-1">
                   {LEVEL_CLASSES.find((l) => l.name === product.level)?.icon}{" "}
-                  {product.level}
+                  {t(`Levels.${product.level}`)}
                 </span>
               </div>
             </Card>

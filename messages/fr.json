@@ -38,7 +38,6 @@
     "Reviews": "Avis",
     "WriteReview": "Écrire un avis",
     "SeeAllReviews": "Voir tous les avis",
-    "Members": "Membres",
     "Members": {
       "SocialNetwork": "Réseau social"
     },
@@ -102,7 +101,8 @@
     "features_title": "Fonctionnalités",
     "features_subtitle": "Découvrez tout ce que CoSport peut vous offrir",
     "soon": "Prochainement",
-    "app_mobile": "L'application mobile"
+    "app_mobile": "L'application mobile",
+    "LatestProducts": "Dernières annonces"
   },
   "Language": {
     "Select": "Sélectionner la langue",
@@ -114,5 +114,100 @@
     "Light": "Clair",
     "Dark": "Sombre",
     "System": "Système"
+  },
+  "Features": {
+    "Title": "Rien de plus simple ! Voici les étapes à suivre :",
+    "Step1": {
+      "Title": "Filtre les annonces selon tes critères pour trouver le partenaire idéal."
+    },
+    "Step2": {
+      "Title": "Trouve l'annonce qui te correspond",
+      "ExampleTitle": "Recherche partenaire de musculation",
+      "Sport": "Sport",
+      "ExampleDescription": "Je recherche un partenaire de musculation pour me motiver et progresser ensemble. Disponible en semaine après 18h.",
+      "Level": "Niveau"
+    },
+    "Step3": {
+      "Title": "Rejoins le groupe et commence à pratiquer !",
+      "ExampleTitle": "Séance de musculation",
+      "ExampleName": "Par John Doe",
+      "JoiningButton": "En cours...",
+      "JoinButton": "Rejoindre",
+      "Details": "Détails",
+      "Sport": "Sport",
+      "Level": "Niveau",
+      "ExampleLevel": "Intermédiaire",
+      "ExampleDescription": "Programme complet de musculation avec échauffement, exercices composés et isolations. Adapté à tous les niveaux."
+    },
+    "Step4": {
+      "Title": "C'est tout ! Tu peux maintenant commencer à pratiquer avec tes nouveaux partenaires.",
+      "Description": "Rejoins la communauté dès maintenant !"
+    },
+    "Filters": "Filtres",
+    "Sports": "Sports",
+    "Level": "Niveau",
+    "Nationality": "Nationalité",
+    "Options": {
+      "Title": "Options",
+      "GirlsOnly": "Entre filles",
+      "Pro": "Pro"
+    }
+  },
+  "Sports": {
+    "Alpinisme": "Alpinisme",
+    "Athlétisme": "Athlétisme",
+    "Badminton": "Badminton",
+    "Basketball": "Basketball",
+    "BMX": "BMX",
+    "Boxe": "Boxe",
+    "Danse": "Danse",
+    "Escalade": "Escalade",
+    "Football": "Football",
+    "Kayak": "Kayak",
+    "Musculation": "Musculation",
+    "Natation": "Natation",
+    "Paddle": "Paddle",
+    "Paintball": "Paintball",
+    "Pétanque": "Pétanque",
+    "Plongée": "Plongée",
+    "Randonnée": "Randonnée",
+    "Roller": "Roller",
+    "Ski": "Ski",
+    "Skate": "Skate",
+    "Surf": "Surf",
+    "Tennis": "Tennis",
+    "Trail": "Trail",
+    "Trek": "Trek",
+    "Triathlon": "Triathlon",
+    "Vélo de route": "Vélo de route",
+    "Voleyball": "Voleyball",
+    "VTT": "VTT",
+    "Yoga": "Yoga"
+  },
+  "Levels": {
+    "Débutant": "Débutant",
+    "Intermédiaire": "Intermédiaire",
+    "Avancé": "Avancé",
+    "Moyen": "Moyen"
+  },
+  "Countries": {
+    "France": "France",
+    "Suisse": "Suisse",
+    "Pérou": "Pérou"
+  },
+  "FAQ": {
+    "Title": "Questions fréquentes",
+    "Q1": "Comment puis-je m'inscrire sur Co-Sport ?",
+    "A1": "L'inscription sur Co-Sport est simple et gratuite. Cliquez sur le bouton 'S'inscrire' en haut de la page, remplissez le formulaire avec vos informations et validez votre compte via l'email de confirmation.",
+    "Q2": "Comment trouver des partenaires de sport ?",
+    "A2": "Utilisez nos filtres de recherche pour trouver des partenaires selon vos critères : sport, niveau, localisation, etc. Vous pouvez ensuite contacter directement les personnes ou rejoindre leurs groupes.",
+    "Q3": "Est-ce que Co-Sport est gratuit ?",
+    "A3": "Oui, Co-Sport est entièrement gratuit pour les fonctionnalités de base. Nous proposons également une version premium avec des fonctionnalités avancées.",
+    "Q4": "Comment puis-je créer une annonce ?",
+    "A4": "Une fois connecté, cliquez sur 'Créer une annonce', choisissez votre sport, définissez vos critères (niveau, horaires, lieu) et publiez votre annonce.",
+    "Q5": "Comment fonctionne le système de niveau ?",
+    "A5": "Nous utilisons un système simple avec trois niveaux : Débutant, Intermédiaire et Avancé. Choisissez le niveau qui correspond le mieux à votre pratique dans chaque sport.",
+    "Q6": "Comment puis-je contacter le support ?",
+    "A6": "Vous pouvez nous contacter via le formulaire de contact dans la section 'Support' ou directement par email à support@co-sport.com"
   }
 }

@@ -8,17 +8,22 @@ import { LandingHeader } from "@/features/landing/LandingHeader";
 import { prisma } from "@/prisma";
 import { LatestProducts } from "./LatestProducts";
 
+// Charger les messages
+async function getMessages() {
+  return (await import("../../../../messages/fr.json")).default;
+}
+
 export default async function Home() {
   const user = await currentUser();
+  const messages = await getMessages();
 
   // Définir les traductions en français directement pour la page d'accueil par défaut
   const heroTranslations = {
-    soon: "Prochainement",
-    app_mobile: "L'application mobile",
-    hero_title: "Trouve ton partenaire de sport",
-    hero_subtitle:
-      "Choisis ton sport, trouve ton partenaire idéal et progressez ensemble.",
-    cta_secondary: "Voir la vidéo",
+    soon: messages.Home.soon,
+    app_mobile: messages.Home.app_mobile,
+    hero_title: messages.Home.hero_title,
+    hero_subtitle: messages.Home.hero_subtitle,
+    cta_button: messages.Home.cta_button,
   };
 
   // Traductions pour le CTA

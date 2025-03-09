@@ -1,5 +1,6 @@
 import { LatestProducts } from "@/app/(landing)/home/LatestProducts";
 import { currentUser } from "@/auth/current-user";
+import { ParallaxIcons } from "@/components/parallax/ParallaxIcons";
 import { CTASection } from "@/features/landing/CTASection";
 import { FAQSection } from "@/features/landing/FAQSection";
 import { FeatureSection } from "@/features/landing/FeatureSection";
@@ -49,6 +50,7 @@ export default async function LocalizedHomePage({ params: { locale } }: Props) {
     hero_title: messages.Home.hero_title,
     hero_subtitle: messages.Home.hero_subtitle,
     cta_secondary: messages.Home.cta_secondary,
+    cta_button: messages.Home.cta_button,
   };
 
   // Extraire les traductions pour CTASection
@@ -89,6 +91,7 @@ export default async function LocalizedHomePage({ params: { locale } }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
+      <ParallaxIcons />
       <div className="h-16" />
       <LandingHeader />
       <HeroSection translations={heroTranslations} />

@@ -38,7 +38,6 @@
     "Reviews": "Reviews",
     "WriteReview": "Write a review",
     "SeeAllReviews": "See all reviews",
-    "Members": "Members",
     "Members": {
       "SocialNetwork": "Social network"
     },
@@ -102,7 +101,8 @@
     "features_title": "Features",
     "features_subtitle": "Discover everything CoSport has to offer",
     "soon": "Coming soon",
-    "app_mobile": "Mobile app"
+    "app_mobile": "Mobile app",
+    "LatestProducts": "Latest activities"
   },
   "Language": {
     "Select": "Select language",
@@ -114,5 +114,100 @@
     "Light": "Light",
     "Dark": "Dark",
     "System": "System"
+  },
+  "Features": {
+    "Title": "It's simple! Here are the steps to follow:",
+    "Step1": {
+      "Title": "Filter ads according to your criteria to find the ideal partner."
+    },
+    "Step2": {
+      "Title": "Find the ad that matches you",
+      "ExampleTitle": "Looking for a workout partner",
+      "Sport": "Sport",
+      "ExampleDescription": "I'm looking for a workout partner to stay motivated and progress together. Available on weekdays after 6pm.",
+      "Level": "Level"
+    },
+    "Step3": {
+      "Title": "Join the group and start practicing!",
+      "ExampleTitle": "Workout session",
+      "ExampleName": "By John Doe",
+      "JoiningButton": "Joining...",
+      "JoinButton": "Join",
+      "Details": "Details",
+      "Sport": "Sport",
+      "Level": "Level",
+      "ExampleLevel": "Intermediate",
+      "ExampleDescription": "Complete workout program with warm-up, compound exercises and isolations. Suitable for all levels."
+    },
+    "Step4": {
+      "Title": "That's it! You can now start practicing with your new partners.",
+      "Description": "Join the community now!"
+    },
+    "Filters": "Filters",
+    "Sports": "Sports",
+    "Level": "Level",
+    "Nationality": "Nationality",
+    "Options": {
+      "Title": "Options",
+      "GirlsOnly": "Girls only",
+      "Pro": "Pro"
+    }
+  },
+  "Sports": {
+    "Alpinisme": "Mountaineering",
+    "Athlétisme": "Athletics",
+    "Badminton": "Badminton",
+    "Basketball": "Basketball",
+    "BMX": "BMX",
+    "Boxe": "Boxing",
+    "Danse": "Dance",
+    "Escalade": "Climbing",
+    "Football": "Football",
+    "Kayak": "Kayaking",
+    "Musculation": "Workout",
+    "Natation": "Swimming",
+    "Paddle": "Paddleboarding",
+    "Paintball": "Paintball",
+    "Pétanque": "Petanque",
+    "Plongée": "Diving",
+    "Randonnée": "Hiking",
+    "Roller": "Roller skating",
+    "Ski": "Skiing",
+    "Skate": "Skateboarding",
+    "Surf": "Surfing",
+    "Tennis": "Tennis",
+    "Trail": "Trail running",
+    "Trek": "Trekking",
+    "Triathlon": "Triathlon",
+    "Vélo de route": "Road cycling",
+    "Voleyball": "Volleyball",
+    "VTT": "Mountain biking",
+    "Yoga": "Yoga"
+  },
+  "Levels": {
+    "Débutant": "Beginner",
+    "Intermédiaire": "Intermediate",
+    "Avancé": "Advanced",
+    "Moyen": "Intermediate"
+  },
+  "Countries": {
+    "France": "France",
+    "Suisse": "Switzerland",
+    "Pérou": "Peru"
+  },
+  "FAQ": {
+    "Title": "Frequently Asked Questions",
+    "Q1": "How do I sign up for Co-Sport?",
+    "A1": "Signing up for Co-Sport is simple and free. Click the 'Sign up' button at the top of the page, fill in the form with your information and validate your account via the confirmation email.",
+    "Q2": "How do I find sports partners?",
+    "A2": "Use our search filters to find partners according to your criteria: sport, level, location, etc. You can then contact people directly or join their groups.",
+    "Q3": "Is Co-Sport free?",
+    "A3": "Yes, Co-Sport is completely free for basic features. We also offer a premium version with advanced features.",
+    "Q4": "How do I create an ad?",
+    "A4": "Once logged in, click on 'Create ad', choose your sport, set your criteria (level, schedule, location) and publish your ad.",
+    "Q5": "How does the level system work?",
+    "A5": "We use a simple system with three levels: Beginner, Intermediate and Advanced. Choose the level that best matches your practice in each sport.",
+    "Q6": "How can I contact support?",
+    "A6": "You can contact us via the contact form in the 'Support' section or directly by email at support@co-sport.com"
   }
 }
