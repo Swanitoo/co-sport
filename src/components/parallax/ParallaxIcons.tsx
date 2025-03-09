@@ -2,6 +2,7 @@
 
 import { SPORTS } from "@/app/(customer)/products/[productId]/edit/product.schema";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 type IconConfig = {
@@ -119,9 +120,9 @@ const ParallaxContent = () => {
           x: Math.random() * 100,
           y: Math.random() * 100,
           size: Math.random() * 20 + 35,
-          blur: Math.random() > 0.8 ? Math.random() * 2 : 0,
+          blur: Math.random() * 1.5 + 0.5,
           speed: Math.random() * 0.4 + 0.1,
-          opacity: Math.random() * 0.3 + 0.2,
+          opacity: Math.random() * 0.15 + 0.05,
           rotationSpeed: (Math.random() - 0.5) * 2,
           direction: {
             x: Math.cos(angle),
@@ -135,7 +136,7 @@ const ParallaxContent = () => {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 h-screen w-screen overflow-hidden bg-background/80 backdrop-blur-[1px] [perspective:1000px]">
+    <div className="pointer-events-none fixed inset-0 -z-10 h-screen w-screen overflow-hidden bg-background/90 backdrop-blur-[1.5px] [perspective:1000px]">
       {icons.map((config, index) => (
         <ParallaxIcon key={index} config={config} />
       ))}
@@ -145,6 +146,7 @@ const ParallaxContent = () => {
 
 export const ParallaxIcons = () => {
   const [isMounted, setIsMounted] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setIsMounted(true);
@@ -155,6 +157,9 @@ export const ParallaxIcons = () => {
 
   // Ne rien rendre tant que le composant n'est pas monté
   if (!isMounted) return null;
+
+  // Ne rendre que sur la page d'accueil
+  if (!["/", "/fr", "/es"].includes(pathname)) return null;
 
   return <ParallaxContent />;
 };
