@@ -26,4 +26,6 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
   pages: {
     signIn: "/login",
   },
+  // Autoriser localhost en développement et en production pour les tests
+  trustHost: true,
 });

@@ -26,6 +26,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { LocationPreviewMap } from "../LocationPreviewMap";
 import { SportVenueSearch } from "../SportVenueSearch";
 import { createProductAction, updateProductAction } from "./product.action";
 import {
@@ -179,6 +180,19 @@ export const ProductForm = (props: ProductFormProps) => {
                       />
                     </FormControl>
                     <FormMessage />
+
+                    {/* Afficher la mini-carte uniquement lorsqu'un lieu a été sélectionné */}
+                    {form.watch("venueLatitude") &&
+                      form.watch("venueLongitude") && (
+                        <div className="mt-2">
+                          <LocationPreviewMap
+                            latitude={form.watch("venueLatitude")}
+                            longitude={form.watch("venueLongitude")}
+                            venueName={form.watch("venueName")}
+                            venueAddress={form.watch("venueAddress")}
+                          />
+                        </div>
+                      )}
                   </FormItem>
                 )}
               />

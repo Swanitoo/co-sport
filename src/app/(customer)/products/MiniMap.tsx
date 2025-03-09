@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppTranslations } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -37,6 +38,7 @@ export const MiniMap = ({
   userId,
   searchParams,
 }: MiniMapProps) => {
+  const { t } = useAppTranslations();
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -95,7 +97,9 @@ export const MiniMap = ({
           onClick={() => setIsOpen(true)}
         >
           <Expand className="size-4" />
-          <span className="sr-only">Agrandir la carte</span>
+          <span className="sr-only">
+            {t("Products.Map.ExpandMap", "Agrandir la carte")}
+          </span>
         </Button>
         <div className="size-full">
           <MapComponent
@@ -116,9 +120,13 @@ export const MiniMap = ({
               className="rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
             >
               <X className="size-4" />
-              <span className="sr-only">Fermer</span>
+              <span className="sr-only">
+                {t("Products.Map.CloseMap", "Fermer")}
+              </span>
             </Button>
-            <DialogTitle className="sr-only">Carte des annonces</DialogTitle>
+            <DialogTitle className="sr-only">
+              {t("Products.Map.Title", "Carte des annonces")}
+            </DialogTitle>
           </DialogHeader>
           <div className="h-[95dvh] w-full">
             <MapComponent

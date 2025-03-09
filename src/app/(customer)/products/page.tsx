@@ -1,5 +1,6 @@
 import { currentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
+import { getServerTranslations } from "@/components/server-translation";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/prisma";
 import { Plus } from "lucide-react";
@@ -15,6 +16,7 @@ export default async function RoutePage({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const user = await currentUser();
+  const { t } = await getServerTranslations();
 
   if (!user) {
     redirect("/auth/signin");
@@ -70,15 +72,18 @@ export default async function RoutePage({
         <div>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <LayoutTitle>Annonces</LayoutTitle>
+              <LayoutTitle>{t("Products.Title", "Annonces")}</LayoutTitle>
               <p className="text-muted-foreground">
-                Trouve ton partenaire de sport et progressez ensemble !
+                {t(
+                  "Products.Description",
+                  "Trouve ton partenaire de sport et progressez ensemble !"
+                )}
               </p>
 
               <Link href="/products/new" className="mt-4 inline-flex">
                 <Button size="lg" className="gap-2">
                   <Plus className="size-4" />
-                  Créer une annonce
+                  {t("Products.Create", "Créer une annonce")}
                 </Button>
               </Link>
             </div>

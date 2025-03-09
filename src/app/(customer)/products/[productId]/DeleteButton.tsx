@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppTranslations } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,6 +21,7 @@ export type DeleteButtonProps = {
 };
 
 export const DeleteButton = (props: DeleteButtonProps) => {
+  const { t, locale } = useAppTranslations();
   const router = useRouter();
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -31,27 +33,35 @@ export const DeleteButton = (props: DeleteButtonProps) => {
       return;
     }
 
-    toast.success("Groupe supprimé avec succès");
-    router.push("/products");
+    toast.success(t("Products.DeleteSuccess", "Groupe supprimé avec succès"));
+    router.push(`/${locale}/products`);
   };
 
   return (
     <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
       <DialogTrigger asChild>
         <Button variant="destructive" size="sm">
-          Supprimer
+          {t("Products.Actions.Delete", "Supprimer")}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Êtes-vous sûr de vouloir supprimer ce groupe ?
+            {t(
+              "Products.DeleteConfirmTitle",
+              "Êtes-vous sûr de vouloir supprimer ce groupe ?"
+            )}
           </DialogTitle>
-          <DialogDescription>Cette action est irréversible.</DialogDescription>
+          <DialogDescription>
+            {t(
+              "Products.DeleteConfirmDescription",
+              "Cette action est irréversible."
+            )}
+          </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={() => setShowConfirm(false)}>
-            Annuler
+            {t("Products.Form.Cancel", "Annuler")}
           </Button>
           <Button
             variant="destructive"
@@ -60,7 +70,7 @@ export const DeleteButton = (props: DeleteButtonProps) => {
               setShowConfirm(false);
             }}
           >
-            Supprimer
+            {t("Products.Actions.Delete", "Supprimer")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,12 +1,20 @@
 "use client";
 
-import { buttonVariants } from "@/components/ui/button";
-import { Section } from "./Section";
-import Link from "next/link";
-import { signIn } from "next-auth/react";
 import { CTASection } from "./CTASection";
+import { Section } from "./Section";
 
-export const HeroSection = () => {
+// Type pour les traductions passées en props
+type HeroSectionProps = {
+  translations: {
+    soon: string;
+    app_mobile: string;
+    hero_title: string;
+    hero_subtitle: string;
+    cta_secondary?: string;
+  };
+};
+
+export const HeroSection = ({ translations }: HeroSectionProps) => {
   return (
     <Section className="text-center">
       <div
@@ -14,15 +22,15 @@ export const HeroSection = () => {
         role="alert"
       >
         <span className="mr-3 rounded-full bg-primary px-4 py-1.5 text-xs text-primary-foreground">
-          Prochainement
+          {translations.soon}
         </span>{" "}
-        <span className="text-sm font-medium">L'application mobile</span>
+        <span className="text-sm font-medium">{translations.app_mobile}</span>
       </div>
       <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-foreground  md:text-5xl lg:text-6xl">
-        Trouve ton partenaire de sport
+        {translations.hero_title}
       </h1>
       <p className="mb-8 text-lg font-normal text-muted-foreground sm:px-16 lg:text-xl xl:px-48">
-        Choisis ton sport, trouve ton partenaire idéal et progressez ensemble.
+        {translations.hero_subtitle}
       </p>
       <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0 lg:mb-16">
         <CTASection />
@@ -41,7 +49,7 @@ export const HeroSection = () => {
           >
             <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
           </svg>
-          Watch video
+          {translations.cta_secondary}
         </a> */}
       </div>
     </Section>

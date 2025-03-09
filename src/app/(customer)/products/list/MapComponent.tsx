@@ -49,6 +49,14 @@ export const MapComponent = ({
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [hoverIndex, setHoverIndex] = useState<string | null>(null);
 
+  // Coordonnées de Lyon comme position par défaut fixe
+  const lyonCoords: [number, number] = [45.764043, 4.835659];
+
+  // Initialiser directement avec les coordonnées de Lyon
+  const [userLocation, setUserLocation] =
+    useState<[number, number]>(lyonCoords);
+  const [mapCenter, setMapCenter] = useState<[number, number]>(lyonCoords);
+
   // Grouper les produits par localisation
   const productGroups = groupProductsByLocation(products);
 
@@ -62,6 +70,47 @@ export const MapComponent = ({
       setSelectedLocation(Object.keys(productGroups)[0]);
     }
   }, [highlightSingleProduct, products.length, productGroups]);
+
+  // Tenter de récupérer une localisation uniquement pour la grande carte
+  useEffect(() => {
+    // Ne pas exécuter pour la mini-carte
+    if (miniVersion) return;
+
+    // Uniquement tenter la géolocalisation pour la grande carte
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          try {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            // Validation basique des coordonnées pour la France et l'Europe
+            if (lat > 35 && lat < 60 && lng > -10 && lng < 30) {
+              console.log(
+                "Géolocalisation navigateur réussie pour la grande carte:",
+                lat,
+                lng
+              );
+              setUserLocation([lat, lng]);
+              setMapCenter([lat, lng]);
+            }
+          } catch (error) {
+            console.log(
+              "Erreur lors du traitement de la géolocalisation:",
+              error
+            );
+          }
+        },
+        (error) => {
+          console.log("Erreur de géolocalisation navigateur:", error);
+        },
+        {
+          timeout: 3000,
+          maximumAge: 24 * 60 * 60 * 1000,
+        }
+      );
+    }
+  }, [miniVersion]);
 
   // Produit actuellement sélectionné dans le groupe
   const selectedProducts = selectedLocation
@@ -95,10 +144,10 @@ export const MapComponent = ({
           .replace("{y}", y.toString());
   };
 
-  // Déterminer le centre de la carte
+  // Déterminer le centre de la carte - toujours utiliser Lyon si aucun produit
   const getCenter = () => {
     if (products.length === 0) {
-      return [48.866667, 2.333333]; // Paris par défaut
+      return lyonCoords; // Lyon par défaut
     }
 
     // Utiliser le centre des produits
@@ -146,7 +195,7 @@ export const MapComponent = ({
       }`}
     >
       <Map
-        defaultCenter={getCenter() as [number, number]}
+        defaultCenter={miniVersion ? lyonCoords : mapCenter}
         defaultZoom={defaultZoom}
         provider={getProvider}
         metaWheelZoom={!miniVersion && !highlightSingleProduct}
@@ -163,6 +212,15 @@ export const MapComponent = ({
         })}
         {...singleProductOptions}
       >
+        {/* Marqueur de localisation de l'utilisateur - visible uniquement sur la grande carte */}
+        {userLocation && !miniVersion && (
+          <Marker
+            width={20}
+            anchor={userLocation}
+            color="#10b981" // Vert
+          />
+        )}
+
         {/* Afficher un marqueur pour chaque groupe de localisation */}
         {Object.entries(productGroups).map(
           ([locationKey, locationProducts]) => {

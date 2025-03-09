@@ -1,15 +1,36 @@
 import { currentUser } from "@/auth/current-user";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LoggedInDropdown } from "@/features/auth/LoggedInDropdown";
 import { LoginDialog } from "@/features/auth/LoginDialog";
 import { ModeToggle } from "@/features/theme/ModeToggle";
+import { getLocaleFromPathname, loadTranslations } from "@/lib/locale-utils";
 import { prisma } from "@/prisma";
+import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 
+// Type pour les traductions
+type TranslationsType = {
+  Navigation?: Record<string, string>;
+  AppName?: string;
+  [key: string]: any;
+};
+
 export async function Header() {
   const user = await currentUser();
+
+  // Obtenir le pathname depuis les headers de la requête
+  const headersList = headers();
+  const pathname = headersList.get("x-pathname") || "/";
+
+  // Déterminer la locale et charger les traductions
+  const locale = getLocaleFromPathname(pathname);
+  const translations = (await loadTranslations(locale)) as TranslationsType;
+
+  // Obtenir les traductions spécifiques
+  const t = translations.Navigation || {};
 
   let pendingRequestsCount = 0;
   let unreadMessagesCount = 0;
@@ -59,17 +80,43 @@ export async function Header() {
     unreadReviewsCount = unreadReviews;
   }
 
+  // Fonction pour traduire les éléments d'interface
+  const translate = (key: string, fallback: string) => {
+    return t[key] || fallback;
+  };
+
+  // Créer le chemin avec le préfixe de locale
+  const getLocalizedPath = (path: string) => {
+    // Si le chemin commence déjà par /fr/, /en/ ou /es/, ne pas modifier
+    if (path.match(/^\/(fr|en|es)\//)) return path;
+    // Sinon, ajouter le préfixe de locale
+    return `/${locale}${path === "/" ? "" : path}`;
+  };
+
   return (
     <header className="w-full border-b border-border py-1">
       <div className="mx-auto flex w-full max-w-5xl flex-row items-center gap-4 px-4 py-0">
         <div className="flex-1">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
+          <Link
+            href={getLocalizedPath("/")}
+            className="mr-6 flex items-center space-x-2"
+          >
             <Image src="/icon.png" alt="Logo" width={32} height={32} />
           </Link>
         </div>
 
-        <div className="flex items-center justify-end space-x-2">
+        <div className="flex items-center justify-end gap-3">
+          {/* Sélecteur de thème */}
           <ModeToggle />
+
+          {/* Séparateur vertical */}
+          <div className="mx-1 h-6 w-px bg-border"></div>
+
+          {/* Sélecteur de langue */}
+          <div className="flex items-center justify-center">
+            <LanguageSwitcher />
+          </div>
+
           {user ? (
             <LoggedInDropdown
               userId={user.id}
@@ -97,7 +144,7 @@ export async function Header() {
             <LoginDialog
               trigger={
                 <span className="inline-block cursor-pointer">
-                  <Button>Connexion</Button>
+                  <Button>{translate("SignIn", "Connexion")}</Button>
                 </span>
               }
             />

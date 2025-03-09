@@ -43,8 +43,12 @@ export const LEVEL_CLASSES = [
 export const ProductSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
   description: z.string().min(1, "La description est requise"),
-  sport: z.enum(SPORTS.map((s) => s.name) as [string, ...string[]]),
-  level: z.enum(LEVEL_CLASSES.map((l) => l.name) as [string, ...string[]]),
+  sport: z.enum(SPORTS.map((s) => s.name) as [string, ...string[]], {
+    errorMap: () => ({ message: "Veuillez sélectionner un sport" }),
+  }),
+  level: z.enum(LEVEL_CLASSES.map((l) => l.name) as [string, ...string[]], {
+    errorMap: () => ({ message: "Veuillez sélectionner un niveau" }),
+  }),
   venueName: z.string().optional(),
   venueAddress: z.string().optional(),
   venueLatitude: z.number().optional(),

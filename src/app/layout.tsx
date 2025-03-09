@@ -1,4 +1,5 @@
 import { currentUser } from "@/auth/current-user";
+import { ThemeScript } from "@/components/theme-script";
 import { getServerUrl } from "@/get-server-url";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -23,6 +24,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body className={cn(inter.className, "h-full")}>
         <Providers userId={user?.id}>{children}</Providers>
       </body>

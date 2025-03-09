@@ -1,5 +1,6 @@
 import { currentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
+import { getServerTranslations } from "@/components/server-translation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,6 +30,9 @@ import { RemoveMemberButton } from "./RemoveMemberButton";
 export default async function RoutePage({
   params: { productId },
 }: PageParams<{ productId: string }>) {
+  // Obtenir les traductions
+  const { t, locale } = await getServerTranslations();
+
   const user = await currentUser();
 
   if (!user) {
@@ -135,8 +139,8 @@ export default async function RoutePage({
     <Layout>
       <div className="space-y-6">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Link href="/products" className="hover:text-foreground">
-            Annonces
+          <Link href={`/${locale}/products`} className="hover:text-foreground">
+            {t("Products.Title", "Annonces")}
           </Link>
           <span>/</span>
           <span>{product.name}</span>
@@ -162,7 +166,7 @@ export default async function RoutePage({
                   </Link>
                 ) : (
                   <Link
-                    href={`/profile/${product.userId}`}
+                    href={`/${locale}/profile/${product.userId}`}
                     className="cursor-pointer text-sm hover:underline"
                   >
                     {product.user.name}
@@ -194,13 +198,13 @@ export default async function RoutePage({
               <>
                 {isOwner && <Crown size={16} className="text-yellow-500" />}
                 <Link
-                  href={`/products/${product.id}/edit`}
+                  href={`/${locale}/products/${product.id}/edit`}
                   className={buttonVariants({
                     size: "sm",
                     variant: "secondary",
                   })}
                 >
-                  Edit
+                  {t("Products.Actions.Edit", "Modifier")}
                 </Link>
                 <DeleteButton productId={product.id} />
               </>
@@ -217,7 +221,10 @@ export default async function RoutePage({
                 className={buttonVariants({ size: "sm", variant: "secondary" })}
                 disabled
               >
-                En attente d'acceptation...
+                {t(
+                  "Products.Actions.PendingRequest",
+                  "En attente d'acceptation..."
+                )}
               </button>
             </div>
           )}
@@ -226,7 +233,7 @@ export default async function RoutePage({
             <div className="flex items-center gap-2">
               <span className="flex items-center">
                 <CheckCircle size={16} className="mr-2 text-green-600" />
-                Tu es membre
+                {t("Products.Actions.YouAreMember", "Tu es membre")}
               </span>
               <LeaveButton productId={product.id} userId={user.id} />
             </div>
@@ -241,7 +248,7 @@ export default async function RoutePage({
                 })}
                 disabled
               >
-                Adhésion refusée
+                {t("Products.Actions.RejectedRequest", "Adhésion refusée")}
               </button>
             </div>
           )}
@@ -262,7 +269,7 @@ export default async function RoutePage({
         <div className="flex gap-4 max-lg:flex-col">
           <Card className="flex-1">
             <CardHeader>
-              <CardTitle>Détails</CardTitle>
+              <CardTitle>{t("Products.Details", "Détails")}</CardTitle>
             </CardHeader>
             <CardContent>
               {/* Afficher la carte si des coordonnées sont disponibles */}
@@ -286,21 +293,26 @@ export default async function RoutePage({
               )}
 
               <div className="mt-4">
-                <p>Description : {product.description}</p>
+                <p>
+                  {t("Products.DescriptionLabel", "Description")} :{" "}
+                  {product.description}
+                </p>
               </div>
             </CardContent>
           </Card>
           <Card className="flex-1">
             <CardHeader>
-              <CardTitle>Avis</CardTitle>
+              <CardTitle>{t("Products.Reviews", "Avis")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader className="pointer-events-none">
                   <TableRow>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Note</TableHead>
-                    <TableHead>Avis</TableHead>
+                    <TableHead>{t("Products.Form.Name", "Nom")}</TableHead>
+                    <TableHead>
+                      {t("Products.Reviews.Rating", "Note")}
+                    </TableHead>
+                    <TableHead>{t("Products.Reviews", "Avis")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -316,26 +328,26 @@ export default async function RoutePage({
               {isClient && membership && membership.status === "APPROVED" && (
                 <div className="mt-4">
                   <Link
-                    href={`/r/${encodeURIComponent(product.slug)}`}
+                    href={`/${locale}/r/${encodeURIComponent(product.slug)}`}
                     className={buttonVariants({
                       size: "sm",
                     })}
                   >
                     <Link2 size={16} className="mr-2" />
-                    Écrire un avis
+                    {t("Products.WriteReview", "Écrire un avis")}
                   </Link>
                 </div>
               )}
               <div className="mt-2">
                 <Link
-                  href={`/wall/${encodeURIComponent(product.slug)}`}
+                  href={`/${locale}/wall/${encodeURIComponent(product.slug)}`}
                   className={buttonVariants({
                     size: "sm",
                     variant: "outline",
                   })}
                 >
                   <Link2 size={16} className="mr-2" />
-                  Voir tous les avis
+                  {t("Products.SeeAllReviews", "Voir tous les avis")}
                 </Link>
               </div>
             </CardContent>
@@ -344,7 +356,7 @@ export default async function RoutePage({
         {isOwner && (
           <Card className="flex-1">
             <CardHeader>
-              <CardTitle>Membres</CardTitle>
+              <CardTitle>{t("Products.Members", "Membres")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
@@ -360,7 +372,10 @@ export default async function RoutePage({
                             rel="noopener noreferrer"
                             className="text-sm text-blue-600 hover:underline"
                           >
-                            Réseau social
+                            {t(
+                              "Products.Members.SocialNetwork",
+                              "Réseau social"
+                            )}
                           </Link>
                         )}
                       </TableCell>

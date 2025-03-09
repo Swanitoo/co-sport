@@ -1,0 +1,118 @@
+{
+  "AppName": "CoSport",
+  "Common": {
+    "Loading": "Chargement..."
+  },
+  "Navigation": {
+    "Home": "Accueil",
+    "Products": "Annonces",
+    "Dashboard": "Tableau de bord",
+    "Profile": "Profil",
+    "SignIn": "Connexion",
+    "SignOut": "Déconnexion",
+    "Support": "Support"
+  },
+  "Auth": {
+    "SignIn": "Se connecter",
+    "ConnectToContinue": "Connectez-vous à votre compte pour continuer",
+    "ContinueWithGoogle": "Continuer avec Google"
+  },
+  "Examples": {
+    "Title": "Exemple de composant traduit",
+    "CurrentLanguage": "Langue actuelle",
+    "Counter": "Compteur",
+    "Increment": "Augmenter",
+    "Decrement": "Diminuer",
+    "Instructions": "Cet exemple montre comment utiliser le hook useAppTranslations pour traduire un composant.",
+    "DebugInstructions": "Pour voir les clés de traduction manquantes, cliquez sur le bouton 'T' en bas à droite."
+  },
+  "Products": {
+    "Title": "Annonces",
+    "Description": "Trouve ton partenaire de sport et progressez ensemble !",
+    "Create": "Créer une annonce",
+    "Details": "Détails",
+    "DescriptionLabel": "Description",
+    "DeleteSuccess": "Groupe supprimé avec succès",
+    "DeleteConfirmTitle": "Êtes-vous sûr de vouloir supprimer ce groupe ?",
+    "DeleteConfirmDescription": "Cette action est irréversible.",
+    "Reviews": "Avis",
+    "WriteReview": "Écrire un avis",
+    "SeeAllReviews": "Voir tous les avis",
+    "Members": "Membres",
+    "Members": {
+      "SocialNetwork": "Réseau social"
+    },
+    "Reviews": {
+      "Rating": "Note"
+    },
+    "Actions": {
+      "Edit": "Modifier",
+      "Delete": "Supprimer",
+      "Join": "Rejoindre",
+      "Leave": "Quitter",
+      "PendingRequest": "En attente d'acceptation...",
+      "RejectedRequest": "Adhésion refusée",
+      "YouAreMember": "Tu es membre"
+    },
+    "Filters": {
+      "Title": "Filtres",
+      "Sport": "Sport",
+      "Level": "Niveau",
+      "OnlyGirls": "Seulement entre filles",
+      "Countries": "Pays",
+      "Reset": "Réinitialiser les filtres",
+      "Apply": "Appliquer les filtres",
+      "Description": "Filtrer les annonces par sport, niveau, et autres critères",
+      "Location": "Lieu",
+      "SelectSport": "Sélectionner un sport",
+      "SelectLevel": "Sélectionner un niveau",
+      "SelectLocation": "Sélectionner un lieu",
+      "SelectCountries": "Sélectionner des pays",
+      "PartnerCulture": "Affinités culturelles du partenaire"
+    },
+    "Map": {
+      "ExpandMap": "Agrandir la carte",
+      "CloseMap": "Fermer la carte",
+      "ViewProduct": "Voir l'annonce",
+      "NoLocation": "Aucun lieu sur la carte",
+      "NoLocationDesc": "Aucune annonce avec des coordonnées géographiques n'a été trouvée",
+      "Location": "Lieu",
+      "Title": "Carte des annonces",
+      "LocationPreview": "Aperçu du lieu",
+      "ZoomWarning": "Utilisez ctrl + molette pour zoomer sur la carte",
+      "Coordinates": "Coordonnées"
+    },
+    "Form": {
+      "Name": "Nom",
+      "Description": "Description",
+      "Sport": "Sport",
+      "Level": "Niveau",
+      "Venue": "Lieu de l'activité",
+      "OnlyGirls": "Réservé aux filles",
+      "Submit": "Enregistrer",
+      "Cancel": "Annuler"
+    }
+  },
+  "Home": {
+    "latest_products": "Dernières annonces",
+    "hero_title": "Trouve ton partenaire de sport",
+    "hero_subtitle": "Choisis ton sport, trouve ton partenaire idéal et progressez ensemble.",
+    "cta_button": "Commencer",
+    "cta_secondary": "Voir la vidéo",
+    "features_title": "Fonctionnalités",
+    "features_subtitle": "Découvrez tout ce que CoSport peut vous offrir",
+    "soon": "Prochainement",
+    "app_mobile": "L'application mobile"
+  },
+  "Language": {
+    "Select": "Sélectionner la langue",
+    "French": "Français",
+    "English": "Anglais",
+    "Spanish": "Espagnol"
+  },
+  "Theme": {
+    "Light": "Clair",
+    "Dark": "Sombre",
+    "System": "Système"
+  }
+}

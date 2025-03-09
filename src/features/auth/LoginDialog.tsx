@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppTranslations } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,6 +20,7 @@ interface LoginDialogProps {
 
 export function LoginDialog({ trigger }: LoginDialogProps) {
   const [open, setOpen] = useState(false);
+  const { t } = useAppTranslations();
 
   const handleGoogleLogin = async () => {
     await signIn("google", { callbackUrl: "/" });
@@ -32,17 +34,20 @@ export function LoginDialog({ trigger }: LoginDialogProps) {
           <div className="mx-auto mb-4 flex justify-center">
             <Image
               src="/opengraph-image.png"
-              alt="CO-Sport Logo"
+              alt={t("AppName", "CO-Sport")}
               width={120}
               height={120}
               priority
             />
           </div>
           <DialogTitle className="text-center text-2xl">
-            Se connecter
+            {t("Auth.SignIn", "Se connecter")}
           </DialogTitle>
           <DialogDescription className="text-center">
-            Connectez-vous à votre compte pour continuer
+            {t(
+              "Auth.ConnectToContinue",
+              "Connectez-vous à votre compte pour continuer"
+            )}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
@@ -58,7 +63,7 @@ export function LoginDialog({ trigger }: LoginDialogProps) {
               height={20}
               unoptimized
             />
-            Continuer avec Google
+            {t("Auth.ContinueWithGoogle", "Continuer avec Google")}
           </Button>
         </div>
       </DialogContent>

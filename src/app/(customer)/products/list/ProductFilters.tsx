@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppTranslations } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -22,6 +23,8 @@ export function ProductFilters({
 }: ProductFiltersProps & {
   venues: { venueName: string | null; venueAddress: string | null }[];
 }) {
+  const { t } = useAppTranslations();
+
   const updateFilters = (newFilters: Partial<FilterType>) => {
     onFilterChange({ ...filters, ...newFilters });
   };
@@ -42,17 +45,22 @@ export function ProductFilters({
     <div
       className={cn(
         "space-y-6 rounded-lg border border-border bg-card p-6 shadow-sm",
-        className,
+        className
       )}
     >
       <div className="space-y-4">
-        <h3 className="font-medium">Sport</h3>
+        <h3 className="font-medium">{t("Products.Filters.Sport", "Sport")}</h3>
         <Select
           value={filters.sport || ""}
           onValueChange={(value) => updateFilters({ sport: value })}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Sélectionner un sport" />
+            <SelectValue
+              placeholder={t(
+                "Products.Filters.SelectSport",
+                "Sélectionner un sport"
+              )}
+            />
           </SelectTrigger>
           <SelectContent>
             {SPORTS.map((sport) => (
@@ -68,13 +76,20 @@ export function ProductFilters({
       </div>
 
       <div className="space-y-4">
-        <h3 className="font-medium">Lieu</h3>
+        <h3 className="font-medium">
+          {t("Products.Filters.Location", "Lieu")}
+        </h3>
         <Select
           value={filters.venue || ""}
           onValueChange={(value) => updateFilters({ venue: value })}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez un lieu" />
+            <SelectValue
+              placeholder={t(
+                "Products.Filters.SelectLocation",
+                "Sélectionnez un lieu"
+              )}
+            />
           </SelectTrigger>
           <SelectContent>
             {venues?.map((venue, index) => {
@@ -93,13 +108,18 @@ export function ProductFilters({
       </div>
 
       <div className="space-y-4">
-        <h3 className="font-medium">Niveau</h3>
+        <h3 className="font-medium">{t("Products.Filters.Level", "Niveau")}</h3>
         <Select
           value={filters.level || ""}
           onValueChange={(value) => updateFilters({ level: value })}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Sélectionner un niveau" />
+            <SelectValue
+              placeholder={t(
+                "Products.Filters.SelectLevel",
+                "Sélectionner un niveau"
+              )}
+            />
           </SelectTrigger>
           <SelectContent>
             {LEVEL_CLASSES.map((level) => (
@@ -115,10 +135,20 @@ export function ProductFilters({
       </div>
 
       <div className="space-y-4">
-        <h3 className="font-medium">Affinités culturelles du partenaire</h3>
+        <h3 className="font-medium">
+          {t(
+            "Products.Filters.PartnerCulture",
+            "Affinités culturelles du partenaire"
+          )}
+        </h3>
         <Select value="" onValueChange={(value) => handleCountryChange(value)}>
           <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez des pays" />
+            <SelectValue
+              placeholder={t(
+                "Products.Filters.SelectCountries",
+                "Sélectionnez des pays"
+              )}
+            />
           </SelectTrigger>
           <SelectContent>
             {countryOptions.map((country) => (
@@ -160,10 +190,10 @@ export function ProductFilters({
             "w-full font-medium border-pink-300 transition-all duration-200",
             filters.onlyGirls
               ? "bg-pink-100 text-pink-900 hover:bg-pink-200 border-pink-500"
-              : "text-pink-700 hover:bg-pink-50 hover:text-pink-900 hover:border-pink-500",
+              : "text-pink-700 hover:bg-pink-50 hover:text-pink-900 hover:border-pink-500"
           )}
         >
-          👩 Only Girls
+          👩 {t("Products.Filters.OnlyGirls", "Only Girls")}
         </Button>
       )}
     </div>

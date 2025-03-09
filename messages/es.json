@@ -1,0 +1,118 @@
+{
+  "AppName": "CoSport",
+  "Common": {
+    "Loading": "Cargando..."
+  },
+  "Navigation": {
+    "Home": "Inicio",
+    "Products": "Actividades",
+    "Dashboard": "Panel",
+    "Profile": "Perfil",
+    "SignIn": "Iniciar sesión",
+    "SignOut": "Cerrar sesión",
+    "Support": "Soporte"
+  },
+  "Auth": {
+    "SignIn": "Iniciar sesión",
+    "ConnectToContinue": "Conecta a tu cuenta para continuar",
+    "ContinueWithGoogle": "Continuar con Google"
+  },
+  "Examples": {
+    "Title": "Ejemplo de componente traducido",
+    "CurrentLanguage": "Idioma actual",
+    "Counter": "Contador",
+    "Increment": "Incrementar",
+    "Decrement": "Disminuir",
+    "Instructions": "Este ejemplo muestra cómo usar el hook useAppTranslations para traducir un componente.",
+    "DebugInstructions": "Para ver las claves de traducción faltantes, haz clic en el botón 'T' en la parte inferior derecha."
+  },
+  "Products": {
+    "Title": "Actividades",
+    "Description": "¡Encuentra tu compañero de deportes y progresen juntos!",
+    "Create": "Crear una actividad",
+    "Details": "Detalles",
+    "DescriptionLabel": "Descripción",
+    "DeleteSuccess": "Grupo eliminado con éxito",
+    "DeleteConfirmTitle": "¿Estás seguro de que quieres eliminar este grupo?",
+    "DeleteConfirmDescription": "Esta acción no se puede deshacer.",
+    "Reviews": "Opiniones",
+    "WriteReview": "Escribir una opinión",
+    "SeeAllReviews": "Ver todas las opiniones",
+    "Members": "Miembros",
+    "Members": {
+      "SocialNetwork": "Red social"
+    },
+    "Reviews": {
+      "Rating": "Calificación"
+    },
+    "Actions": {
+      "Edit": "Editar",
+      "Delete": "Eliminar",
+      "Join": "Unirse",
+      "Leave": "Salir",
+      "PendingRequest": "Pendiente de aprobación...",
+      "RejectedRequest": "Membresía rechazada",
+      "YouAreMember": "Eres miembro"
+    },
+    "Filters": {
+      "Title": "Filtros",
+      "Sport": "Deporte",
+      "Level": "Nivel",
+      "OnlyGirls": "Solo para chicas",
+      "Countries": "Países",
+      "Reset": "Reiniciar filtros",
+      "Apply": "Aplicar filtros",
+      "Description": "Filtrar actividades por deporte, nivel y otros criterios",
+      "Location": "Ubicación",
+      "SelectSport": "Seleccionar un deporte",
+      "SelectLevel": "Seleccionar un nivel",
+      "SelectLocation": "Seleccionar una ubicación",
+      "SelectCountries": "Seleccionar países",
+      "PartnerCulture": "Afinidades culturales del compañero"
+    },
+    "Map": {
+      "ExpandMap": "Ampliar mapa",
+      "CloseMap": "Cerrar mapa",
+      "ViewProduct": "Ver anuncio",
+      "NoLocation": "No hay ubicación en el mapa",
+      "NoLocationDesc": "No se encontraron anuncios con coordenadas geográficas",
+      "Location": "Ubicación",
+      "Title": "Mapa de anuncios",
+      "LocationPreview": "Vista previa de la ubicación",
+      "ZoomWarning": "Utiliza ctrl + rueda para hacer zoom en el mapa",
+      "Coordinates": "Coordenadas"
+    },
+    "Form": {
+      "Name": "Nombre",
+      "Description": "Descripción",
+      "Sport": "Deporte",
+      "Level": "Nivel",
+      "Venue": "Lugar de la actividad",
+      "OnlyGirls": "Solo para chicas",
+      "Submit": "Guardar",
+      "Cancel": "Cancelar"
+    }
+  },
+  "Home": {
+    "latest_products": "Últimas actividades",
+    "hero_title": "Encuentra tu compañero de deportes",
+    "hero_subtitle": "Elige tu deporte, encuentra tu compañero ideal y progresen juntos.",
+    "cta_button": "Comenzar",
+    "cta_secondary": "Ver video",
+    "features_title": "Características",
+    "features_subtitle": "Descubre todo lo que CoSport tiene para ofrecer",
+    "soon": "Próximamente",
+    "app_mobile": "Aplicación móvil"
+  },
+  "Language": {
+    "Select": "Seleccionar idioma",
+    "French": "Francés",
+    "English": "Inglés",
+    "Spanish": "Español"
+  },
+  "Theme": {
+    "Light": "Claro",
+    "Dark": "Oscuro",
+    "System": "Sistema"
+  }
+}

@@ -278,7 +278,7 @@ export const FeatureSection = () => {
                     </Button>
                   </div>
                 </div>
-                <div className="bg flex gap-4 max-lg:flex-col">
+                <div className="flex gap-4 max-lg:flex-col">
                   <Card className="flex-1 bg-white text-black dark:bg-black dark:text-white">
                     <CardHeader>
                       <CardTitle>Détails</CardTitle>

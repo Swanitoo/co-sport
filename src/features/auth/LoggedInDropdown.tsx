@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppTranslations } from "@/components/i18n-provider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { LocalizedLink } from "@/components/ui/localized-link";
 import {
   HelpCircle,
   Home,
@@ -15,9 +17,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 
 export type LoggedInDropdownProps = {
   userId: string;
@@ -42,11 +42,13 @@ export const LoggedInDropdown = ({
   unreadReviewsCount = 0,
   children,
 }: LoggedInDropdownProps) => {
-  const router = useRouter();
+  const { t, locale } = useAppTranslations();
+  const [open, setOpen] = useState(false);
 
   const handleSignOut = async () => {
+    setOpen(false);
     await signOut({
-      callbackUrl: "/",
+      callbackUrl: `/${locale}/`,
     });
   };
 
@@ -72,7 +74,7 @@ export const LoggedInDropdown = ({
       : children;
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>{triggerElement}</DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <div className="flex items-center justify-start gap-2 p-2">
@@ -85,13 +87,21 @@ export const LoggedInDropdown = ({
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/" className="flex items-center gap-2">
+          <LocalizedLink
+            href="/"
+            className="flex items-center gap-2"
+            onClick={() => setOpen(false)}
+          >
             <Home className="size-4" />
-            Accueil
-          </Link>
+            {t("Navigation.Home", "Accueil")}
+          </LocalizedLink>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/dashboard" className="flex items-center gap-2">
+          <LocalizedLink
+            href="/dashboard"
+            className="flex items-center gap-2"
+            onClick={() => setOpen(false)}
+          >
             <div className="relative">
               <LayoutDashboard className="size-4" />
               {(unreadMessagesCount > 0 ||
@@ -106,20 +116,28 @@ export const LoggedInDropdown = ({
                 </span>
               )}
             </div>
-            Tableau de bord
-          </Link>
+            {t("Navigation.Dashboard", "Tableau de bord")}
+          </LocalizedLink>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/products" className="flex items-center gap-2">
+          <LocalizedLink
+            href="/products"
+            className="flex items-center gap-2"
+            onClick={() => setOpen(false)}
+          >
             <MessageSquare className="size-4" />
-            Annonces
-          </Link>
+            {t("Navigation.Products", "Annonces")}
+          </LocalizedLink>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/support" className="flex items-center gap-2">
+          <LocalizedLink
+            href="/support"
+            className="flex items-center gap-2"
+            onClick={() => setOpen(false)}
+          >
             <HelpCircle className="size-4" />
-            Support
-          </Link>
+            {t("Navigation.Support", "Support")}
+          </LocalizedLink>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -127,7 +145,7 @@ export const LoggedInDropdown = ({
           onClick={handleSignOut}
         >
           <LogOut className="size-4" />
-          Déconnexion
+          {t("Navigation.SignOut", "Déconnexion")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

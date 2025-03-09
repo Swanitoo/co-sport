@@ -11,6 +11,21 @@ import { LatestProducts } from "./LatestProducts";
 export default async function Home() {
   const user = await currentUser();
 
+  // Définir les traductions en français directement pour la page d'accueil par défaut
+  const heroTranslations = {
+    soon: "Prochainement",
+    app_mobile: "L'application mobile",
+    hero_title: "Trouve ton partenaire de sport",
+    hero_subtitle:
+      "Choisis ton sport, trouve ton partenaire idéal et progressez ensemble.",
+    cta_secondary: "Voir la vidéo",
+  };
+
+  // Traductions pour le CTA
+  const ctaTranslations = {
+    cta_button: "Commencer",
+  };
+
   const latestProducts = await prisma.product.findMany({
     where: {
       enabled: true,
@@ -46,11 +61,11 @@ export default async function Home() {
     <div className="flex flex-col gap-4">
       <div className="h-16" />
       <LandingHeader />
-      <HeroSection />
+      <HeroSection translations={heroTranslations} />
       <LatestProducts products={latestProducts} isAuthenticated={!!user} />
       <FeatureSection />
       <FAQSection />
-      <CTASection />
+      <CTASection translations={ctaTranslations} />
       <FooterSection />
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppTranslations } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,6 +25,7 @@ export function FilteredProductList({
   userId,
   venues,
 }: FilteredProductListProps) {
+  const { t } = useAppTranslations();
   const [hasMore, setHasMore] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -134,7 +136,7 @@ export function FilteredProductList({
             className="flex items-center gap-2 lg:hidden"
           >
             <X className="size-4" />
-            Réinitialiser les filtres
+            {t("Products.Filters.Reset", "Réinitialiser les filtres")}
           </Button>
         </div>
       )}
@@ -159,9 +161,14 @@ export function FilteredProductList({
         <DialogContent className="h-[80vh] w-full max-w-[95vw] overflow-hidden sm:max-w-[425px]">
           <DialogHeader>
             <div className="flex items-center justify-between">
-              <DialogTitle>Filtres</DialogTitle>
+              <DialogTitle>
+                {t("Products.Filters.Title", "Filtres")}
+              </DialogTitle>
               <DialogDescription className="sr-only">
-                Filtrer les annonces par sport, niveau, et autres critères
+                {t(
+                  "Products.Filters.Description",
+                  "Filtrer les annonces par sport, niveau, et autres critères"
+                )}
               </DialogDescription>
               {(filters.sport ||
                 filters.level ||
@@ -177,7 +184,7 @@ export function FilteredProductList({
                   className="flex items-center gap-2"
                 >
                   <X className="size-4" />
-                  Réinitialiser
+                  {t("Products.Filters.Reset", "Réinitialiser")}
                 </Button>
               )}
             </div>
@@ -194,7 +201,7 @@ export function FilteredProductList({
                 setFiltersOpen(false);
               }}
             >
-              Appliquer les filtres
+              {t("Products.Filters.Apply", "Appliquer les filtres")}
             </Button>
           </DialogHeader>
         </DialogContent>
@@ -203,7 +210,9 @@ export function FilteredProductList({
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="hidden w-full lg:sticky lg:top-4 lg:block lg:h-[calc(100vh-6rem)] lg:w-64">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-medium">Filtres</h3>
+            <h3 className="font-medium">
+              {t("Products.Filters.Title", "Filtres")}
+            </h3>
             {(filters.sport ||
               filters.level ||
               filters.onlyGirls ||
@@ -215,7 +224,7 @@ export function FilteredProductList({
                 className="flex items-center gap-2"
               >
                 <X className="size-4" />
-                Réinitialiser les filtres
+                {t("Products.Filters.Reset", "Réinitialiser les filtres")}
               </Button>
             )}
           </div>
@@ -231,7 +240,7 @@ export function FilteredProductList({
           <ProductList products={products} userId={userId} />
           {loading && (
             <div className="mt-4 text-center text-muted-foreground">
-              Chargement...
+              {t("Common.Loading", "Chargement...")}
             </div>
           )}
           <div ref={loadMoreRef} className="h-10" />

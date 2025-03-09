@@ -1,8 +1,10 @@
 "use client";
 
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { motion, useMotionValue, useScroll, useTransform } from "framer-motion";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect } from "react";
 import { SignInButton } from "../auth/SignInButton";
 import { ModeToggle } from "../theme/ModeToggle";
@@ -13,7 +15,7 @@ function useBoundedScroll(threshold: number) {
   let scrollYBoundedProgress = useTransform(
     scrollYBounded,
     [0, threshold],
-    [0, 1],
+    [0, 1]
   );
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export function LandingHeader() {
   let scrollYBoundedProgressDelayed = useTransform(
     scrollYBoundedProgress,
     [0, 0.75, 1],
-    [0, 0, 1],
+    [0, 0, 1]
   );
 
   return (
@@ -43,7 +45,7 @@ export function LandingHeader() {
       style={{
         height: useTransform(scrollYBoundedProgressDelayed, [0, 1], [80, 50]),
       }}
-      className="fixed inset-x-0 flex h-20 shadow backdrop-blur-md"
+      className="fixed inset-x-0 z-50 flex h-20 shadow backdrop-blur-md"
     >
       <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-8">
         <motion.div
@@ -51,30 +53,32 @@ export function LandingHeader() {
             scale: useTransform(
               scrollYBoundedProgressDelayed,
               [0, 1],
-              [1, 0.9],
+              [1, 0.9]
             ),
           }}
           className="flex origin-left items-center text-xl font-semibold uppercase"
         >
-          <Image
-            src="/icon.png"
-            width={32}
-            height={32}
-            alt="co-sport.com logo"
-          />
+          <Link href="/">
+            <Image
+              src="/icon.png"
+              width={32}
+              height={32}
+              alt="co-sport.com logo"
+            />
+          </Link>
         </motion.div>
         <motion.nav
           style={{
             opacity: useTransform(
               scrollYBoundedProgressDelayed,
               [0, 1],
-              [1, 0],
+              [1, 0]
             ),
           }}
           className="flex items-center gap-4 text-sm font-medium text-muted-foreground"
         >
-          {/* <a href="#features">Fonctionnalités</a> */}
           <AppButton />
+          <LanguageSwitcher />
           <ModeToggle />
         </motion.nav>
       </div>
@@ -89,7 +93,7 @@ const AppButton = () => {
   const session = useSession();
 
   if (session.data?.user) {
-    return <a href="/products">App</a>;
+    return <Link href="/products">App</Link>;
   } else {
     return <SignInButton />;
   }
