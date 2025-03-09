@@ -8,44 +8,43 @@ import { LandingHeader } from "@/features/landing/LandingHeader";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { LatestProducts } from "./LatestProducts";
 
-// Charger les messages
-async function getMessages() {
-  return (await import("../../../../messages/fr.json")).default;
+// Configuration ISR
+export const dynamic = "force-static"; // Utiliser le rendu statique pour la page d'accueil
+export const revalidate = 300; // Revalider toutes les 5 minutes (300 secondes)
+
+// Squelette pour le chargement des derniers produits
+function LatestProductsSkeleton() {
+  return (
+    <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+      <div className="mb-8 animate-pulse space-y-3">
+        <div className="h-8 w-48 rounded bg-muted"></div>
+        <div className="h-4 w-64 rounded bg-muted"></div>
+      </div>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {Array(6)
+          .fill(0)
+          .map((_, i) => (
+            <div
+              key={i}
+              className="animate-pulse space-y-3 rounded-xl border p-6"
+            >
+              <div className="h-4 w-2/3 rounded bg-muted"></div>
+              <div className="h-20 w-full rounded bg-muted"></div>
+              <div className="h-4 w-full rounded bg-muted"></div>
+              <div className="h-4 w-1/2 rounded bg-muted"></div>
+            </div>
+          ))}
+      </div>
+    </div>
+  );
 }
 
-// Génération des métadonnées SEO pour la page d'accueil
-export function generateMetadata(): Metadata {
-  return createSeoMetadata({
-    title:
-      "co-sport.com - Trouve ton partenaire de sport et progressez ensemble !",
-    description:
-      "co-sport.com est la plateforme idéale pour trouver des partenaires de sport près de chez toi. Pratique des sports ensemble, rejoins des groupes et améliore ta performance !",
-    path: "/",
-    ogImage: "/opengraph-image.png",
-  });
-}
-
-export default async function Home() {
-  const user = await currentUser();
-  const messages = await getMessages();
-
-  // Définir les traductions en français directement pour la page d'accueil par défaut
-  const heroTranslations = {
-    soon: messages.Home.soon,
-    app_mobile: messages.Home.app_mobile,
-    hero_title: messages.Home.hero_title,
-    hero_subtitle: messages.Home.hero_subtitle,
-    cta_button: messages.Home.cta_button,
-  };
-
-  // Traductions pour le CTA
-  const ctaTranslations = {
-    cta_button: "Commencer",
-  };
-
-  const latestProducts = await prisma.product.findMany({
+// Charge les produits de manière asynchrone
+async function getLatestProducts() {
+  return prisma.product.findMany({
     where: {
       enabled: true,
     },
@@ -75,17 +74,72 @@ export default async function Home() {
       },
     },
   });
+}
+
+// Charger les messages
+async function getMessages() {
+  return (await import("../../../../messages/fr.json")).default;
+}
+
+// Génération des métadonnées SEO pour la page d'accueil
+export function generateMetadata(): Metadata {
+  return createSeoMetadata({
+    title:
+      "co-sport.com - Trouve ton partenaire de sport et progressez ensemble !",
+    description:
+      "co-sport.com est la plateforme idéale pour trouver des partenaires de sport près de chez toi. Pratique des sports ensemble, rejoins des groupes et améliore ta performance !",
+    path: "/",
+    ogImage: "/opengraph-image.png",
+  });
+}
+
+// Composant pour les derniers produits avec chargement asynchrone
+async function LatestProductsSection() {
+  const [user, latestProducts] = await Promise.all([
+    currentUser(),
+    getLatestProducts(),
+  ]);
+
+  return <LatestProducts products={latestProducts} isAuthenticated={!!user} />;
+}
+
+export default async function Home() {
+  const messages = await getMessages();
+
+  // Définir les traductions en français directement pour la page d'accueil par défaut
+  const heroTranslations = {
+    soon: messages.Home.soon,
+    app_mobile: messages.Home.app_mobile,
+    hero_title: messages.Home.hero_title,
+    hero_subtitle: messages.Home.hero_subtitle,
+    cta_button: messages.Home.cta_button,
+  };
+
+  // Traductions pour le CTA
+  const ctaTranslations = {
+    cta_button: "Commencer",
+  };
 
   return (
     <div className="flex flex-col gap-4">
       <div className="h-16" />
       <LandingHeader />
       <HeroSection translations={heroTranslations} />
-      <LatestProducts products={latestProducts} isAuthenticated={!!user} />
-      <FeatureSection />
-      <FAQSection />
-      <CTASection translations={ctaTranslations} />
-      <FooterSection />
+      <Suspense fallback={<LatestProductsSkeleton />}>
+        <LatestProductsSection />
+      </Suspense>
+      <Suspense>
+        <FeatureSection />
+      </Suspense>
+      <Suspense>
+        <FAQSection />
+      </Suspense>
+      <Suspense>
+        <CTASection translations={ctaTranslations} />
+      </Suspense>
+      <Suspense>
+        <FooterSection />
+      </Suspense>
     </div>
   );
 }

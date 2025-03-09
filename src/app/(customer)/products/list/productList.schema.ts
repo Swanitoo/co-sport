@@ -23,6 +23,8 @@ export interface FilteredProductListProps {
   userSex: string | null;
   userId: string;
   venues: { venueName: string | null; venueAddress: string | null }[];
+  isAdmin?: boolean;
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export const FilterSchema = z.object({

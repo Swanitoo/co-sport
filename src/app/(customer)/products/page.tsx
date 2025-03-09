@@ -1,16 +1,24 @@
 import { currentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { getServerTranslations } from "@/components/server-translation";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
 import { Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { FilteredProductList } from "./list/FilteredProductList";
+import { Suspense } from "react";
+import {
+  FilteredProductList,
+  ProductListFallback,
+} from "./list/FilteredProductList";
 import { getUniqueVenues } from "./list/productList.actions";
 import { MiniMap } from "./MiniMap";
+
+// Activation de l'ISR pour cette page
+export const dynamic = "force-dynamic"; // Valeur possible: 'auto' | 'force-dynamic' | 'error' | 'force-static'
+export const revalidate = 60; // Revalider toutes les 60 secondes
 
 export default async function RoutePage({
   searchParams,
@@ -24,6 +32,9 @@ export default async function RoutePage({
     redirect("/auth/signin");
   }
 
+  const isAdmin = user.isAdmin ?? false;
+
+  // Utilisation de Promise.all pour paralléliser les requêtes et réduire le temps de chargement
   const [initialProducts, venues] = await Promise.all([
     prisma.product.findMany({
       where: {
@@ -64,6 +75,8 @@ export default async function RoutePage({
           },
         },
       },
+      // Limiter le nombre initial de produits pour accélérer le chargement
+      take: 20,
     }),
     getUniqueVenues(),
   ]);
@@ -82,30 +95,41 @@ export default async function RoutePage({
                 )}
               </p>
 
-              <Link href="/products/new" className="mt-4 inline-flex">
-                <Button size="lg" className="gap-2">
-                  <Plus className="size-4" />
-                  {t("Products.Create", "Créer une annonce")}
-                </Button>
+              <Link
+                href="/products/new"
+                className={buttonVariants({ variant: "default" })}
+              >
+                <Plus className="mr-2 size-4" />
+                {t("Products.Create", "Créer une annonce")}
               </Link>
             </div>
 
             <div className="mt-4 sm:mt-0">
-              <MiniMap
-                initialProducts={initialProducts}
-                userId={user.id}
-                searchParams={searchParams}
-              />
+              <Suspense
+                fallback={
+                  <div className="h-[200px] w-full animate-pulse rounded-md bg-muted"></div>
+                }
+              >
+                <MiniMap
+                  initialProducts={initialProducts}
+                  userId={user.id}
+                  searchParams={searchParams}
+                />
+              </Suspense>
             </div>
           </div>
         </div>
 
-        <FilteredProductList
-          initialProducts={initialProducts}
-          userSex={user.sex}
-          userId={user.id}
-          venues={venues}
-        />
+        <Suspense fallback={<ProductListFallback />}>
+          <FilteredProductList
+            initialProducts={initialProducts}
+            userSex={user.sex}
+            userId={user.id}
+            venues={venues}
+            isAdmin={isAdmin}
+            searchParams={searchParams}
+          />
+        </Suspense>
       </div>
     </Layout>
   );

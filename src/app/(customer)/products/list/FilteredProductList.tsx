@@ -11,21 +11,44 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollToTop } from "@/components/ui/scrollTotop";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Filter, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { ProductFilters } from "./ProductFilters";
 import { ProductList } from "./ProductList";
 import { fetchMoreProducts } from "./productList.actions";
 import { FilteredProductListProps, FilterType } from "./productList.schema";
+
+// Composant de secours pendant le chargement
+export function ProductListFallback() {
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between">
+        <Skeleton className="h-8 w-[150px]" />
+        <Skeleton className="h-8 w-[100px]" />
+      </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {Array(6)
+          .fill(0)
+          .map((_, i) => (
+            <Skeleton key={i} className="h-[300px] w-full rounded-lg" />
+          ))}
+      </div>
+    </div>
+  );
+}
 
 export function FilteredProductList({
   initialProducts,
   userSex,
   userId,
   venues,
+  isAdmin,
+  searchParams: initialSearchParams,
 }: FilteredProductListProps) {
   const { t } = useAppTranslations();
+  const [isPending, startTransition] = useTransition();
   const [hasMore, setHasMore] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -38,55 +61,79 @@ export function FilteredProductList({
     sport: searchParams?.get("sport") || undefined,
     level: searchParams?.get("level") || undefined,
     onlyGirls: searchParams?.get("onlyGirls") === "true",
-    countries: searchParams?.get("countries")?.split(",") || [],
+    countries: searchParams?.get("countries")?.split(",").filter(Boolean) || [],
     location: undefined,
   });
 
-  const applyFilters = (products: any[]) => {
-    return products.filter((product) => {
-      if (filters.sport && product.sport !== filters.sport) return false;
-      if (filters.level && product.level !== filters.level) return false;
-      if (
-        filters.countries?.length > 0 &&
-        !filters.countries.includes(product.user.country)
-      )
-        return false;
-      if (userSex === "F" && filters.onlyGirls && product.user.sex !== "F")
-        return false;
-      return true;
+  const applyFilters = useCallback(
+    (products: any[]) => {
+      return products.filter((product) => {
+        if (filters.sport && product.sport !== filters.sport) return false;
+        if (filters.level && product.level !== filters.level) return false;
+        if (
+          filters.countries?.length > 0 &&
+          !filters.countries.includes(product.user.country)
+        )
+          return false;
+        if (userSex === "F" && filters.onlyGirls && product.user.sex !== "F")
+          return false;
+        return true;
+      });
+    },
+    [filters, userSex]
+  );
+
+  // Utiliser useCallback pour mémoriser la fonction et éviter des re-rendus inutiles
+  const loadMoreProducts = useCallback(async () => {
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+    try {
+      const skip = products.length;
+      const newProducts = await fetchMoreProducts(skip, filters, userSex);
+
+      if (newProducts.length < 10) {
+        setHasMore(false);
+      }
+
+      const filteredNewProducts = applyFilters(newProducts);
+      setProducts((prev) => [...prev, ...filteredNewProducts]);
+    } catch (error) {
+      console.error("Erreur lors du chargement des produits:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [applyFilters, filters, hasMore, loading, products.length, userSex]);
+
+  useEffect(() => {
+    startTransition(() => {
+      const filteredProducts = applyFilters(initialProducts);
+      setProducts(filteredProducts);
+      setHasMore(filteredProducts.length >= 10);
     });
-  };
+  }, [applyFilters, filters, initialProducts]);
 
   useEffect(() => {
-    const filteredProducts = applyFilters(initialProducts);
-    setProducts(filteredProducts);
-    setHasMore(filteredProducts.length >= 10);
-  }, [filters, initialProducts]);
-
-  useEffect(() => {
+    const currentRef = loadMoreRef.current;
     const observer = new IntersectionObserver(
-      async (entries) => {
+      (entries) => {
         if (entries[0].isIntersecting && !loading && hasMore) {
-          setLoading(true);
-          const skip = products.length;
-          const newProducts = await fetchMoreProducts(skip, filters, userSex);
-          if (newProducts.length < 10) {
-            setHasMore(false);
-          }
-          const filteredNewProducts = applyFilters(newProducts);
-          setProducts((prev) => [...prev, ...filteredNewProducts]);
-          setLoading(false);
+          loadMoreProducts();
         }
       },
-      { threshold: 1.0 }
+      { threshold: 0.1 }
     );
 
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
-    return () => observer.disconnect();
-  }, [products.length, loading, filters, hasMore, userSex]);
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasMore, loading, loadMoreProducts]);
 
   const handleFilterChange = (newFilters: FilterType) => {
     const params = new URLSearchParams(searchParams?.toString());

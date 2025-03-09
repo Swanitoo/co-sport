@@ -3,12 +3,24 @@ import { ParallaxIcons } from "@/components/parallax/ParallaxIcons";
 import { ThemeScript } from "@/components/theme-script";
 import { getServerUrl } from "@/get-server-url";
 import { cn } from "@/lib/utils";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
+
+// Configuration du viewport séparée selon les recommandations Next.js
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  colorScheme: "dark light",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f1f5f9" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+  ],
+};
 
 export const metadata: Metadata = {
   title: "co-sport.com",
@@ -40,11 +52,6 @@ export const metadata: Metadata = {
     "ski",
   ],
   category: "sports",
-  colorScheme: "dark light",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f1f5f9" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
-  ],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -58,7 +65,6 @@ export const metadata: Metadata = {
     email: true,
     url: true,
   },
-  viewport: { width: "device-width", initialScale: 1, viewportFit: "cover" },
 };
 
 export default async function RootLayout({

@@ -10,6 +10,9 @@ import { ReviewItem } from "./ReviewCard";
 
 export const maxDuration = 10;
 
+export const dynamic = "force-static";
+export const revalidate = 300;
+
 export default async function RoutePage(props: PageParams<{ slug: string }>) {
   const user = await currentUser();
 
@@ -106,7 +109,9 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
                 {isAdmin && (
                   <div className="flex gap-2">
                     <Link
-                      href={`/r/${encodeURIComponent(product.slug)}/edit/${review.id}`}
+                      href={`/r/${encodeURIComponent(product.slug)}/edit/${
+                        review.id
+                      }`}
                       className={buttonVariants({
                         variant: "ghost",
                         size: "sm",

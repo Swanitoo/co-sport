@@ -633,3 +633,8 @@ export async function generateMetadata(): Promise<Metadata> {
     noindex: true, // Page privée, ne pas indexer
   });
 }
+
+// Configuration du rendu dynamique pour cette page
+// Le tableau de bord contient des données personnalisées qui doivent être actualisées fréquemment
+export const dynamic = "force-dynamic";
+export const revalidate = 0; // Ne pas mettre en cache cette page (toujours fraîche)

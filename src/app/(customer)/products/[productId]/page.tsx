@@ -20,6 +20,7 @@ import { CheckCircle, Crown, Link2, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { Suspense } from "react";
 import { AcceptRequestButton } from "./AcceptButton";
 import { ChatComponent } from "./Chat";
 import { DeleteButton } from "./DeleteButton";
@@ -28,6 +29,44 @@ import { JoinRequestButton } from "./JoinRequestButton";
 import { LeaveButton } from "./LeaveButton";
 import { ProductLocationMap } from "./ProductLocationMap";
 import { RemoveMemberButton } from "./RemoveMemberButton";
+
+// Activation de l'ISR pour cette page
+export const dynamic = "force-dynamic"; // Permettre les mises à jour dynamiques des données
+export const revalidate = 60; // Revalider toutes les 60 secondes
+
+// Fallback pour le chargement des cartes
+function CardSkeleton() {
+  return (
+    <Card className="animate-pulse">
+      <CardHeader>
+        <div className="h-6 w-24 rounded bg-muted"></div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <div className="h-4 w-full rounded bg-muted"></div>
+          <div className="h-4 w-3/4 rounded bg-muted"></div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Fallback pour le chargement du chat
+function ChatSkeleton() {
+  return (
+    <div className="animate-pulse space-y-4">
+      <div className="h-10 w-full rounded bg-muted"></div>
+      <div className="h-[400px] w-full rounded bg-muted"></div>
+    </div>
+  );
+}
+
+// Fallback pour le chargement de la carte
+function MapSkeleton() {
+  return (
+    <div className="h-[300px] w-full animate-pulse rounded bg-muted"></div>
+  );
+}
 
 export default async function RoutePage({
   params: { productId },
@@ -40,6 +79,16 @@ export default async function RoutePage({
   if (!user) {
     redirect("/auth/signin");
   }
+
+  const getSportIcon = (sportName: string) => {
+    const sport = SPORTS.find((s) => s.name === sportName);
+    return sport?.icon || "🎯";
+  };
+
+  const getLevelIcon = (levelName: string) => {
+    const level = LEVEL_CLASSES.find((l) => l.name === levelName);
+    return level?.icon || "🎯";
+  };
 
   const product = await prisma.product.findUnique({
     where: {
@@ -81,6 +130,7 @@ export default async function RoutePage({
     notFound();
   }
 
+  // Définir les variables avant de les utiliser
   const isOwner = product.userId === user.id;
   const isClient = product.userId !== user.id;
   const isMember = product.memberships.some(
@@ -98,16 +148,6 @@ export default async function RoutePage({
     (m) => m.status === "PENDING"
   );
   const pendingCount = pendingMemberships.length;
-
-  const getSportIcon = (sportName: string) => {
-    const sport = SPORTS.find((s) => s.name === sportName);
-    return sport?.icon || "🎯";
-  };
-
-  const getLevelIcon = (levelName: string) => {
-    const level = LEVEL_CLASSES.find((l) => l.name === levelName);
-    return level?.icon || "🎯";
-  };
 
   // Marquer les messages comme lus si l'utilisateur est membre ou propriétaire
   if (user) {
@@ -149,254 +189,299 @@ export default async function RoutePage({
         </div>
 
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
-          <div className="max-w-[90%] space-y-0.5">
-            <LayoutTitle className="break-words">{product.name}</LayoutTitle>
-            <div className="flex items-center gap-2">
-              <Avatar className="size-6">
-                <AvatarImage src={product.user.image || undefined} />
-                <AvatarFallback>{product.user.name?.[0]}</AvatarFallback>
-              </Avatar>
-              <div className="flex items-center gap-1">
-                {product.user.socialLink ? (
-                  <Link
-                    href={product.user.socialLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="cursor-pointer text-sm hover:underline"
-                  >
-                    {product.user.name}
-                  </Link>
-                ) : (
-                  <Link
-                    href={`/${locale}/profile/${product.userId}`}
-                    className="cursor-pointer text-sm hover:underline"
-                  >
-                    {product.user.name}
-                  </Link>
-                )}
-                {product.user.sex && (
-                  <span className="text-sm text-muted-foreground">
-                    ({product.user.sex})
-                  </span>
-                )}
-                {product.user.country && (
-                  <span className="text-base">
-                    {getCountryFlag(product.user.country)}
-                  </span>
-                )}
+          <Suspense
+            fallback={
+              <div className="max-w-[90%] space-y-0.5">
+                <div className="h-8 w-2/3 rounded bg-muted"></div>
+                <div className="h-6 w-1/2 rounded bg-muted"></div>
               </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {canManageProduct && pendingMemberships.length > 0 && (
-              <AcceptRequestButton
-                membership={pendingMemberships[0]}
-                count={pendingCount}
-              />
-            )}
-
-            {canManageProduct && (
-              <>
-                {isOwner && <Crown size={16} className="text-yellow-500" />}
-                <Link
-                  href={`/${locale}/products/${product.id}/edit`}
-                  className={buttonVariants({
-                    size: "sm",
-                    variant: "secondary",
-                  })}
-                >
-                  {t("Products.Actions.Edit", "Modifier")}
-                </Link>
-                <DeleteButton productId={product.id} />
-              </>
-            )}
-          </div>
-
-          {isClient && !membership && (
-            <JoinRequestButton productId={product.id} userId={user.id} />
-          )}
-
-          {isClient && membership && membership.status === "PENDING" && (
-            <div className="flex items-center gap-2">
-              <button
-                className={buttonVariants({ size: "sm", variant: "secondary" })}
-                disabled
-              >
-                {t(
-                  "Products.Actions.PendingRequest",
-                  "En attente d'acceptation..."
-                )}
-              </button>
-            </div>
-          )}
-
-          {isClient && membership && membership.status === "APPROVED" && (
-            <div className="flex items-center gap-2">
-              <span className="flex items-center">
-                <CheckCircle size={16} className="mr-2 text-green-600" />
-                {t("Products.Actions.YouAreMember", "Tu es membre")}
-              </span>
-              <LeaveButton productId={product.id} userId={user.id} />
-            </div>
-          )}
-
-          {isClient && membership && membership.status === "REMOVED" && (
-            <div className="flex items-center gap-2">
-              <button
-                className={buttonVariants({
-                  size: "sm",
-                  variant: "destructive",
-                })}
-                disabled
-              >
-                {t("Products.Actions.RejectedRequest", "Adhésion refusée")}
-              </button>
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-col text-lg sm:flex-row sm:items-center sm:gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">{getSportIcon(product.sport)}</span>
-            <span>{product.sport}</span>
-          </div>
-          <span className="hidden text-muted-foreground sm:block">•</span>
-          <div className="mt-2 flex items-center gap-2 sm:mt-0">
-            <span className="text-2xl">{getLevelIcon(product.level)}</span>
-            <span>{product.level}</span>
-          </div>
-        </div>
-
-        <div className="flex gap-4 max-lg:flex-col">
-          <Card className="flex-1">
-            <CardHeader>
-              <CardTitle>{t("Products.Details", "Détails")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* Afficher la carte si des coordonnées sont disponibles */}
-              {product.venueLat && product.venueLng && (
-                <ProductLocationMap product={product} userId={user.id} />
-              )}
-
-              {product.venueName && (
-                <div className="flex items-start gap-2">
-                  <MapPin className="mt-1 size-4 shrink-0 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">{product.venueName}</p>
-                    {product.venueAddress &&
-                      product.venueAddress !== product.venueName && (
-                        <p className="text-sm text-muted-foreground">
-                          {product.venueAddress}
-                        </p>
-                      )}
-                  </div>
+            }
+          >
+            <div className="max-w-[90%] space-y-0.5">
+              <LayoutTitle className="break-words">{product.name}</LayoutTitle>
+              <div className="flex items-center gap-2">
+                <Avatar className="size-6">
+                  <AvatarImage src={product.user.image || undefined} />
+                  <AvatarFallback>{product.user.name?.[0]}</AvatarFallback>
+                </Avatar>
+                <div className="flex items-center gap-1">
+                  {product.user.socialLink ? (
+                    <Link
+                      href={product.user.socialLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="cursor-pointer text-sm hover:underline"
+                    >
+                      {product.user.name}
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/${locale}/profile/${product.userId}`}
+                      className="cursor-pointer text-sm hover:underline"
+                    >
+                      {product.user.name}
+                    </Link>
+                  )}
+                  {product.user.sex && (
+                    <span className="text-sm text-muted-foreground">
+                      ({product.user.sex})
+                    </span>
+                  )}
+                  {product.user.country && (
+                    <span className="text-base">
+                      {getCountryFlag(product.user.country)}
+                    </span>
+                  )}
                 </div>
+              </div>
+            </div>
+          </Suspense>
+
+          <Suspense
+            fallback={
+              <div className="flex items-center gap-2">
+                <div className="h-10 w-24 rounded bg-muted"></div>
+              </div>
+            }
+          >
+            <div className="flex items-center gap-2">
+              {canManageProduct && pendingMemberships.length > 0 && (
+                <AcceptRequestButton
+                  membership={pendingMemberships[0]}
+                  count={pendingCount}
+                />
               )}
 
-              <div className="mt-4">
-                <p>
-                  {t("Products.DescriptionLabel", "Description")} :{" "}
-                  {product.description}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="flex-1">
-            <CardHeader>
-              <CardTitle>{t("Products.Reviews", "Avis")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader className="pointer-events-none">
-                  <TableRow>
-                    <TableHead>{t("Products.Form.Name", "Nom")}</TableHead>
-                    <TableHead>
-                      {t("Products.Reviews.Rating", "Note")}
-                    </TableHead>
-                    <TableHead>{t("Products.Reviews", "Avis")}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {product.reviews.map((review) => (
-                    <TableRow key={review.id}>
-                      <TableCell>{review.name}</TableCell>
-                      <TableCell>{review.rating}/5</TableCell>
-                      <TableCell>{review.text}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              {isClient && membership && membership.status === "APPROVED" && (
-                <div className="mt-4">
+              {canManageProduct && (
+                <>
+                  {isOwner && <Crown size={16} className="text-yellow-500" />}
                   <Link
-                    href={`/r/${encodeURIComponent(product.slug)}`}
+                    href={`/${locale}/products/${product.id}/edit`}
                     className={buttonVariants({
                       size: "sm",
+                      variant: "secondary",
                     })}
+                    prefetch={true}
                   >
-                    <Link2 size={16} className="mr-2" />
-                    {t("Products.WriteReview", "Écrire un avis")}
+                    {t("Products.Actions.Edit", "Modifier")}
                   </Link>
+                  <DeleteButton productId={product.id} />
+                </>
+              )}
+
+              {isClient && !membership && (
+                <JoinRequestButton productId={product.id} userId={user.id} />
+              )}
+
+              {isClient && membership && membership.status === "PENDING" && (
+                <div className="flex items-center gap-2">
+                  <button
+                    className={buttonVariants({
+                      size: "sm",
+                      variant: "secondary",
+                    })}
+                    disabled
+                  >
+                    {t(
+                      "Products.Actions.PendingRequest",
+                      "En attente d'acceptation..."
+                    )}
+                  </button>
                 </div>
               )}
-              <div className="mt-2">
-                <Link
-                  href={`/wall/${encodeURIComponent(product.slug)}`}
-                  className={buttonVariants({
-                    size: "sm",
-                    variant: "outline",
-                  })}
-                >
-                  <Link2 size={16} className="mr-2" />
-                  {t("Products.SeeAllReviews", "Voir tous les avis")}
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+
+              {isClient && membership && membership.status === "APPROVED" && (
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center">
+                    <CheckCircle size={16} className="mr-2 text-green-600" />
+                    {t("Products.Actions.YouAreMember", "Tu es membre")}
+                  </span>
+                  <LeaveButton productId={product.id} userId={user.id} />
+                </div>
+              )}
+
+              {isClient && membership && membership.status === "REMOVED" && (
+                <div className="flex items-center gap-2">
+                  <button
+                    className={buttonVariants({
+                      size: "sm",
+                      variant: "destructive",
+                    })}
+                    disabled
+                  >
+                    {t("Products.Actions.RejectedRequest", "Adhésion refusée")}
+                  </button>
+                </div>
+              )}
+            </div>
+          </Suspense>
         </div>
-        {isOwner && (
-          <Card className="flex-1">
-            <CardHeader>
-              <CardTitle>{t("Products.Members", "Membres")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableBody>
-                  {activeMemberships.map((membership) => (
-                    <TableRow key={membership.id}>
-                      <TableCell>
-                        <p>{membership.user.name}</p>
-                        {membership.user.socialLink && (
-                          <Link
-                            href={membership.user.socialLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-blue-600 hover:underline"
-                          >
-                            {t(
-                              "Products.Members.SocialNetwork",
-                              "Réseau social"
-                            )}
-                          </Link>
+
+        <Suspense
+          fallback={
+            <div className="flex flex-col text-lg sm:flex-row sm:items-center sm:gap-4">
+              <div className="h-8 w-24 rounded bg-muted"></div>
+              <span className="hidden text-muted-foreground sm:block">•</span>
+              <div className="h-8 w-24 rounded bg-muted"></div>
+            </div>
+          }
+        >
+          <div className="flex flex-col text-lg sm:flex-row sm:items-center sm:gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">{getSportIcon(product.sport)}</span>
+              <span>{product.sport}</span>
+            </div>
+            <span className="hidden text-muted-foreground sm:block">•</span>
+            <div className="mt-2 flex items-center gap-2 sm:mt-0">
+              <span className="text-2xl">{getLevelIcon(product.level)}</span>
+              <span>{product.level}</span>
+            </div>
+          </div>
+        </Suspense>
+
+        <div className="flex gap-4 max-lg:flex-col">
+          <Suspense fallback={<CardSkeleton />}>
+            <Card className="flex-1">
+              <CardHeader>
+                <CardTitle>{t("Products.Details", "Détails")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {/* Afficher la carte si des coordonnées sont disponibles */}
+                {product.venueLat && product.venueLng && (
+                  <Suspense fallback={<MapSkeleton />}>
+                    <ProductLocationMap product={product} userId={user.id} />
+                  </Suspense>
+                )}
+
+                {product.venueName && (
+                  <div className="flex items-start gap-2">
+                    <MapPin className="mt-1 size-4 shrink-0 text-muted-foreground" />
+                    <div>
+                      <p className="font-medium">{product.venueName}</p>
+                      {product.venueAddress &&
+                        product.venueAddress !== product.venueName && (
+                          <p className="text-sm text-muted-foreground">
+                            {product.venueAddress}
+                          </p>
                         )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <RemoveMemberButton membershipId={membership.id} />
-                      </TableCell>
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-4">
+                  <p>
+                    {t("Products.DescriptionLabel", "Description")} :{" "}
+                    {product.description}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </Suspense>
+          <Suspense fallback={<CardSkeleton />}>
+            <Card className="flex-1">
+              <CardHeader>
+                <CardTitle>{t("Products.Reviews", "Avis")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader className="pointer-events-none">
+                    <TableRow>
+                      <TableHead>{t("Products.Form.Name", "Nom")}</TableHead>
+                      <TableHead>
+                        {t("Products.Reviews.Rating", "Note")}
+                      </TableHead>
+                      <TableHead>{t("Products.Reviews", "Avis")}</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {product.reviews.map((review) => (
+                      <TableRow key={review.id}>
+                        <TableCell>{review.name}</TableCell>
+                        <TableCell>{review.rating}/5</TableCell>
+                        <TableCell>{review.text}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                {isClient && membership && membership.status === "APPROVED" && (
+                  <div className="mt-4">
+                    <Link
+                      href={`/${locale}/r/${encodeURIComponent(product.slug)}`}
+                      className={buttonVariants({
+                        size: "sm",
+                      })}
+                      prefetch={true}
+                    >
+                      <Link2 size={16} className="mr-2" />
+                      {t("Products.WriteReview", "Écrire un avis")}
+                    </Link>
+                  </div>
+                )}
+                <div className="mt-2">
+                  <Link
+                    href={`/${locale}/wall/${encodeURIComponent(product.slug)}`}
+                    className={buttonVariants({
+                      size: "sm",
+                      variant: "outline",
+                    })}
+                    prefetch={true}
+                  >
+                    <Link2 size={16} className="mr-2" />
+                    {t("Products.SeeAllReviews", "Voir tous les avis")}
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </Suspense>
+        </div>
+
+        {isOwner && (
+          <Suspense fallback={<CardSkeleton />}>
+            <Card className="flex-1">
+              <CardHeader>
+                <CardTitle>{t("Products.Members", "Membres")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableBody>
+                    {activeMemberships.map((membership) => (
+                      <TableRow key={membership.id}>
+                        <TableCell>
+                          <p>{membership.user.name}</p>
+                          {membership.user.socialLink && (
+                            <Link
+                              href={membership.user.socialLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-600 hover:underline"
+                            >
+                              {t(
+                                "Products.Members.SocialNetwork",
+                                "Réseau social"
+                              )}
+                            </Link>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <RemoveMemberButton membershipId={membership.id} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </Suspense>
         )}
+
         {canViewMessages && (
-          <ChatComponent
-            productId={productId}
-            userId={user.id}
-            isAdmin={user.isAdmin}
-          />
+          <Suspense fallback={<ChatSkeleton />}>
+            <ChatComponent
+              productId={productId}
+              userId={user.id}
+              isAdmin={user.isAdmin}
+            />
+          </Suspense>
         )}
       </div>
     </Layout>
