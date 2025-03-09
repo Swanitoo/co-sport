@@ -2,8 +2,10 @@ import { currentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { getServerTranslations } from "@/components/server-translation";
 import { Button } from "@/components/ui/button";
+import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
 import { Plus } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FilteredProductList } from "./list/FilteredProductList";
@@ -107,4 +109,14 @@ export default async function RoutePage({
       </div>
     </Layout>
   );
+}
+
+// Génération de métadonnées SEO pour la page de produits
+export async function generateMetadata(): Promise<Metadata> {
+  return createSeoMetadata({
+    title: "Toutes les annonces sportives | co-sport.com",
+    description:
+      "Découvrez toutes les annonces sportives disponibles. Trouvez des partenaires pour tous types de sports dans votre région.",
+    path: "/products",
+  });
 }

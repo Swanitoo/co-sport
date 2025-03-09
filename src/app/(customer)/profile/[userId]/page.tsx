@@ -1,9 +1,11 @@
 import { Layout, LayoutTitle } from "@/components/layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCountryFlag } from "@/data/country";
+import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
 import { formatDistance } from "date-fns";
 import { fr } from "date-fns/locale";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReviewItem } from "../../../(user)/wall/[slug]/ReviewCard";
@@ -213,4 +215,33 @@ export default async function ProfilePage({
       </div>
     </Layout>
   );
+}
+
+// Génération de métadonnées SEO pour la page de profil
+export async function generateMetadata({
+  params,
+}: {
+  params: { userId: string };
+}): Promise<Metadata> {
+  const user = await prisma.user.findUnique({
+    where: { id: params.userId },
+    select: { name: true },
+  });
+
+  if (!user) {
+    return createSeoMetadata({
+      title: "Profil non trouvé | co-sport.com",
+      description: "Ce profil n'existe pas ou a été supprimé.",
+      path: `/profile/${params.userId}`,
+      noindex: true,
+    });
+  }
+
+  return createSeoMetadata({
+    title: `Profil de ${user.name || "Utilisateur"} | co-sport.com`,
+    description: `Découvrez le profil sportif de ${
+      user.name || "cet utilisateur"
+    } sur co-sport.com. Consultez ses activités et ses préférences sportives.`,
+    path: `/profile/${params.userId}`,
+  });
 }

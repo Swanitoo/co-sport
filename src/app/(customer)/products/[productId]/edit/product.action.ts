@@ -115,7 +115,14 @@ export async function updateProductAction({
     return { serverError: "Groupe introuvable" };
   }
 
-  if (product.userId !== session.user.id) {
+  // Vérifier si l'utilisateur est un administrateur
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { isAdmin: true },
+  });
+
+  // Permettre aux admins de modifier n'importe quelle annonce
+  if (product.userId !== session.user.id && !user?.isAdmin) {
     return { serverError: "Vous n'êtes pas autorisé à modifier ce groupe" };
   }
 

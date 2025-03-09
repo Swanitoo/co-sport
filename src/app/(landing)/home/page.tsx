@@ -5,12 +5,26 @@ import { FeatureSection } from "@/features/landing/FeatureSection";
 import { FooterSection } from "@/features/landing/Footersection";
 import { HeroSection } from "@/features/landing/HeroSection";
 import { LandingHeader } from "@/features/landing/LandingHeader";
+import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
+import type { Metadata } from "next";
 import { LatestProducts } from "./LatestProducts";
 
 // Charger les messages
 async function getMessages() {
   return (await import("../../../../messages/fr.json")).default;
+}
+
+// Génération des métadonnées SEO pour la page d'accueil
+export function generateMetadata(): Metadata {
+  return createSeoMetadata({
+    title:
+      "co-sport.com - Trouve ton partenaire de sport et progressez ensemble !",
+    description:
+      "co-sport.com est la plateforme idéale pour trouver des partenaires de sport près de chez toi. Pratique des sports ensemble, rejoins des groupes et améliore ta performance !",
+    path: "/",
+    ogImage: "/opengraph-image.png",
+  });
 }
 
 export default async function Home() {

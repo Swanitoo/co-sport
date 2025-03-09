@@ -27,9 +27,11 @@ import {
 } from "@/components/ui/select";
 import { COUNTRIES } from "@/data/country";
 import { ProfileImageUpload } from "@/features/upload/components/ProfileImageUpload";
+import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
 import { Globe, MapPin, Pencil } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ReviewItem } from "../../(user)/wall/[slug]/ReviewCard";
 import {
@@ -619,4 +621,15 @@ export default async function RoutePage(props: PageParams<{}>) {
       </div>
     </Layout>
   );
+}
+
+// Génération de métadonnées SEO pour la page de tableau de bord
+export async function generateMetadata(): Promise<Metadata> {
+  return createSeoMetadata({
+    title: "Tableau de bord | co-sport.com",
+    description:
+      "Gérez vos activités sportives, vos réservations et vos préférences depuis votre tableau de bord personnel.",
+    path: "/dashboard",
+    noindex: true, // Page privée, ne pas indexer
+  });
 }

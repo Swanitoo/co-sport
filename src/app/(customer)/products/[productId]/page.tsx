@@ -13,9 +13,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getCountryFlag } from "@/data/country";
+import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
 import { CheckCircle, Crown, Link2, MapPin } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AcceptRequestButton } from "./AcceptButton";
@@ -328,7 +330,7 @@ export default async function RoutePage({
               {isClient && membership && membership.status === "APPROVED" && (
                 <div className="mt-4">
                   <Link
-                    href={`/${locale}/r/${encodeURIComponent(product.slug)}`}
+                    href={`/r/${encodeURIComponent(product.slug)}`}
                     className={buttonVariants({
                       size: "sm",
                     })}
@@ -340,7 +342,7 @@ export default async function RoutePage({
               )}
               <div className="mt-2">
                 <Link
-                  href={`/${locale}/wall/${encodeURIComponent(product.slug)}`}
+                  href={`/wall/${encodeURIComponent(product.slug)}`}
                   className={buttonVariants({
                     size: "sm",
                     variant: "outline",
@@ -399,4 +401,41 @@ export default async function RoutePage({
       </div>
     </Layout>
   );
+}
+
+// Génération de métadonnées SEO pour la page de détail d'un produit
+export async function generateMetadata({
+  params,
+}: {
+  params: { productId: string };
+}): Promise<Metadata> {
+  const product = await prisma.product.findUnique({
+    where: { id: params.productId },
+    select: {
+      name: true,
+      description: true,
+      sport: true,
+      level: true,
+    },
+  });
+
+  if (!product) {
+    return createSeoMetadata({
+      title: "Annonce non trouvée | co-sport.com",
+      description: "Cette annonce n'existe pas ou a été supprimée.",
+      path: `/products/${params.productId}`,
+      noindex: true,
+    });
+  }
+
+  // Préparer une description optimisée pour le SEO
+  const seoDescription = `${product.description.substring(0, 160)}... Sport: ${
+    product.sport
+  }, Niveau: ${product.level}`;
+
+  return createSeoMetadata({
+    title: `${product.name} | co-sport.com`,
+    description: seoDescription,
+    path: `/products/${params.productId}`,
+  });
 }
