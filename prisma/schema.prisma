@@ -154,13 +154,12 @@ model Feedback {
 }
 
 model User {
-  id               String           @id
+  id               String           @id @default(cuid())
   name             String?
   email            String?          @unique
   emailVerified    DateTime?
   image            String?
   createdAt        DateTime         @default(now())
-  plan             Plan             @default(FREE)
   updatedAt        DateTime
   stripeCustomerId String?
   socialLink       String?
@@ -185,10 +184,6 @@ model User {
   unreadMessages   UnreadMessage[]
 }
 
-enum Plan {
-  FREE
-  PREMIUM
-}
 
 enum Status {
   PENDING
