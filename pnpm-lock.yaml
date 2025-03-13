@@ -13,7 +13,7 @@ dependencies:
     version: 0.34.2
   '@auth/prisma-adapter':
     specifier: 2.4.2
-    version: 2.4.2(@prisma/client@6.4.1)
+    version: 2.4.2(@prisma/client@6.5.0)
   '@googlemaps/google-maps-services-js':
     specifier: ^3.4.0
     version: 3.4.0
@@ -21,8 +21,8 @@ dependencies:
     specifier: ^3.9.0
     version: 3.10.0(react-hook-form@7.54.2)
   '@prisma/client':
-    specifier: ^6.4.1
-    version: 6.4.1(prisma@6.4.1)(typescript@5.8.2)
+    specifier: ^6.5.0
+    version: 6.5.0(prisma@6.4.1)(typescript@5.8.2)
   '@radix-ui/react-accordion':
     specifier: ^1.2.0
     version: 1.2.3(@types/react-dom@18.3.5)(@types/react@18.3.18)(react-dom@18.3.1)(react@18.3.1)
@@ -255,13 +255,13 @@ packages:
       preact-render-to-string: 5.2.3(preact@10.11.3)
     dev: false
 
-  /@auth/prisma-adapter@2.4.2(@prisma/client@6.4.1):
+  /@auth/prisma-adapter@2.4.2(@prisma/client@6.5.0):
     resolution: {integrity: sha512-QQwnGYfDiyTcAxMVhTrim+lLFFA3TKq3nIrbPtGZXlkiuNQ5t0rUg//Km7Wv21pD5bxhy4aRPlfq7TdFKk3XIw==}
     peerDependencies:
       '@prisma/client': '>=2.26.0 || >=3 || >=4 || >=5'
     dependencies:
       '@auth/core': 0.34.2
-      '@prisma/client': 6.4.1(prisma@6.4.1)(typescript@5.8.2)
+      '@prisma/client': 6.5.0(prisma@6.4.1)(typescript@5.8.2)
     transitivePeerDependencies:
       - '@simplewebauthn/browser'
       - '@simplewebauthn/server'
@@ -1105,8 +1105,8 @@ packages:
     requiresBuild: true
     optional: true
 
-  /@prisma/client@6.4.1(prisma@6.4.1)(typescript@5.8.2):
-    resolution: {integrity: sha512-A7Mwx44+GVZVexT5e2GF/WcKkEkNNKbgr059xpr5mn+oUm2ZW1svhe+0TRNBwCdzhfIZ+q23jEgsNPvKD9u+6g==}
+  /@prisma/client@6.5.0(prisma@6.4.1)(typescript@5.8.2):
+    resolution: {integrity: sha512-M6w1Ql/BeiGoZmhMdAZUXHu5sz5HubyVcKukbLs3l0ELcQb8hTUJxtGEChhv4SVJ0QJlwtLnwOLgIRQhpsm9dw==}
     engines: {node: '>=18.18'}
     requiresBuild: true
     peerDependencies:

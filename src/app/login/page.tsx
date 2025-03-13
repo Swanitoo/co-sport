@@ -66,6 +66,17 @@ export default function LoginPage() {
     }
   };
 
+  const handleStravaLogin = async () => {
+    try {
+      await signIn("strava", { callbackUrl });
+    } catch (error) {
+      console.error("Erreur de connexion:", error);
+      setErrorDetails(
+        "Erreur lors de la connexion à Strava. Veuillez réessayer."
+      );
+    }
+  };
+
   return (
     <div className="container flex min-h-screen items-center justify-center py-12">
       <Card className="w-full max-w-md">
@@ -106,6 +117,23 @@ export default function LoginPage() {
                 unoptimized
               />
               Continuer avec Google
+            </Button>
+
+            <Button
+              onClick={handleStravaLogin}
+              className="flex w-full items-center justify-center gap-2 bg-[#FC4C02] hover:bg-[#E34000]"
+              size="lg"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="currentColor"
+                className="text-white"
+              >
+                <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" />
+              </svg>
+              Continuer avec Strava
             </Button>
           </div>
         </CardContent>

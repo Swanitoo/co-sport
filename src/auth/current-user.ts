@@ -22,6 +22,18 @@ export async function currentUser() {
       country: true,
       socialLink: true,
       isAdmin: true,
+      stravaId: true,
+      stravaConnected: true,
+      stravaLinkRefused: true,
+      stravaToken: true,
+      stravaRefreshToken: true,
+      stravaTokenExpiresAt: true,
+      stravaPremium: true,
+      stravaWeight: true,
+      stravaFTP: true,
+      stravaCreatedAt: true,
+      stravaFollowerCount: true,
+      stravaFollowingCount: true,
     },
   });
 

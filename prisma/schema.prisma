@@ -96,12 +96,44 @@ model Membership {
 }
 
 model StravaActivity {
-  id       String   @id
-  userId   String
-  activity String
-  date     DateTime
-  distance Float
-  User     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String   @id
+  userId               String
+  distance             Float
+  achievementCount     Int?
+  activityType         String
+  athleteCount         Int?
+  averageCadence       Float?
+  averageHeartrate     Float?
+  averageRunCadence    Float?
+  averageSpeed         Float?
+  averageSwimCadence   Float?
+  averageWatts         Float?
+  commentCount         Int?
+  description          String?
+  deviceWatts          Boolean?
+  elapsedTime          Int
+  kilojoules           Float?
+  kudosCount           Int?
+  locationCity         String?
+  locationCountry      String?
+  locationState        String?
+  mapId                String?
+  mapPolyline          String?
+  maxHeartrate         Int?
+  maxSpeed             Float?
+  maxWatts             Int?
+  movingTime           Int
+  name                 String
+  photoCount           Int?
+  poolLength           Int?
+  startDate            DateTime
+  startDateLocal       DateTime
+  sufferScore          Int?
+  timezone             String?
+  totalElevationGain   Float?
+  totalStrokes         Int?
+  weightedAverageWatts Int?
+  User                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Message {
@@ -154,36 +186,72 @@ model Feedback {
 }
 
 model User {
-  id               String           @id @default(cuid())
-  name             String?
-  email            String?          @unique
-  emailVerified    DateTime?
-  image            String?
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @default(now())
-  stripeCustomerId String?
-  socialLink       String?
-  bio              String?
-  city             String?
-  country          String?
-  sex              String?
-  state            String?
-  birthDate        DateTime?
-  nationality      String?
-  profileCompleted Boolean          @default(false)
-  isAdmin          Boolean          @default(false)
-  accounts         Account[]
-  ContactMessage   ContactMessage[]
-  Feedback         Feedback[]
-  memberships      Membership[]
-  products         Product[]
-  reviews          Review[]
-  sessions         Session[]
-  StravaActivity   StravaActivity[]
-  messages         Message[]        @relation("UserMessages")
-  unreadMessages   UnreadMessage[]
+  id                   String           @id @default(cuid())
+  name                 String?
+  email                String?          @unique
+  emailVerified        DateTime?
+  image                String?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @default(now())
+  stripeCustomerId     String?
+  socialLink           String?
+  bio                  String?
+  city                 String?
+  country              String?
+  sex                  String?
+  state                String?
+  birthDate            DateTime?
+  nationality          String?
+  profileCompleted     Boolean          @default(false)
+  isAdmin              Boolean          @default(false)
+  stravaConnected      Boolean          @default(false)
+  stravaCreatedAt      DateTime?
+  stravaFTP            Int?
+  stravaFollowerCount  Int?
+  stravaFollowingCount Int?
+  stravaId             String?          @unique
+  stravaLinkRefused    Boolean          @default(false)
+  stravaPremium        Boolean?
+  stravaRefreshToken   String?
+  stravaToken          String?
+  stravaTokenExpiresAt Int?
+  stravaWeight         Float?
+  accounts             Account[]
+  ContactMessage       ContactMessage[]
+  Feedback             Feedback[]
+  memberships          Membership[]
+  products             Product[]
+  reviews              Review[]
+  sessions             Session[]
+  StravaActivity       StravaActivity[]
+  StravaSegment        StravaSegment[]
+  messages             Message[]        @relation("UserMessages")
+  unreadMessages       UnreadMessage[]
 }
 
+model StravaSegment {
+  id                 String   @id
+  userId             String
+  name               String
+  activityType       String
+  distance           Float
+  averageGrade       Float
+  maximumGrade       Float
+  elevationHigh      Float
+  elevationLow       Float
+  totalElevationGain Float
+  city               String?
+  state              String?
+  country            String?
+  climbCategory      Int?
+  effortCount        Int?
+  athleteCount       Int?
+  starCount          Int?
+  mapPolyline        String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  User               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 
 enum Status {
   PENDING

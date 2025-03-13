@@ -1,7 +1,9 @@
+import { CustomPrismaAdapter } from "@/lib/auth-adapter";
 import { prisma } from "@/prisma";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import { AdapterUser } from "@auth/core/adapters";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import StravaProvider, { StravaProfile } from "next-auth/providers/strava";
 
 // Déterminer l'environnement
 const useSecureCookies = process.env.NODE_ENV === "production";
@@ -16,12 +18,23 @@ const securityLevel =
 const securityChecks: ("pkce" | "state" | "nonce")[] =
   securityLevel === "high" ? ["pkce", "state", "nonce"] : ["state"];
 
+// Interface pour étendre l'utilisateur avec nos champs personnalisés
+interface CustomUser extends AdapterUser {
+  city?: string | undefined;
+  state?: string | undefined;
+  country?: string | undefined;
+  sex?: string | undefined;
+  stravaConnected?: boolean;
+}
+
 export const { auth, signIn, signOut, handlers } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: CustomPrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // Autoriser la liaison des comptes par email
+      allowDangerousEmailAccountLinking: true,
       // Contrôler les vérifications de sécurité via la variable d'environnement
       checks: securityChecks,
       profile(profile) {
@@ -77,6 +90,148 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         },
       },
     }),
+    StravaProvider({
+      clientId: process.env.STRAVA_CLIENT_ID!,
+      clientSecret: process.env.STRAVA_CLIENT_SECRET!,
+      // Autoriser la liaison des comptes par email
+      allowDangerousEmailAccountLinking: true,
+      checks: securityChecks,
+      authorization: {
+        params: {
+          scope: "read,activity:read",
+          approval_prompt: "auto",
+        },
+      },
+      // Implémentation personnalisée de l'échange du code d'autorisation contre un token
+      token: {
+        url: "https://www.strava.com/api/v3/oauth/token",
+        async request(context: any) {
+          try {
+            console.log("Échange du code d'autorisation Strava...");
+
+            // Construire manuellement la requête pour échanger le code contre un token
+            const params = {
+              client_id: context.provider.clientId,
+              client_secret: context.provider.clientSecret,
+              code: context.params.code,
+              grant_type: "authorization_code",
+            };
+
+            const response = await fetch(
+              "https://www.strava.com/api/v3/oauth/token",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams(params),
+              }
+            );
+
+            if (!response.ok) {
+              console.error("Strava token error status:", response.status);
+              const errorText = await response.text();
+              console.error("Strava token error body:", errorText);
+              throw new Error(
+                `Erreur lors de l'échange du code: ${response.status}`
+              );
+            }
+
+            // Récupérer et analyser la réponse
+            const data = await response.json();
+            console.log(
+              "Réponse du token Strava reçue:",
+              JSON.stringify(data, null, 2)
+            );
+
+            // S'assurer que toutes les propriétés nécessaires sont correctement formatées
+            return {
+              access_token: data.access_token,
+              token_type: data.token_type || "Bearer",
+              expires_at: data.expires_at,
+              refresh_token: data.refresh_token,
+              scope: "read,activity:read",
+              id_token: null,
+              athlete: data.athlete || null,
+            };
+          } catch (error) {
+            console.error("Erreur d'échange du token Strava:", error);
+            throw error;
+          }
+        },
+      },
+      // Implémentation personnalisée pour récupérer le profil utilisateur
+      userinfo: {
+        url: "https://www.strava.com/api/v3/athlete",
+        async request(context: any) {
+          try {
+            console.log("Récupération du profil utilisateur Strava...");
+            // Utiliser le token obtenu précédemment pour récupérer les informations de l'utilisateur
+            const response = await fetch(
+              "https://www.strava.com/api/v3/athlete",
+              {
+                headers: {
+                  Authorization: `Bearer ${context.tokens.access_token}`,
+                },
+              }
+            );
+
+            if (!response.ok) {
+              console.error("Strava userinfo error status:", response.status);
+              const errorText = await response.text();
+              console.error("Strava userinfo error body:", errorText);
+              throw new Error(
+                `Erreur lors de la récupération du profil: ${response.status}`
+              );
+            }
+
+            const data = await response.json();
+            console.log(
+              "Profil Strava récupéré:",
+              JSON.stringify(data, null, 2)
+            );
+            return data;
+          } catch (error) {
+            console.error("Erreur de récupération du profil Strava:", error);
+            throw error;
+          }
+        },
+      },
+      profile(profile) {
+        // Extraction correcte de toutes les données du profil Strava
+        return {
+          id: profile.id.toString(),
+          name:
+            profile.firstname && profile.lastname
+              ? `${profile.firstname} ${profile.lastname}`
+              : undefined,
+          email: null, // Strava ne fournit pas d'email
+          image: profile.profile,
+          stravaId: profile.id.toString(),
+          stravaConnected: true,
+          stravaCreatedAt: profile.created_at
+            ? new Date(profile.created_at)
+            : undefined,
+          stravaPremium: profile.premium || profile.summit || false,
+          sex: profile.sex,
+          city: profile.city,
+          state: profile.state,
+          country: profile.country,
+          stravaWeight:
+            typeof profile.weight === "number" && profile.weight > 0
+              ? profile.weight
+              : undefined,
+        };
+      },
+      account(account) {
+        return {
+          ...account,
+          providerAccountId: account.providerAccountId
+            ? account.providerAccountId.toString()
+            : "",
+        };
+      },
+    }),
   ],
   callbacks: {
     async session({ session, user }) {
@@ -86,15 +241,128 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         session.user.isAdmin = user.isAdmin;
         // @ts-ignore
         session.user.sex = user.sex;
+        // @ts-ignore
+        session.user.stravaConnected = user.stravaConnected;
+        // @ts-ignore
+        session.user.stravaLinkRefused = user.stravaLinkRefused;
       }
       return session;
     },
     async signIn({ user, account, profile }) {
       try {
+        if (account?.provider === "strava" && account.access_token) {
+          const stravaProfile = profile as StravaProfile;
+          // S'assurer que l'ID est converti en chaîne
+          const stravaId = stravaProfile?.id
+            ? stravaProfile.id.toString()
+            : null;
+
+          // Vérifier d'abord si l'utilisateur existe déjà par son ID interne
+          const existingUser = user.id
+            ? await prisma.user.findUnique({ where: { id: user.id } })
+            : null;
+
+          // Rechercher l'utilisateur par stravaId si pas trouvé par ID interne
+          const userByStravaId =
+            !existingUser && stravaId
+              ? await prisma.user.findUnique({
+                  where: { stravaId },
+                })
+              : null;
+
+          // Cas 1: L'utilisateur existe déjà avec ce stravaId
+          if (userByStravaId) {
+            // Mettre à jour ses tokens
+            await prisma.user.update({
+              where: { id: userByStravaId.id },
+              data: {
+                stravaConnected: true,
+                stravaToken: account.access_token,
+                stravaRefreshToken: account.refresh_token,
+                stravaTokenExpiresAt: account.expires_at
+                  ? parseInt(account.expires_at.toString())
+                  : undefined,
+                // Mise à jour des informations du profil si nécessaire
+                name:
+                  userByStravaId.name ||
+                  (stravaProfile?.firstname && stravaProfile?.lastname
+                    ? `${stravaProfile.firstname} ${stravaProfile.lastname}`
+                    : undefined),
+                image: userByStravaId.image || stravaProfile?.profile,
+                sex: userByStravaId.sex || stravaProfile?.sex,
+                city: userByStravaId.city || stravaProfile?.city,
+                state: userByStravaId.state || stravaProfile?.state,
+                country: userByStravaId.country || stravaProfile?.country,
+                stravaPremium: stravaProfile?.premium || stravaProfile?.summit,
+                stravaWeight:
+                  typeof stravaProfile?.weight === "number" &&
+                  stravaProfile.weight > 0
+                    ? stravaProfile.weight
+                    : undefined,
+                stravaCreatedAt: stravaProfile?.created_at
+                  ? new Date(stravaProfile.created_at)
+                  : undefined,
+              },
+            });
+
+            // Remplacer l'ID utilisateur temporaire par celui existant
+            user.id = userByStravaId.id;
+            return true;
+          }
+
+          // Cas 2: L'utilisateur existe et on veut lier son compte Strava
+          if (existingUser) {
+            const customUser = user as CustomUser;
+            await prisma.user.update({
+              where: { id: user.id },
+              data: {
+                stravaConnected: true,
+                stravaToken: account.access_token,
+                stravaRefreshToken: account.refresh_token,
+                stravaTokenExpiresAt: account.expires_at
+                  ? parseInt(account.expires_at.toString())
+                  : undefined,
+                stravaId: stravaId, // Déjà converti en chaîne
+                // Mise à jour des informations du profil si nécessaire
+                sex: customUser.sex || stravaProfile?.sex,
+                city: customUser.city || stravaProfile?.city,
+                state: customUser.state || stravaProfile?.state,
+                country: customUser.country || stravaProfile?.country,
+                stravaPremium: stravaProfile?.premium || stravaProfile?.summit,
+                stravaWeight:
+                  typeof stravaProfile?.weight === "number" &&
+                  stravaProfile.weight > 0
+                    ? stravaProfile.weight
+                    : undefined,
+                stravaCreatedAt: stravaProfile?.created_at
+                  ? new Date(stravaProfile.created_at)
+                  : undefined,
+              },
+            });
+            return true;
+          }
+
+          // Cas 3: Nouvel utilisateur avec Strava comme premier login
+          // On ne fait rien ici, AuthJS va créer l'utilisateur avec les données du profil
+          // Les champs personnalisés viennent de la fonction profile() dans le provider
+          console.log(
+            "Nouvel utilisateur avec Strava, création automatique par AuthJS"
+          );
+          return true;
+        }
         return true;
       } catch (error) {
+        console.error("Erreur lors de l'authentification:", error);
         return false;
       }
+    },
+    async jwt({ token, user, account }) {
+      // Ajouter les données Strava au token
+      if (account?.provider === "strava" && user) {
+        token.stravaConnected = true;
+        token.stravaId = account.providerAccountId;
+      }
+      return token;
     },
   },
   pages: {

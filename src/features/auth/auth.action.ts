@@ -13,9 +13,15 @@ export const signInAction = async () => {
   await signIn();
 };
 
+export const signInWithStravaAction = async () => {
+  await signIn("strava");
+};
+
 const profileDataSchema = z.object({
   sex: z.enum(["M", "F", "O"]).optional(),
   country: z.string().optional(),
+  email: z.string().email().optional(),
+  stravaLinkRefused: z.boolean().optional(),
 });
 
 export const updateUserProfile = userAction(
