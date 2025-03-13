@@ -69,15 +69,20 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params?: { locale?: string };
 }>) {
   const user = await currentUser();
+  // Utiliser 'fr' par défaut si la locale n'est pas disponible
+  const locale = params?.locale || "fr";
 
   return (
-    <html lang="en" className="h-full" suppressHydrationWarning>
+    <html lang={locale} className="h-full" suppressHydrationWarning>
       <head>
         <ThemeScript />
+        <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className={cn(inter.className, "h-full")}>
         <ParallaxIcons />

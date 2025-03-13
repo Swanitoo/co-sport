@@ -1,4 +1,3 @@
-import { ThemeScript } from "@/components/theme-script";
 import { ThemeSync } from "@/components/theme-sync";
 import { ThemeProvider } from "@/features/theme/ThemeProvider";
 import { NextIntlClientProvider } from "next-intl";
@@ -33,26 +32,15 @@ export default async function LocaleLayout({
 
   const messages = await getMessages(locale);
 
-  // Nous ne pouvons pas utiliser usePathname directement dans un composant serveur
-  // mais nous pouvons vérifier si c'est la page d'accueil d'une autre manière
-  // en examinant les composants enfants rendus
-
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <head>
-        <ThemeScript />
-      </head>
-      <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <ThemeProvider>
-            <ThemeSync />
-            <div className="flex min-h-screen flex-col">
-              {/* Le Header sera ajouté directement dans les pages qui en ont besoin */}
-              <main className="flex-1">{children}</main>
-            </div>
-          </ThemeProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <ThemeProvider>
+        <ThemeSync />
+        <div className="flex min-h-screen flex-col">
+          {/* Le Header sera ajouté directement dans les pages qui en ont besoin */}
+          <main className="flex-1">{children}</main>
+        </div>
+      </ThemeProvider>
+    </NextIntlClientProvider>
   );
 }

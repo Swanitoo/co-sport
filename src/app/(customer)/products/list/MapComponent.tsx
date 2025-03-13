@@ -195,7 +195,7 @@ export const MapComponent = ({
 
   // Style de transition pour les marqueurs
   const markerStyle = {
-    transition: "all 0.2s ease-in-out",
+    // Suppression de la transition pour une apparence plus stable
   };
 
   const mobileOptions = {

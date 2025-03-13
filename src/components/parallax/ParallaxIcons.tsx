@@ -54,17 +54,9 @@ const ParallaxIcon = ({ config }: { config: IconConfig }) => {
     [0, dimensions.width * config.speed * config.direction.x * 0.3]
   );
 
-  const z = useTransform(
-    smoothProgress,
-    [0, 1],
-    [config.initialZ, config.initialZ + 100]
-  );
+  const z = config.initialZ;
 
-  const scale = useTransform(
-    z,
-    [config.initialZ, config.initialZ + 100],
-    [0.8, 1.2]
-  );
+  const scale = 1;
 
   return (
     <motion.div
@@ -80,28 +72,6 @@ const ParallaxIcon = ({ config }: { config: IconConfig }) => {
         filter: `blur(${config.blur}px)`,
         opacity: config.opacity,
       }}
-      initial={{
-        z: config.initialZ,
-        scale: 0.8,
-      }}
-      animate={{
-        z: config.initialZ + 100,
-        scale: 1.2,
-      }}
-      transition={{
-        z: {
-          duration: 20,
-          ease: "linear",
-          repeat: Infinity,
-          repeatType: "mirror",
-        },
-        scale: {
-          duration: 20,
-          ease: "linear",
-          repeat: Infinity,
-          repeatType: "mirror",
-        },
-      }}
     >
       {config.icon}
     </motion.div>
@@ -110,19 +80,31 @@ const ParallaxIcon = ({ config }: { config: IconConfig }) => {
 
 const ParallaxContent = () => {
   const icons = useMemo(() => {
+    // Sécurité supplémentaire pour s'assurer qu'on est côté client
+    if (typeof window === "undefined") return [];
+
     const generatedIcons: IconConfig[] = [];
     SPORTS.forEach((sport) => {
       for (let i = 0; i < 2; i++) {
         const angle = Math.random() * Math.PI * 2;
         const initialZ = Math.random() * 100 - 50;
+
+        // Augmentation légère de l'opacité et réduction du flou pour une meilleure visibilité
+        const baseOpacity = Math.random() * 0.15 + 0.15; // Augmentation de 0.05 à 0.15 min
+        const isMobile = window.innerWidth < 768;
+
         generatedIcons.push({
           icon: sport.icon,
           x: Math.random() * 100,
           y: Math.random() * 100,
           size: Math.random() * 20 + 35,
-          blur: Math.random() * 1.5 + 0.5,
+          // Réduction du flou pour les appareils mobiles
+          blur: isMobile
+            ? Math.random() * 0.8 + 0.3
+            : Math.random() * 1.5 + 0.5,
           speed: Math.random() * 0.4 + 0.1,
-          opacity: Math.random() * 0.15 + 0.05,
+          // Augmentation de l'opacité pour une meilleure visibilité
+          opacity: isMobile ? baseOpacity * 1.5 : baseOpacity,
           rotationSpeed: (Math.random() - 0.5) * 2,
           direction: {
             x: Math.cos(angle),
@@ -135,6 +117,8 @@ const ParallaxContent = () => {
     return generatedIcons;
   }, []);
 
+  if (icons.length === 0) return null;
+
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 h-screen w-screen overflow-hidden bg-background/90 backdrop-blur-[1.5px] [perspective:1000px]">
       {icons.map((config, index) => (
@@ -144,6 +128,7 @@ const ParallaxContent = () => {
   );
 };
 
+// Modifié pour éviter les problèmes d'hydratation
 export const ParallaxIcons = () => {
   const [isMounted, setIsMounted] = useState(false);
   const pathname = usePathname();
@@ -152,14 +137,11 @@ export const ParallaxIcons = () => {
     setIsMounted(true);
   }, []);
 
-  // Ne rien rendre côté serveur
-  if (typeof window === "undefined") return null;
-
-  // Ne rien rendre tant que le composant n'est pas monté
+  // Attendre le montage côté client
   if (!isMounted) return null;
 
   // Ne rendre que sur la page d'accueil
-  if (!["/", "/fr", "/es"].includes(pathname)) return null;
+  if (pathname && !["/", "/fr", "/es", "/en"].includes(pathname)) return null;
 
   return <ParallaxContent />;
 };

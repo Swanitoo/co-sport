@@ -2,7 +2,7 @@
 
 import { useLocalizedLink } from "@/hooks/useLocalizedLink";
 import { default as NextLink, LinkProps as NextLinkProps } from "next/link";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, forwardRef } from "react";
 
 export interface LocalizedLinkProps extends Omit<NextLinkProps, "href"> {
   href: string;
@@ -17,13 +17,10 @@ export interface LocalizedLinkProps extends Omit<NextLinkProps, "href"> {
  * @param children Contenu du lien
  * @returns Composant Link avec le chemin localisé
  */
-export const LocalizedLink = ({
-  href,
-  preserveLocale = true,
-  children,
-  className,
-  ...props
-}: PropsWithChildren<LocalizedLinkProps>) => {
+export const LocalizedLink = forwardRef<
+  HTMLAnchorElement,
+  PropsWithChildren<LocalizedLinkProps>
+>(({ href, preserveLocale = true, children, className, ...props }, ref) => {
   const { getLocalizedPath } = useLocalizedLink();
 
   // Si preserveLocale est false ou si le lien est externe, on ne modifie pas le href
@@ -35,8 +32,10 @@ export const LocalizedLink = ({
     !preserveLocale || isExternal ? href : getLocalizedPath(href);
 
   return (
-    <NextLink href={finalHref} className={className} {...props}>
+    <NextLink href={finalHref} className={className} ref={ref} {...props}>
       {children}
     </NextLink>
   );
-};
+});
+
+LocalizedLink.displayName = "LocalizedLink";

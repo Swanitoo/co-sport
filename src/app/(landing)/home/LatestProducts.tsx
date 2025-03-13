@@ -70,7 +70,9 @@ export const LatestProducts = ({
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="line-clamp-1 font-medium">{product.name}</h3>
+                  <h3 className="line-clamp-1 truncate font-medium">
+                    {product.name}
+                  </h3>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span>
                       {product.user.name}

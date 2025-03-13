@@ -22,7 +22,6 @@ export async function currentUser() {
       country: true,
       socialLink: true,
       isAdmin: true,
-      plan: true,
     },
   });
 

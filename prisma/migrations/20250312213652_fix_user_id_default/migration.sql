@@ -11,8 +11,7 @@ ALTER TABLE "messages" DROP CONSTRAINT "messages_product_fkey";
 ALTER TABLE "messages" DROP CONSTRAINT "messages_user_fkey";
 
 -- AlterTable
-ALTER TABLE "User" DROP COLUMN "plan",
-ALTER COLUMN "id" SET DEFAULT gen_random_uuid();
+ALTER TABLE "User" DROP COLUMN "plan";
 
 -- DropEnum
 DROP TYPE "Plan";
@@ -22,3 +21,6 @@ ALTER TABLE "messages" RENAME CONSTRAINT "messages_productId_fkey" TO "messages_
 
 -- RenameForeignKey
 ALTER TABLE "messages" RENAME CONSTRAINT "messages_userId_fkey" TO "messages_user_fkey";
+
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "id" SET DEFAULT gen_random_uuid();
