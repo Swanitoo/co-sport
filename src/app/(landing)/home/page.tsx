@@ -108,7 +108,8 @@ async function FeatureBoxesSection() {
 
 async function LatestProductsWrapper() {
   const products = await getLatestProducts();
-  return <LatestProducts products={products} />;
+  const user = await currentUser();
+  return <LatestProducts products={products} isAuthenticated={!!user} />;
 }
 
 export default async function Home() {

@@ -30,9 +30,13 @@ type Product = {
 
 type LatestProductsProps = {
   products: Product[];
+  isAuthenticated: boolean;
 };
 
-export function LatestProducts({ products }: LatestProductsProps) {
+export function LatestProducts({
+  products,
+  isAuthenticated,
+}: LatestProductsProps) {
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
   const isMobileRef = useRef(false);
@@ -91,7 +95,16 @@ export function LatestProducts({ products }: LatestProductsProps) {
                 }}
                 data-card-index={index}
               >
-                <Link href={`/products/${product.id}`} className="group block">
+                <Link
+                  href={
+                    isAuthenticated
+                      ? `/products/${product.id}`
+                      : `/api/auth/signin?callbackUrl=${encodeURIComponent(
+                          `/products/${product.id}`
+                        )}`
+                  }
+                  className="group block"
+                >
                   <Card
                     className={`h-full cursor-pointer p-4 transition-all duration-300 hover:bg-accent/50 ${
                       isHovered ? "bg-accent/50" : ""
