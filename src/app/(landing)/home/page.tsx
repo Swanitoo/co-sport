@@ -1,12 +1,4 @@
 import { currentUser } from "@/auth/current-user";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { CTASection } from "@/features/landing/CTASection";
 import { FAQSection } from "@/features/landing/FAQSection";
 import { FeatureBoxes } from "@/features/landing/FeatureBoxes";
@@ -15,10 +7,9 @@ import { FooterSection } from "@/features/landing/Footersection";
 import { HeroSection } from "@/features/landing/HeroSection";
 import { LandingHeader } from "@/features/landing/LandingHeader";
 import { prisma } from "@/prisma";
-import { BadgeInfo, Users } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
+import { LatestProducts } from "./LatestProducts";
 
 // Configuration ISR
 export const dynamic = "force-static"; // Utiliser le rendu statique pour la page d'accueil
@@ -109,74 +100,15 @@ export function generateMetadata(): Metadata {
   };
 }
 
-// Charger les derniers produits et récupérer l'état d'authentification
-async function LatestProductsSection() {
-  const products = await getLatestProducts();
-
-  return (
-    <section className="w-full">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="mb-12 flex flex-col items-center space-y-4 text-center">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-            Les dernières annonces
-          </h2>
-          <p className="max-w-[700px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
-            Découvrez les dernières activités sportives ajoutées par nos membres
-          </p>
-        </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {products.map((product) => (
-            <Link
-              href={`/products/${product.id}`}
-              key={product.id}
-              className="group"
-            >
-              <Card className="h-full overflow-hidden transition-colors hover:bg-gray-100/40 dark:hover:bg-gray-800/40">
-                <CardHeader className="p-4 pb-2">
-                  <CardTitle className="line-clamp-1 truncate text-lg">
-                    {product.name}
-                  </CardTitle>
-                  <CardDescription asChild>
-                    <span className="flex items-center gap-2 text-xs">
-                      <span className="flex items-center gap-1">
-                        <Avatar className="size-6">
-                          <AvatarImage src={product.user.image || ""} />
-                          <AvatarFallback>
-                            {product.user.name?.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="truncate">{product.user.name}</span>
-                      </span>
-                    </span>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="line-clamp-2 text-sm">
-                    {product.description}
-                  </div>
-                  <div className="mt-2 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center gap-1">
-                      <BadgeInfo className="size-3" />
-                      <span className="truncate">{product.sport}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="size-3" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // Composant pour les boxes fonctionnalités avec authentification
 async function FeatureBoxesSection() {
   const user = await currentUser();
   return <FeatureBoxes isAuthenticated={!!user} />;
+}
+
+async function LatestProductsWrapper() {
+  const products = await getLatestProducts();
+  return <LatestProducts products={products} />;
 }
 
 export default async function Home() {
@@ -205,7 +137,7 @@ export default async function Home() {
         <FeatureBoxesSection />
       </Suspense>
       <Suspense fallback={<LatestProductsSkeleton />}>
-        <LatestProductsSection />
+        <LatestProductsWrapper />
       </Suspense>
       <Suspense>
         <FeatureSection />

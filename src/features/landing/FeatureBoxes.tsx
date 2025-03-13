@@ -27,7 +27,7 @@ import {
   Utensils,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type FeatureBoxesProps = {
   isAuthenticated: boolean;
@@ -49,6 +49,40 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
   const { t } = useAppTranslations();
   const router = useRouter();
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
+  const isMobileRef = useRef(false);
+
+  useEffect(() => {
+    // Vérifier si on est sur mobile
+    isMobileRef.current = window.innerWidth < 768;
+
+    if (!isMobileRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const cardElement = entry.target as HTMLDivElement;
+          const cardIndex = parseInt(cardElement.dataset.cardIndex || "-1");
+
+          if (entry.isIntersecting) {
+            setHoveredCardIndex(cardIndex);
+          } else if (hoveredCardIndex === cardIndex) {
+            setHoveredCardIndex(null);
+          }
+        });
+      },
+      {
+        threshold: 0.35, // Déclencher plus tôt
+        rootMargin: "0px 0px -10% 0px", // Déclencher un peu avant
+      }
+    );
+
+    cardsRef.current.forEach((card) => {
+      if (card) observer.observe(card);
+    });
+
+    return () => observer.disconnect();
+  }, [hoveredCardIndex]);
 
   // Fonction pour rediriger conditionnellement
   const handleRedirect = (path: string) => {
@@ -249,10 +283,10 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
         </h2>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => {
-            // Précalculer toutes les positions des icônes
             const iconPositions = getPrecomputedPositions(
               feature.auxiliaryIcons || []
             );
+            const isHovered = index === hoveredCardIndex;
 
             return (
               <div
@@ -260,34 +294,50 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
                 ref={(el) => {
                   cardsRef.current[index] = el;
                 }}
+                data-card-index={index}
               >
                 <Card
                   onClick={() => handleRedirect(feature.path)}
-                  className="group relative flex h-[500px] cursor-pointer flex-col overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:border-primary/50 hover:shadow-xl"
+                  className={`group relative flex h-[500px] cursor-pointer flex-col overflow-hidden transition-all duration-300 ${
+                    isHovered
+                      ? "scale-[1.02] border-primary/50 shadow-xl"
+                      : "hover:scale-[1.02] hover:border-primary/50 hover:shadow-xl"
+                  }`}
                 >
                   <div
-                    className={`relative h-48 w-full shrink-0 bg-gradient-to-br ${feature.bgColor} flex items-center justify-center transition-all duration-300 group-hover:saturate-[1.2]`}
+                    className={`relative h-48 w-full shrink-0 bg-gradient-to-br ${
+                      feature.bgColor
+                    } flex items-center justify-center transition-all duration-300 ${
+                      isHovered
+                        ? "saturate-[1.2]"
+                        : "group-hover:saturate-[1.2]"
+                    }`}
                   >
                     <div className="relative">
-                      {/* Icônes auxiliaires qui se déploient au survol */}
                       {feature.auxiliaryIcons?.map((icon, i) => {
                         const positions = iconPositions[i];
                         return (
                           <div
                             key={i}
-                            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-80 transition-all duration-500 ease-in-out group-hover:opacity-90"
+                            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-80 transition-all duration-300 ease-in-out ${
+                              isHovered ? "opacity-90" : ""
+                            } group-hover:opacity-90`}
                             style={{
-                              transform: `translate(calc(-50% + ${positions.initialX}px), calc(-50% + ${positions.initialY}px))`,
+                              transform: isHovered
+                                ? `translate(calc(-50% + ${positions.finalX}px), calc(-50% + ${positions.finalY}px))`
+                                : `translate(calc(-50% + ${positions.initialX}px), calc(-50% + ${positions.initialY}px))`,
                               transitionProperty: "transform, opacity",
                               zIndex: 5,
                             }}
-                            data-final-x={positions.finalX}
-                            data-final-y={positions.finalY}
                             data-initial-x={positions.initialX}
                             data-initial-y={positions.initialY}
+                            data-final-x={positions.finalX}
+                            data-final-y={positions.finalY}
                           >
                             <div
-                              className="transition-transform duration-500 ease-in-out group-hover:scale-110"
+                              className={`transition-transform duration-300 ease-in-out ${
+                                isHovered ? "scale-110" : ""
+                              } group-hover:scale-110`}
                               style={{
                                 transformOrigin: "center",
                               }}
@@ -298,18 +348,19 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
                         );
                       })}
 
-                      {/* Conteneur pour l'icône principale */}
                       <div
-                        className={`relative z-10 flex items-center justify-center rounded-full ${feature.iconBgColor} p-4 shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:shadow-md`}
+                        className={`relative z-10 flex items-center justify-center rounded-full ${
+                          feature.iconBgColor
+                        } p-4 shadow-sm transition-all duration-300 ${
+                          isHovered ? "scale-110 shadow-md" : ""
+                        } group-hover:scale-110 group-hover:shadow-md`}
                       >
                         {feature.icon}
                       </div>
                     </div>
                   </div>
 
-                  {/* Structure en deux parties fixes : contenu et zone pour le footer */}
                   <div className="flex h-[calc(500px-192px)] flex-col">
-                    {/* Zone de contenu avec hauteur fixe et défilement si nécessaire */}
                     <div className="flex-1 p-4">
                       <CardHeader className="p-0 pb-2">
                         <CardTitle className="text-xl font-bold leading-tight">
@@ -325,12 +376,19 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
                       </CardContent>
                     </div>
 
-                    {/* Zone fixe du bas pour le footer - toujours à la même position */}
                     <div className="relative h-[60px] overflow-hidden">
-                      <CardFooter className="absolute inset-x-0 bottom-0 flex h-[60px] translate-y-full items-center border-t bg-card p-4 shadow-sm transition-all duration-300 ease-out group-hover:translate-y-0">
+                      <CardFooter
+                        className={`absolute inset-x-0 bottom-0 flex h-[60px] items-center border-t bg-card p-4 shadow-sm transition-all duration-300 ease-out ${
+                          isHovered ? "translate-y-0" : "translate-y-full"
+                        } group-hover:translate-y-0`}
+                      >
                         <div className="flex items-center gap-2 text-primary">
                           {feature.cta}
-                          <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                          <ArrowRight
+                            className={`size-4 transition-transform duration-300 ${
+                              isHovered ? "translate-x-1" : ""
+                            } group-hover:translate-x-1`}
+                          />
                         </div>
                       </CardFooter>
                     </div>
