@@ -27,6 +27,27 @@ interface CustomUser extends AdapterUser {
   stravaConnected?: boolean;
 }
 
+// Interface pour le contexte de requête d'OAuth
+interface OAuthTokenRequestContext {
+  provider: {
+    id: string;
+    clientId: string;
+    clientSecret: string;
+    token?: {
+      url: string;
+    };
+    callbackUrl?: string;
+  };
+  params: {
+    code: string;
+    [key: string]: string;
+  };
+  tokens?: {
+    access_token: string;
+    [key: string]: any;
+  };
+}
+
 export const { auth, signIn, signOut, handlers } = NextAuth({
   adapter: CustomPrismaAdapter(prisma),
   providers: [
@@ -58,13 +79,18 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       },
       token: {
         url: "https://oauth2.googleapis.com/token",
-        async request(context: any) {
+        async request(context: OAuthTokenRequestContext) {
           try {
+            // S'assurer que callbackUrl existe avant de l'utiliser
+            const callbackUrl =
+              context.provider.callbackUrl ||
+              `${process.env.NEXTAUTH_URL}/api/auth/callback/google`;
+
             const params = {
               client_id: context.provider.clientId,
               client_secret: context.provider.clientSecret,
               grant_type: "authorization_code",
-              redirect_uri: context.provider.callbackUrl,
+              redirect_uri: callbackUrl,
               code: context.params.code,
             };
 
@@ -102,57 +128,71 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           approval_prompt: "auto",
         },
       },
-      // Implémentation personnalisée de l'échange du code d'autorisation contre un token
+      // Configuration personnalisée et améliorée pour obtenir le token
       token: {
         url: "https://www.strava.com/api/v3/oauth/token",
-        async request(context: any) {
+        async request(context: OAuthTokenRequestContext) {
           try {
-            console.log("Échange du code d'autorisation Strava...");
+            console.log("Début échange du code d'autorisation Strava...");
 
-            // Construire manuellement la requête pour échanger le code contre un token
-            const params = {
-              client_id: context.provider.clientId,
-              client_secret: context.provider.clientSecret,
-              code: context.params.code,
-              grant_type: "authorization_code",
-            };
-
+            // Construction manuelle de la requête pour éviter les problèmes avec OAuth4WebAPI
             const response = await fetch(
               "https://www.strava.com/api/v3/oauth/token",
               {
                 method: "POST",
                 headers: {
-                  "Content-Type": "application/x-www-form-urlencoded",
+                  "Content-Type": "application/json",
                 },
-                body: new URLSearchParams(params),
+                body: JSON.stringify({
+                  client_id: context.provider.clientId,
+                  client_secret: context.provider.clientSecret,
+                  code: context.params.code,
+                  grant_type: "authorization_code",
+                }),
               }
             );
 
             if (!response.ok) {
-              console.error("Strava token error status:", response.status);
               const errorText = await response.text();
-              console.error("Strava token error body:", errorText);
+              console.error(
+                `Strava token error (${response.status}):`,
+                errorText
+              );
               throw new Error(
-                `Erreur lors de l'échange du code: ${response.status}`
+                `Erreur lors de l'échange du code: ${response.status} - ${errorText}`
               );
             }
 
-            // Récupérer et analyser la réponse
             const data = await response.json();
             console.log(
               "Réponse du token Strava reçue:",
-              JSON.stringify(data, null, 2)
+              JSON.stringify(
+                {
+                  access_token: "***REDACTED***",
+                  token_type: data.token_type,
+                  expires_at: data.expires_at,
+                  refresh_token: "***REDACTED***",
+                  athlete: data.athlete
+                    ? {
+                        id: data.athlete.id,
+                        name: `${data.athlete.firstname} ${data.athlete.lastname}`,
+                      }
+                    : null,
+                },
+                null,
+                2
+              )
             );
 
-            // S'assurer que toutes les propriétés nécessaires sont correctement formatées
+            // Retourner un format compatible avec NextAuth
             return {
-              access_token: data.access_token,
-              token_type: data.token_type || "Bearer",
-              expires_at: data.expires_at,
-              refresh_token: data.refresh_token,
-              scope: "read,activity:read",
-              id_token: null,
-              athlete: data.athlete || null,
+              tokens: {
+                access_token: data.access_token,
+                token_type: data.token_type || "Bearer",
+                expires_at: data.expires_at,
+                refresh_token: data.refresh_token,
+                athlete: data.athlete || null,
+              },
             };
           } catch (error) {
             console.error("Erreur d'échange du token Strava:", error);
@@ -163,7 +203,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       // Implémentation personnalisée pour récupérer le profil utilisateur
       userinfo: {
         url: "https://www.strava.com/api/v3/athlete",
-        async request(context: any) {
+        async request(context: { tokens: { access_token: string } }) {
           try {
             console.log("Récupération du profil utilisateur Strava...");
             // Utiliser le token obtenu précédemment pour récupérer les informations de l'utilisateur

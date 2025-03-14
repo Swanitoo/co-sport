@@ -10,6 +10,11 @@ export interface ProductWithMemberships extends Product {
     country: string | null;
     name: string | null;
     image: string | null;
+    // Performances sportives
+    stravaRunningPace?: number | null;
+    stravaCyclingSpeed?: number | null;
+    stravaAvgDistance?: number | null;
+    stravaItraPoints?: number | null;
   };
 }
 
@@ -42,6 +47,15 @@ export const FilterSchema = z.object({
       lng: z.number(),
     })
     .optional(),
+  // Nouveaux filtres de performance sportive
+  minRunPace: z.number().optional(),
+  maxRunPace: z.number().optional(),
+  minCyclingSpeed: z.number().optional(),
+  maxCyclingSpeed: z.number().optional(),
+  minDistance: z.number().optional(),
+  maxDistance: z.number().optional(),
+  minItraPoints: z.number().optional(),
+  maxItraPoints: z.number().optional(),
 });
 
 export type FilterType = z.infer<typeof FilterSchema>;

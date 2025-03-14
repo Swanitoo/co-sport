@@ -26,6 +26,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { COUNTRIES } from "@/data/country";
+import { StravaActivities } from "@/features/strava/components/StravaActivities";
+import { StravaSyncHandler } from "@/features/strava/components/StravaSyncHandler";
+import {
+  getStravaActivityStats,
+  getUserStravaActivities,
+} from "@/features/strava/services/strava-activity.service";
 import { ProfileImageUpload } from "@/features/upload/components/ProfileImageUpload";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
@@ -46,12 +52,18 @@ import {
   updateName,
 } from "./dashboard.action";
 import { NotificationsCard } from "./NotificationsCard";
-import { ProfileDataCheck } from "./ProfileDataCheck";
+import { ProfileCompletionButton } from "./ProfileCompletionButton";
 
 export default async function RoutePage(props: PageParams<{}>) {
   const user = await requiredCurrentUser();
 
-  const [productsCount, joinedSessionsCount, lastReview] = await Promise.all([
+  const [
+    productsCount,
+    joinedSessionsCount,
+    lastReview,
+    stravaStats,
+    stravaActivities,
+  ] = await Promise.all([
     prisma.product.count({
       where: { userId: user.id },
     }),
@@ -68,6 +80,12 @@ export default async function RoutePage(props: PageParams<{}>) {
       },
       orderBy: { createdAt: "desc" },
     }),
+    user.stravaConnected
+      ? getStravaActivityStats(user.id)
+      : Promise.resolve([]),
+    user.stravaConnected
+      ? getUserStravaActivities(user.id, 5) // Récupérer les 5 dernières activités
+      : Promise.resolve([]),
   ]);
 
   // Récupérer les messages non lus
@@ -266,14 +284,8 @@ export default async function RoutePage(props: PageParams<{}>) {
 
   return (
     <Layout>
-      <ProfileDataCheck
-        needsSex={!user.sex}
-        needsCountry={!user.country}
-        needsEmail={!user.email}
-        shouldAskLinkStrava={
-          !user.stravaConnected && !user.stravaLinkRefused && !!user.email
-        }
-      />
+      <StravaSyncHandler isConnected={user.stravaConnected} />
+
       <div className="space-y-6">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="order-1 text-center sm:order-1 sm:text-left">
@@ -281,6 +293,17 @@ export default async function RoutePage(props: PageParams<{}>) {
             <h2 className="text-xl font-medium text-muted-foreground">
               Content de te voir, {user.name}
             </h2>
+
+            <ProfileCompletionButton
+              user={{
+                sex: user.sex,
+                country: user.country,
+                email: user.email,
+                stravaConnected: user.stravaConnected,
+                stravaLinkRefused: user.stravaLinkRefused,
+              }}
+              completionPercentage={calculateProfileCompletion(user)}
+            />
           </div>
           <div className="order-2 sm:order-2">
             <ProfileImageUpload
@@ -593,6 +616,14 @@ export default async function RoutePage(props: PageParams<{}>) {
           </Card>
 
           <Card className="md:col-span-2">
+            <StravaActivities
+              stats={stravaStats}
+              recentActivities={stravaActivities}
+              isConnected={user.stravaConnected}
+            />
+          </Card>
+
+          <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle>Mes annonces</CardTitle>
             </CardHeader>
@@ -695,3 +726,21 @@ export async function generateMetadata(): Promise<Metadata> {
 // Le tableau de bord contient des données personnalisées qui doivent être actualisées fréquemment
 export const dynamic = "force-dynamic";
 export const revalidate = 0; // Ne pas mettre en cache cette page (toujours fraîche)
+
+// Ajout de la fonction de calcul en bas du fichier
+function calculateProfileCompletion(user: any) {
+  // Définir les champs requis pour un profil complet
+  const requiredFields = [
+    !!user.sex,
+    !!user.country,
+    !!user.email,
+    // Considérer la connexion Strava comme remplie si l'utilisateur est connecté ou a explicitement refusé
+    !!user.stravaConnected || !!user.stravaLinkRefused,
+  ];
+
+  // Calculer le pourcentage de complétion
+  const completedFields = requiredFields.filter(Boolean).length;
+  const totalFields = requiredFields.length;
+
+  return Math.round((completedFields / totalFields) * 100);
+}

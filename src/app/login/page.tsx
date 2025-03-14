@@ -18,6 +18,7 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams?.get("callbackUrl") || "/";
   const error = searchParams?.get("error");
+  const fromProfileDataCheck = searchParams?.get("from") === "profileDataCheck";
   const [errorDetails, setErrorDetails] = useState<string | null>(error);
 
   // Traduire les erreurs d'authentification pour les utilisateurs
@@ -55,6 +56,13 @@ export default function LoginPage() {
     }
   }, [error]);
 
+  // Si l'utilisateur vient du ProfileDataCheck, lancer directement la connexion Strava
+  useEffect(() => {
+    if (fromProfileDataCheck) {
+      handleStravaLogin();
+    }
+  }, [fromProfileDataCheck]);
+
   const handleGoogleLogin = async () => {
     try {
       await signIn("google", { callbackUrl });
@@ -90,9 +98,13 @@ export default function LoginPage() {
               priority
             />
           </div>
-          <CardTitle className="text-2xl">Se connecter</CardTitle>
+          <CardTitle className="text-2xl">
+            {fromProfileDataCheck ? "Connexion à Strava" : "Se connecter"}
+          </CardTitle>
           <CardDescription>
-            Connectez-vous à votre compte pour continuer
+            {fromProfileDataCheck
+              ? "Liez votre compte Strava pour compléter votre profil"
+              : "Connectez-vous à votre compte pour continuer"}
           </CardDescription>
           {errorDetails && (
             <div className="mt-4 rounded-md bg-red-50 p-4">
@@ -104,20 +116,22 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
-            <Button
-              onClick={handleGoogleLogin}
-              className="flex w-full items-center justify-center gap-2"
-              size="lg"
-            >
-              <Image
-                src="https://authjs.dev/img/providers/google.svg"
-                alt="Google"
-                width={20}
-                height={20}
-                unoptimized
-              />
-              Continuer avec Google
-            </Button>
+            {!fromProfileDataCheck && (
+              <Button
+                onClick={handleGoogleLogin}
+                className="flex w-full items-center justify-center gap-2"
+                size="lg"
+              >
+                <Image
+                  src="https://authjs.dev/img/providers/google.svg"
+                  alt="Google"
+                  width={20}
+                  height={20}
+                  unoptimized
+                />
+                Continuer avec Google
+              </Button>
+            )}
 
             <Button
               onClick={handleStravaLogin}
@@ -133,7 +147,9 @@ export default function LoginPage() {
               >
                 <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" />
               </svg>
-              Continuer avec Strava
+              {fromProfileDataCheck
+                ? "Se connecter avec Strava"
+                : "Continuer avec Strava"}
             </Button>
           </div>
         </CardContent>

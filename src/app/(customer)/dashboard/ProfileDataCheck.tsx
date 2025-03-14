@@ -23,13 +23,21 @@ import { updateUserProfile } from "@/features/auth/auth.action";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ProfileDataCheckProps {
   needsSex: boolean;
   needsCountry?: boolean;
   needsEmail?: boolean;
   shouldAskLinkStrava?: boolean;
+  existingData?: {
+    sex?: string | null;
+    country?: string | null;
+    email?: string | null;
+    stravaConnected?: boolean;
+  };
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 type Step = "sex" | "country" | "email" | "linkStrava";
@@ -39,76 +47,190 @@ export function ProfileDataCheck({
   needsCountry,
   needsEmail,
   shouldAskLinkStrava,
+  existingData = {},
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
 }: ProfileDataCheckProps) {
-  const [open, setOpen] = useState(
-    needsSex || needsCountry || needsEmail || shouldAskLinkStrava
-  );
+  // Calculer si l'utilisateur a des données manquantes qui nécessitent l'ouverture de la boîte de dialogue
+  const hasMissingData =
+    (needsSex && !existingData.sex) ||
+    (needsCountry && !existingData.country) ||
+    (needsEmail && !existingData.email) ||
+    (shouldAskLinkStrava && !existingData.stravaConnected);
 
-  // Déterminer la première étape
+  // Si les props de contrôle externe sont fournies, les utiliser. Sinon, utiliser l'état interne.
+  const [internalOpen, setInternalOpen] = useState(hasMissingData);
+
+  // Déterminer si la boîte de dialogue est ouverte
+  const isOpen = externalOpen !== undefined ? externalOpen : internalOpen;
+
+  // Fonction pour gérer le changement d'état ouvert/fermé
+  const handleOpenChange = (newOpenState: boolean) => {
+    if (externalOnOpenChange) {
+      externalOnOpenChange(newOpenState);
+    } else {
+      setInternalOpen(newOpenState);
+    }
+  };
+
+  const [formData, setFormData] = useState({
+    sex: existingData.sex || "",
+    country: existingData.country || "",
+    email: existingData.email || "",
+  });
+
+  // S'assurer que formData est toujours à jour avec les données existantes
+  useEffect(() => {
+    setFormData({
+      sex: existingData.sex || "",
+      country: existingData.country || "",
+      email: existingData.email || "",
+    });
+    // Calcul initial de la progression
+    setProgress(calculateProgress());
+  }, [existingData]);
+
+  // Fonction pour calculer la progression basée sur les données existantes et formData
+  const calculateProgress = () => {
+    // Calculer le nombre total d'étapes nécessaires
+    const totalSteps =
+      (needsSex ? 1 : 0) +
+      (needsCountry ? 1 : 0) +
+      (needsEmail ? 1 : 0) +
+      (shouldAskLinkStrava ? 1 : 0);
+
+    // Si aucune étape n'est nécessaire, retourner 100%
+    if (totalSteps === 0) return 100;
+
+    // Calculer le nombre d'étapes complétées
+    let completedSteps = 0;
+
+    // Vérifier chaque étape nécessaire et compter si elle est complétée
+    if (needsSex && (formData.sex || existingData.sex)) {
+      completedSteps++;
+    }
+    if (needsCountry && (formData.country || existingData.country)) {
+      completedSteps++;
+    }
+    if (needsEmail && (formData.email || existingData.email)) {
+      completedSteps++;
+    }
+    if (shouldAskLinkStrava && existingData.stravaConnected) {
+      completedSteps++;
+    }
+
+    // Calculer le pourcentage de progression
+    return Math.min((completedSteps / totalSteps) * 100, 100);
+  };
+
+  const [progress, setProgress] = useState(() => calculateProgress());
+
+  // Vérifier si le profil est complet après chaque mise à jour
+  useEffect(() => {
+    const newProgress = calculateProgress();
+    setProgress(newProgress);
+
+    // Si toutes les étapes sont complétées, afficher le succès et fermer la modal après un délai
+    if (newProgress >= 100 && isOpen) {
+      setShowSuccess(true);
+
+      // Recharger la page après un délai pour refléter les changements
+      const timer = setTimeout(() => {
+        handleOpenChange(false);
+        window.location.reload();
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [
+    formData,
+    existingData,
+    needsSex,
+    needsCountry,
+    needsEmail,
+    shouldAskLinkStrava,
+    isOpen,
+  ]);
+
+  // Déterminer la première étape en tenant compte des données existantes
   const getFirstStep = (): Step => {
-    if (needsEmail) return "email";
-    if (needsSex) return "sex";
-    if (needsCountry) return "country";
-    if (shouldAskLinkStrava) return "linkStrava";
+    if (needsEmail && !existingData.email && !formData.email) return "email";
+    if (needsSex && !existingData.sex && !formData.sex) return "sex";
+    if (needsCountry && !existingData.country && !formData.country)
+      return "country";
+    if (shouldAskLinkStrava && !existingData.stravaConnected)
+      return "linkStrava";
     return "sex"; // Fallback
   };
 
   const [currentStep, setCurrentStep] = useState<Step>(getFirstStep());
   const [showSuccess, setShowSuccess] = useState(false);
-  const [formData, setFormData] = useState({
-    sex: "",
-    country: "",
-    email: "",
-  });
 
-  const getProgress = () => {
-    const total =
-      (needsSex ? 1 : 0) +
-      (needsCountry ? 1 : 0) +
-      (needsEmail ? 1 : 0) +
-      (shouldAskLinkStrava ? 1 : 0);
-    let completed = 0;
-    if (formData.sex) completed++;
-    if (formData.country) completed++;
-    if (formData.email) completed++;
-    if (currentStep === "linkStrava" || !shouldAskLinkStrava) completed++;
-    return (completed / total) * 100;
+  // Mettre à jour currentStep quand les données changent
+  useEffect(() => {
+    setCurrentStep(getFirstStep());
+  }, [formData, existingData]);
+
+  const goToNextStep = () => {
+    // Vérifier d'abord si toutes les étapes sont complétées
+    const newProgress = calculateProgress();
+    if (newProgress >= 100) {
+      setShowSuccess(true);
+      setTimeout(() => {
+        handleOpenChange(false);
+        window.location.reload();
+      }, 1500);
+      return;
+    }
+
+    if (
+      currentStep === "email" &&
+      needsSex &&
+      !formData.sex &&
+      !existingData.sex
+    ) {
+      setCurrentStep("sex");
+    } else if (
+      currentStep === "sex" &&
+      needsCountry &&
+      !formData.country &&
+      !existingData.country
+    ) {
+      setCurrentStep("country");
+    } else if (
+      currentStep === "country" &&
+      shouldAskLinkStrava &&
+      !existingData.stravaConnected
+    ) {
+      setCurrentStep("linkStrava");
+    } else if (shouldAskLinkStrava && !existingData.stravaConnected) {
+      setCurrentStep("linkStrava");
+    } else {
+      // Si toutes les étapes nécessaires sont complétées, afficher le succès
+      setShowSuccess(true);
+      setTimeout(() => {
+        handleOpenChange(false);
+        window.location.reload();
+      }, 1500);
+    }
   };
 
   const handleSubmit = async (field: string, value: string) => {
+    // Mettre à jour formData immédiatement pour une meilleure UX
     setFormData((prev) => ({ ...prev, [field]: value }));
 
     try {
+      // Mettre à jour dans la base de données
       await updateUserProfile({ [field]: value });
 
-      // Déterminer la prochaine étape
-      if (field === "email" && needsSex) {
-        setCurrentStep("sex");
-        return;
-      }
-      if (field === "sex" && needsCountry) {
-        setCurrentStep("country");
-        return;
-      }
-      if (field === "country" && shouldAskLinkStrava) {
-        setCurrentStep("linkStrava");
-        return;
-      }
+      // Mise à jour des données existantes pour refléter le changement
+      const updatedExistingData = { ...existingData, [field]: value };
 
-      // Si c'est la dernière étape, montrer le succès
-      if (
-        (field === "email" &&
-          !needsSex &&
-          !needsCountry &&
-          !shouldAskLinkStrava) ||
-        (field === "sex" && !needsCountry && !shouldAskLinkStrava) ||
-        (field === "country" && !shouldAskLinkStrava)
-      ) {
-        setShowSuccess(true);
-        // Revalider la session
-        setTimeout(() => window.location.reload(), 1500);
-        return;
-      }
+      // Mettre à jour la progression
+      setProgress(calculateProgress());
+
+      // Passer à l'étape suivante
+      goToNextStep();
     } catch (error) {
       console.error("Erreur lors de la mise à jour:", error);
     }
@@ -116,14 +238,19 @@ export function ProfileDataCheck({
 
   const handleStravaLink = async (link: boolean) => {
     if (link) {
-      // Rediriger vers Strava pour lier le compte
-      await signIn("strava", { callbackUrl: "/dashboard" });
+      // Utiliser next-auth/react signIn pour la redirection Strava
+      signIn("strava", {
+        callbackUrl: "/dashboard",
+      });
     } else {
-      // Marquer comme refusé pour ne plus demander
       try {
         await updateUserProfile({ stravaLinkRefused: true });
+        setProgress(calculateProgress());
         setShowSuccess(true);
-        setTimeout(() => window.location.reload(), 1500);
+        setTimeout(() => {
+          handleOpenChange(false);
+          window.location.reload();
+        }, 1500);
       } catch (error) {
         console.error("Erreur lors de la mise à jour:", error);
       }
@@ -136,13 +263,14 @@ export function ProfileDataCheck({
     const emailInput = formElement.querySelector(
       'input[name="email"]'
     ) as HTMLInputElement;
+
     if (emailInput && emailInput.value) {
       await handleSubmit("email", emailInput.value);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         {showSuccess ? (
           <motion.div
@@ -163,9 +291,9 @@ export function ProfileDataCheck({
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-2">
-              <Progress value={getProgress()} className="h-2 w-full" />
+              <Progress value={progress} className="h-2 w-full" />
               <p className="text-center text-sm text-muted-foreground">
-                {Math.round(getProgress())}% complété
+                {Math.round(progress)}% complété
               </p>
             </div>
           </div>
@@ -190,6 +318,7 @@ export function ProfileDataCheck({
                     name="email"
                     type="email"
                     placeholder="votre@email.com"
+                    defaultValue={formData.email || existingData.email || ""}
                     required
                   />
                 </div>
@@ -211,7 +340,10 @@ export function ProfileDataCheck({
               <DialogHeader>
                 <DialogTitle>Choisissez votre genre</DialogTitle>
               </DialogHeader>
-              <RadioGroup onValueChange={(v: string) => handleSubmit("sex", v)}>
+              <RadioGroup
+                onValueChange={(v: string) => handleSubmit("sex", v)}
+                defaultValue={formData.sex || existingData.sex || undefined}
+              >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="M" id="M" />
                   <Label htmlFor="M">Homme</Label>
@@ -240,10 +372,10 @@ export function ProfileDataCheck({
                 <DialogTitle>Sélectionnez votre nationalité</DialogTitle>
               </DialogHeader>
               <Select
-                onValueChange={async (v: string) => {
-                  await updateUserProfile({ country: v });
-                  handleSubmit("country", v);
-                }}
+                onValueChange={(v: string) => handleSubmit("country", v)}
+                defaultValue={
+                  formData.country || existingData.country || undefined
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Choisissez un pays" />

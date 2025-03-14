@@ -12,6 +12,11 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollToTop } from "@/components/ui/scrollTotop";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  isDistanceInRange,
+  isPaceInRange,
+  isSpeedInRange,
+} from "@/features/strava/utils/activity-utils";
 import { Filter, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
@@ -56,6 +61,13 @@ export function FilteredProductList({
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState(initialProducts);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filterChangeCount, setFilterChangeCount] = useState(0);
+
+  // Extraire les valeurs des paramètres d'URL pour les filtres de performance
+  const getNumberParam = (param: string): number | undefined => {
+    const value = searchParams?.get(param);
+    return value ? parseInt(value) : undefined;
+  };
 
   const [filters, setFilters] = useState<FilterType>({
     sport: searchParams?.get("sport") || undefined,
@@ -63,11 +75,19 @@ export function FilteredProductList({
     onlyGirls: searchParams?.get("onlyGirls") === "true",
     countries: searchParams?.get("countries")?.split(",").filter(Boolean) || [],
     location: undefined,
+    // Initialiser les filtres de performance sportive depuis les paramètres d'URL
+    minRunPace: getNumberParam("minRunPace"),
+    maxRunPace: getNumberParam("maxRunPace"),
+    minCyclingSpeed: getNumberParam("minCyclingSpeed"),
+    maxCyclingSpeed: getNumberParam("maxCyclingSpeed"),
+    minDistance: getNumberParam("minDistance"),
+    maxDistance: getNumberParam("maxDistance"),
   });
 
   const applyFilters = useCallback(
     (products: any[]) => {
       return products.filter((product) => {
+        // Filtres existants
         if (filters.sport && product.sport !== filters.sport) return false;
         if (filters.level && product.level !== filters.level) return false;
         if (
@@ -77,6 +97,44 @@ export function FilteredProductList({
           return false;
         if (userSex === "F" && filters.onlyGirls && product.user.sex !== "F")
           return false;
+
+        // Nouveaux filtres de performance sportive
+
+        // Filtrer par allure en course à pied
+        if (
+          (filters.minRunPace || filters.maxRunPace) &&
+          !isPaceInRange(
+            product.user.stravaRunningPace,
+            filters.minRunPace,
+            filters.maxRunPace
+          )
+        ) {
+          return false;
+        }
+
+        // Filtrer par vitesse en vélo
+        if (
+          (filters.minCyclingSpeed || filters.maxCyclingSpeed) &&
+          !isSpeedInRange(
+            product.user.stravaCyclingSpeed,
+            filters.minCyclingSpeed,
+            filters.maxCyclingSpeed
+          )
+        ) {
+          return false;
+        }
+
+        // Filtrer par distance moyenne
+        if (
+          filters.minDistance &&
+          !isDistanceInRange(
+            product.user.stravaAvgDistance,
+            filters.minDistance
+          )
+        ) {
+          return false;
+        }
+
         return true;
       });
     },
@@ -105,14 +163,16 @@ export function FilteredProductList({
     }
   }, [applyFilters, filters, hasMore, loading, products.length, userSex]);
 
+  // Appliquer les filtres lorsqu'ils changent
   useEffect(() => {
     startTransition(() => {
       const filteredProducts = applyFilters(initialProducts);
       setProducts(filteredProducts);
       setHasMore(filteredProducts.length >= 10);
     });
-  }, [applyFilters, filters, initialProducts]);
+  }, [applyFilters, filterChangeCount, initialProducts]);
 
+  // Observer l'élément pour charger plus de produits
   useEffect(() => {
     const currentRef = loadMoreRef.current;
     const observer = new IntersectionObserver(
@@ -135,9 +195,11 @@ export function FilteredProductList({
     };
   }, [hasMore, loading, loadMoreProducts]);
 
+  // Fonction de mise à jour des filtres y compris les filtres de performance
   const handleFilterChange = (newFilters: FilterType) => {
     const params = new URLSearchParams(searchParams?.toString());
 
+    // Paramètres existants
     if (newFilters.sport) params.set("sport", newFilters.sport);
     else params.delete("sport");
 
@@ -153,10 +215,28 @@ export function FilteredProductList({
       params.delete("countries");
     }
 
+    // Nouveaux paramètres de performance sportive
+    const updateNumberParam = (name: string, value: number | undefined) => {
+      if (value !== undefined) {
+        params.set(name, value.toString());
+      } else {
+        params.delete(name);
+      }
+    };
+
+    updateNumberParam("minRunPace", newFilters.minRunPace);
+    updateNumberParam("maxRunPace", newFilters.maxRunPace);
+    updateNumberParam("minCyclingSpeed", newFilters.minCyclingSpeed);
+    updateNumberParam("maxCyclingSpeed", newFilters.maxCyclingSpeed);
+    updateNumberParam("minDistance", newFilters.minDistance);
+    updateNumberParam("maxDistance", newFilters.maxDistance);
+
     router.push(`?${params.toString()}`);
     setFilters(newFilters);
+    setFilterChangeCount((prev) => prev + 1); // Incrémente le compteur pour déclencher l'effet
   };
 
+  // Fonction de réinitialisation des filtres
   const resetFilters = () => {
     const emptyFilters: FilterType = {
       sport: undefined,
@@ -164,17 +244,38 @@ export function FilteredProductList({
       onlyGirls: false,
       countries: [],
       location: undefined,
+      // Réinitialiser les filtres de performance sportive
+      minRunPace: undefined,
+      maxRunPace: undefined,
+      minCyclingSpeed: undefined,
+      maxCyclingSpeed: undefined,
+      minDistance: undefined,
+      maxDistance: undefined,
     };
     router.push(window.location.pathname);
     setFilters(emptyFilters);
+    setFilterChangeCount((prev) => prev + 1); // Incrémente le compteur pour déclencher l'effet
   };
+
+  // Vérifier si des filtres sont actifs
+  const hasActiveFilters = useCallback(() => {
+    return (
+      !!filters.sport ||
+      !!filters.level ||
+      filters.onlyGirls ||
+      (filters.countries?.length || 0) > 0 ||
+      !!filters.minRunPace ||
+      !!filters.maxRunPace ||
+      !!filters.minCyclingSpeed ||
+      !!filters.maxCyclingSpeed ||
+      !!filters.minDistance ||
+      !!filters.maxDistance
+    );
+  }, [filters]);
 
   return (
     <>
-      {(filters.sport ||
-        filters.level ||
-        filters.onlyGirls ||
-        filters.countries?.length > 0) && (
+      {hasActiveFilters() && (
         <div className="mb-4 flex justify-end">
           <Button
             variant="ghost"
@@ -197,10 +298,7 @@ export function FilteredProductList({
             onClick={() => setFiltersOpen(true)}
           >
             <Filter className="size-6" />
-            {(filters.sport ||
-              filters.level ||
-              filters.onlyGirls ||
-              filters.countries?.length > 0) && (
+            {hasActiveFilters() && (
               <span className="absolute -right-1 -top-1 size-3 rounded-full bg-primary" />
             )}
           </Button>
@@ -217,10 +315,7 @@ export function FilteredProductList({
                   "Filtrer les annonces par sport, niveau, et autres critères"
                 )}
               </DialogDescription>
-              {(filters.sport ||
-                filters.level ||
-                filters.onlyGirls ||
-                filters.countries?.length > 0) && (
+              {hasActiveFilters() && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -260,10 +355,7 @@ export function FilteredProductList({
             <h3 className="font-medium">
               {t("Products.Filters.Title", "Filtres")}
             </h3>
-            {(filters.sport ||
-              filters.level ||
-              filters.onlyGirls ||
-              filters.countries?.length > 0) && (
+            {hasActiveFilters() && (
               <Button
                 variant="ghost"
                 size="sm"

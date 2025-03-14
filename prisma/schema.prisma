@@ -204,6 +204,8 @@ model User {
   nationality          String?
   profileCompleted     Boolean          @default(false)
   isAdmin              Boolean          @default(false)
+  
+  // Strava base fields
   stravaConnected      Boolean          @default(false)
   stravaCreatedAt      DateTime?
   stravaFTP            Int?
@@ -216,6 +218,15 @@ model User {
   stravaToken          String?
   stravaTokenExpiresAt Int?
   stravaWeight         Float?
+  
+  // Strava performance stats
+  stravaRunningPace    Int?             // Allure moyenne en secondes/km
+  stravaCyclingSpeed   Float?           // Vitesse moyenne à vélo en km/h
+  stravaStatsUpdatedAt DateTime?        // Date de dernière mise à jour des stats
+  stravaItraPoints     Int?             // Points ITRA (International Trail Running Association)
+  stravaAvgDistance    Float?           // Distance moyenne des activités en km
+  
+  // Relations
   accounts             Account[]
   ContactMessage       ContactMessage[]
   Feedback             Feedback[]

@@ -125,26 +125,40 @@ export function CustomPrismaAdapter(prisma: PrismaClient): Adapter {
     },
 
     // Surcharger linkAccount pour s'assurer que providerAccountId est une chaîne
-    linkAccount: async (rawAccount: AdapterAccount) => {
+    linkAccount: async (
+      rawAccount: AdapterAccount
+    ): Promise<AdapterAccount | null> => {
       try {
         // S'assurer que providerAccountId est toujours une chaîne
         const providerAccountId = rawAccount.providerAccountId
           ? rawAccount.providerAccountId.toString()
           : "";
 
-        // Créer un compte propre avec le bon format
-        const account = {
-          ...rawAccount,
+        // Extraire uniquement les champs supportés par le schéma Prisma
+        const validAccountFields = {
+          userId: rawAccount.userId,
+          provider: rawAccount.provider,
           providerAccountId,
+          type: rawAccount.type,
+          refresh_token: rawAccount.refresh_token,
+          access_token: rawAccount.access_token,
+          expires_at: rawAccount.expires_at
+            ? typeof rawAccount.expires_at === "number"
+              ? rawAccount.expires_at
+              : parseInt(String(rawAccount.expires_at), 10)
+            : null,
+          token_type: rawAccount.token_type,
+          scope: rawAccount.scope,
+          id_token: rawAccount.id_token,
+          session_state: rawAccount.session_state,
         };
 
-        // Gérer expires_at pour s'assurer qu'il est toujours un nombre
-        if (account.expires_at) {
-          account.expires_at =
-            typeof account.expires_at === "number"
-              ? account.expires_at
-              : parseInt(String(account.expires_at), 10);
-        }
+        // Supprimer les propriétés undefined ou null pour éviter les erreurs Prisma
+        const account = Object.fromEntries(
+          Object.entries(validAccountFields).filter(
+            ([_, v]) => v !== undefined && v !== null
+          )
+        ) as AdapterAccount;
 
         // Vérifier si un compte existe déjà pour cet utilisateur et ce provider
         const existingAccount = await prisma.account.findFirst({
@@ -156,8 +170,8 @@ export function CustomPrismaAdapter(prisma: PrismaClient): Adapter {
 
         if (existingAccount) {
           console.log("Compte existant trouvé, mise à jour...");
-          // Mettre à jour les informations du compte existant sans utiliser session_state qui peut ne pas exister
-          await prisma.account.update({
+          // Mettre à jour les informations du compte existant
+          const updatedAccount = await prisma.account.update({
             where: { id: existingAccount.id },
             data: {
               access_token: account.access_token,
@@ -165,15 +179,22 @@ export function CustomPrismaAdapter(prisma: PrismaClient): Adapter {
               scope: account.scope,
               id_token: account.id_token,
               token_type: account.token_type,
-              // Ne pas inclure session_state qui peut ne pas être défini
+              expires_at: account.expires_at,
             },
           });
+          return updatedAccount as AdapterAccount;
         } else if (standardAdapter.linkAccount) {
-          // Créer un nouveau compte via l'adaptateur standard si la méthode existe
-          await standardAdapter.linkAccount(account);
+          // Créer un nouveau compte via l'adaptateur standard
+          const newAccount = await prisma.account.create({
+            data: account as any,
+          });
+          return newAccount as AdapterAccount;
         }
+
+        return null;
       } catch (error) {
         console.error("Erreur lors de la liaison du compte:", error);
+        return null;
       }
     },
   };

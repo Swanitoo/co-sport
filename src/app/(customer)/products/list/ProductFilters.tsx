@@ -9,9 +9,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { COUNTRIES } from "@/data/country";
 import { cn } from "@/lib/utils";
 import { LEVEL_CLASSES, SPORTS } from "../[productId]/edit/product.schema";
+import {
+  SportPerformanceFilters,
+  SportPerformanceValues,
+} from "./SportPerformanceFilters";
 import { FilterType, ProductFiltersProps } from "./productList.schema";
 
 export function ProductFilters({
@@ -34,6 +39,16 @@ export function ProductFilters({
       ? filters.countries.filter((code) => code !== countryCode)
       : [...filters.countries, countryCode];
     updateFilters({ countries: newSelectedCountries });
+  };
+
+  const handleSportPerformanceChange = (values: SportPerformanceValues) => {
+    updateFilters({
+      minRunPace: values.minRunPace,
+      maxRunPace: values.maxRunPace,
+      minCyclingSpeed: values.minCyclingSpeed,
+      maxCyclingSpeed: values.maxCyclingSpeed,
+      minDistance: values.minDistance,
+    });
   };
 
   const countryOptions = COUNTRIES.map((country) => ({
@@ -158,6 +173,9 @@ export function ProductFilters({
             ))}
           </SelectContent>
         </Select>
+
+        <Separator />
+
         <div className="mt-2 flex flex-wrap gap-2">
           {filters.countries.map((countryCode) => {
             const country = COUNTRIES.find((c) => c.code === countryCode);
@@ -180,6 +198,22 @@ export function ProductFilters({
           })}
         </div>
       </div>
+
+      <Separator />
+
+      {/* Filtres de performance sportive */}
+      <SportPerformanceFilters
+        onChange={handleSportPerformanceChange}
+        defaultValues={{
+          minRunPace: filters.minRunPace,
+          maxRunPace: filters.maxRunPace,
+          minCyclingSpeed: filters.minCyclingSpeed,
+          maxCyclingSpeed: filters.maxCyclingSpeed,
+          minDistance: filters.minDistance,
+        }}
+      />
+
+      <Separator />
 
       {showGenderFilter && (
         <Button

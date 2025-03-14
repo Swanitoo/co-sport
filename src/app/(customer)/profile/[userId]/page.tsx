@@ -11,6 +11,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReviewItem } from "../../../(user)/wall/[slug]/ReviewCard";
 import { ProfileAvatar } from "./ProfileAvatar";
+import { StravaStats } from "./StravaStats";
 
 // Activation de l'ISR pour cette page
 export const dynamic = "force-static"; // La page de profil peut être générée statiquement
@@ -152,6 +153,8 @@ export default async function ProfilePage({
               </div>
             </CardContent>
           </Card>
+
+          {user.stravaConnected && <StravaStats userId={userId} />}
 
           <Card>
             <CardHeader>
