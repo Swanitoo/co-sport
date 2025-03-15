@@ -2,6 +2,8 @@ import { Layout, LayoutTitle } from "@/components/layout";
 import { getServerTranslations } from "@/components/server-translation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCountryFlag } from "@/data/country";
+import { getUserStravaActivities } from "@/features/strava/services/strava-activity.service";
+import { getStravaStatsForUser } from "@/features/strava/services/strava-stats.server";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
 import { formatDistance } from "date-fns";
@@ -13,8 +15,8 @@ import { ReviewItem } from "../../../(user)/wall/[slug]/ReviewCard";
 import { ProfileAvatar } from "./ProfileAvatar";
 import { StravaStats } from "./StravaStats";
 
-// Activation de l'ISR pour cette page
-export const dynamic = "force-static"; // La page de profil peut être générée statiquement
+// Activer le mode dynamique pour permettre une détection correcte de l'authentification
+export const dynamic = "force-dynamic"; // Changé de force-static à force-dynamic
 export const revalidate = 300; // Revalider toutes les 5 minutes
 
 // Configuration du viewport séparée de metadata selon les recommandations Next.js
@@ -33,6 +35,7 @@ export default async function ProfilePage({
   const { t, locale } = await getServerTranslations();
 
   try {
+    // Récupérer les données de l'utilisateur
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
@@ -81,6 +84,26 @@ export default async function ProfilePage({
       if (!fullName) return "";
       return fullName.split(" ")[0];
     };
+
+    // Récupérer les statistiques Strava directement depuis la base de données
+    const stravaStats = user.stravaConnected
+      ? await getStravaStatsForUser(userId)
+      : null;
+
+    // Récupérer les activités Strava récentes
+    const stravaActivities = user.stravaConnected
+      ? await getUserStravaActivities(userId, 5) // Récupérer les 5 dernières activités
+      : [];
+
+    // Convertir la date en chaîne pour la compatibilité avec le composant client
+    const clientStravaStats = stravaStats
+      ? {
+          ...stravaStats,
+          lastUpdated: stravaStats.lastUpdated
+            ? stravaStats.lastUpdated.toISOString()
+            : undefined,
+        }
+      : null;
 
     return (
       <Layout>
@@ -154,7 +177,14 @@ export default async function ProfilePage({
             </CardContent>
           </Card>
 
-          {user.stravaConnected && <StravaStats userId={userId} />}
+          {user.stravaConnected && (
+            <StravaStats
+              userId={userId}
+              initialData={clientStravaStats || undefined}
+              recentActivities={stravaActivities}
+              disableAutoFetch={true}
+            />
+          )}
 
           <Card>
             <CardHeader>

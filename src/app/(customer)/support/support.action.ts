@@ -19,7 +19,7 @@ export async function sendContactMessage(data: ContactMessageData) {
     throw new Error("Vous devez être connecté pour envoyer un message");
   }
 
-  await prisma.contactMessage.create({
+  await prisma.supportTicket.create({
     data: {
       subject: data.subject,
       message: data.message,
@@ -32,6 +32,19 @@ export async function sendFeedback(data: FeedbackData) {
   const user = await currentUser();
   if (!user) {
     throw new Error("Vous devez être connecté pour envoyer un feedback");
+  }
+
+  // Vérifier si l'utilisateur a déjà laissé un avis
+  const existingFeedback = await prisma.feedback.findFirst({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  if (existingFeedback) {
+    throw new Error(
+      "Vous avez déjà laissé un avis. Vous ne pouvez en laisser qu'un seul."
+    );
   }
 
   await prisma.feedback.create({

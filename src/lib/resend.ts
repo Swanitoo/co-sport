@@ -3,6 +3,17 @@ import { Resend } from "resend";
 
 export const resend = new Resend(env.RESEND_API_KEY);
 
+// Valeurs d'environnement pour la configuration des emails
+export const APP_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://co-sport.com"
+    : process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+// S'assurer que Resend et les templates d'emails connaissent l'URL de base correcte
+if (typeof window === "undefined") {
+  process.env.NEXT_PUBLIC_APP_URL = APP_URL;
+}
+
 export const sendEmail = async ({
   email,
   subject,

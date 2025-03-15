@@ -1,10 +1,10 @@
+import { Section } from "@react-email/components";
 import { Button } from "./Button";
 import EmailLayout from "./EmailLayout";
 import { Text } from "./Text";
 
-const baseUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+// Utiliser l'URL définie dans l'environnement ou une valeur par défaut
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://co-sport.com";
 
 export const ProductCreatedEmail = ({
   productName,
@@ -17,49 +17,69 @@ export const ProductCreatedEmail = ({
   isFirstProduct?: boolean;
   slug?: string;
 }) => {
+  // S'assurer que les valeurs sont valides
+  const safeProductName = productName || "votre activité";
+  const safeProductId = productId || "";
+  const safeSlug = slug || "";
+
+  const productLink = safeSlug
+    ? `${baseUrl}/products/${safeSlug}`
+    : `${baseUrl}/products/${safeProductId}`;
+
   return (
     <EmailLayout
       preview={
         isFirstProduct
-          ? "Votre première annonce a été créée !"
-          : "Votre annonce a été créée !"
+          ? `Votre première activité ${safeProductName} a été créée !`
+          : `Votre activité ${safeProductName} a été créée !`
       }
     >
-      <Text className="text-base font-light leading-8 text-gray-800">
-        {isFirstProduct
-          ? "Félicitations ! Vous venez de créer votre première annonce sur co-sport.com."
-          : `Votre annonce "${productName}" a été créée avec succès !`}
-      </Text>
-      <Text className="text-base font-light leading-8 text-gray-800">
-        Vous pouvez maintenant : - Partager votre annonce - Gérer les demandes
-        d'adhésion - Communiquer avec les membres
-      </Text>
-      <Button
-        className="block w-52 rounded bg-blue-600 py-3.5 text-center text-sm font-normal text-white no-underline"
-        href={`${baseUrl}/products/${productId}`}
-      >
-        Voir mon annonce
-      </Button>
+      <Section className="mb-3 text-center">
+        <Text className="text-3xl">🎉</Text>
+      </Section>
 
-      {isFirstProduct && slug && (
-        <>
-          <Text className="text-base font-light leading-8 text-gray-800">
-            Vous pouvez partager le lien pour les avis :
-          </Text>
-          <Button
-            className="block w-52 rounded bg-blue-600 py-3.5 text-center text-sm font-normal text-white no-underline"
-            href={`${baseUrl}/r/${slug}`}
-          >
-            Partager le lien des avis
-          </Button>
-        </>
+      <Text className="text-center text-lg font-bold text-yellow-500">
+        {isFirstProduct
+          ? "Félicitations pour votre première annonce !"
+          : "Votre activité a été créée avec succès !"}
+      </Text>
+
+      <Text>Bonjour,</Text>
+
+      <Text>
+        Votre activité "<strong>{safeProductName}</strong>" a été créée avec
+        succès et est maintenant visible dans notre catalogue.
+      </Text>
+
+      {isFirstProduct && (
+        <Text>
+          En tant que créateur de votre première annonce, vous pouvez maintenant
+          :
+          <ul>
+            <li>Recevoir des demandes d'adhésion de participants intéressés</li>
+            <li>Communiquer avec les membres de votre groupe</li>
+            <li>Organiser et planifier vos séances sportives</li>
+          </ul>
+        </Text>
       )}
 
-      <Text className="text-base font-light leading-8 text-gray-800">
-        Bonne activité sportive !
-      </Text>
-      <Text className="text-base font-light leading-8 text-gray-800">
-        L'équipe Co-Sport
+      <Text>Pour optimiser la visibilité de votre activité, pensez à :</Text>
+
+      <Section className="pl-4">
+        <Text>• Ajouter une description détaillée</Text>
+        <Text>• Préciser les horaires et la fréquence</Text>
+        <Text>• Indiquer le niveau requis et le matériel nécessaire</Text>
+        <Text>• Partager votre annonce sur les réseaux sociaux</Text>
+      </Section>
+
+      <Section className="my-8 text-center">
+        <Button href={productLink}>Voir mon annonce</Button>
+      </Section>
+
+      <Text>À bientôt sur Co-Sport !</Text>
+
+      <Text>
+        <em>L'équipe Co-Sport</em>
       </Text>
     </EmailLayout>
   );

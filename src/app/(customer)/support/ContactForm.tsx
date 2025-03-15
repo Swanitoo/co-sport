@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { sendContactMessage } from "./support.action";
+import { useTickets } from "./TicketsContext";
 
 const contactFormSchema = z.object({
   subject: z.string().min(1, "Le sujet est requis"),
@@ -25,6 +26,8 @@ const contactFormSchema = z.object({
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 export const ContactForm = () => {
+  const { addTicket } = useTickets();
+
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -36,6 +39,20 @@ export const ContactForm = () => {
   const onSubmit = async (data: ContactFormValues) => {
     try {
       await sendContactMessage(data);
+
+      // Créer un nouveau ticket temporaire pour l'affichage immédiat
+      const newTicket = {
+        id: `temp-${Date.now()}`,
+        subject: data.subject,
+        message: data.message,
+        createdAt: new Date().toISOString(),
+        isResolved: false,
+        responses: [],
+      };
+
+      // Ajouter le ticket à l'état local
+      addTicket(newTicket);
+
       toast.success("Message envoyé", {
         description: "Nous vous répondrons dans les plus brefs délais.",
       });

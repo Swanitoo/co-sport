@@ -1,10 +1,10 @@
+import { Section } from "@react-email/components";
 import { Button } from "./Button";
 import EmailLayout from "./EmailLayout";
 import { Text } from "./Text";
 
-const baseUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+// Utiliser l'URL définie dans l'environnement ou une valeur par défaut
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://co-sport.com";
 
 export const MembershipAcceptedEmail = ({
   productName,
@@ -13,29 +13,49 @@ export const MembershipAcceptedEmail = ({
   productName: string;
   productId: string;
 }) => {
+  // S'assurer que les valeurs sont valides
+  const safeProductName = productName || "l'activité";
+  const safeProductId = productId || "";
+
   return (
-    <EmailLayout
-      preview={`Votre demande d'adhésion à ${productName} a été acceptée !`}
-    >
-      <Text className="text-base font-light leading-8 text-gray-800">
-        Félicitations ! Votre demande d'adhésion à "{productName}" a été
-        acceptée.
+    <EmailLayout preview={`Demande acceptée pour ${safeProductName}`}>
+      <Section className="mb-3 text-center">
+        <Text className="text-3xl">✅</Text>
+      </Section>
+
+      <Text className="text-center text-lg font-bold text-yellow-500">
+        Bonne nouvelle ! Votre demande a été acceptée
       </Text>
-      <Text className="text-base font-light leading-8 text-gray-800">
-        Vous pouvez maintenant accéder à la conversation du groupe et interagir
-        avec le(s) autre(s) membre(s).
+
+      <Text>Bonjour,</Text>
+
+      <Text>
+        Votre demande d'adhésion à l'activité "
+        <strong>{safeProductName}</strong>" a été acceptée !
       </Text>
-      <Button
-        className="block w-52 rounded bg-blue-600 py-3.5 text-center text-sm font-normal text-white no-underline"
-        href={`${baseUrl}/products/${productId}`}
-      >
-        Voir le groupe
-      </Button>
-      <Text className="text-base font-light leading-8 text-gray-800">
-        À bientôt sur Co-Sport !
+
+      <Text>
+        Vous pouvez maintenant accéder à tous les détails de l'activité et
+        communiquer avec les autres participants. N'hésitez pas à vous présenter
+        dans le chat de groupe !
       </Text>
-      <Text className="text-base font-light leading-8 text-gray-800">
-        L'équipe Co-Sport
+
+      <Section className="my-8 text-center">
+        <Button href={`${baseUrl}/products/${safeProductId}`}>
+          Voir l'activité
+        </Button>
+      </Section>
+
+      <Text className="text-sm text-slate-600">
+        Rappel : en rejoignant une activité, vous vous engagez à respecter les
+        règles établies par l'organisateur et à informer le groupe en cas
+        d'annulation de votre participation.
+      </Text>
+
+      <Text>À bientôt sur Co-Sport !</Text>
+
+      <Text>
+        <em>L'équipe Co-Sport</em>
       </Text>
     </EmailLayout>
   );

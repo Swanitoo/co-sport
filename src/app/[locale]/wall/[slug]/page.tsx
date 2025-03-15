@@ -13,9 +13,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Locale, locales } from "../../../../../locales";
 
-// Activation de l'ISR pour cette page
-export const dynamic = "force-static"; // La page de mur d'avis peut être générée statiquement
+// Activation de la revalidation pour cette page
+// export const dynamic = "force-static"; // Supprimé pour permettre une détection dynamique de l'authentification
 export const revalidate = 300; // Revalider toutes les 5 minutes
+
+// Spécifier que la page est dynamique pour s'assurer que l'authentification fonctionne
+export const dynamic = "force-dynamic";
 
 // Configuration du viewport séparée de metadata selon les recommandations Next.js
 export const viewport: Viewport = {

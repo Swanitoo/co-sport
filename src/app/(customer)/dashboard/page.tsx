@@ -1,5 +1,6 @@
 import { requiredCurrentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
+import { StravaLogo } from "@/components/StravaLogo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -26,17 +27,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { COUNTRIES } from "@/data/country";
-import { StravaActivities } from "@/features/strava/components/StravaActivities";
+import { StravaDashboard } from "@/features/strava/components/StravaDashboard";
 import { StravaSyncHandler } from "@/features/strava/components/StravaSyncHandler";
+import { getUserStravaActivities } from "@/features/strava/services/strava-activity.service";
 import {
-  getStravaActivityStats,
-  getUserStravaActivities,
-} from "@/features/strava/services/strava-activity.service";
+  DashboardStravaStats,
+  getStravaDashboardStats,
+} from "@/features/strava/services/strava-dashboard.service";
 import { ProfileImageUpload } from "@/features/upload/components/ProfileImageUpload";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
-import { Globe, MapPin, Pencil } from "lucide-react";
+import { ExternalLink, Globe, MapPin, Pencil } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ReviewItem } from "../../(user)/wall/[slug]/ReviewCard";
@@ -80,12 +82,13 @@ export default async function RoutePage(props: PageParams<{}>) {
       },
       orderBy: { createdAt: "desc" },
     }),
-    user.stravaConnected
-      ? getStravaActivityStats(user.id)
-      : Promise.resolve([]),
-    user.stravaConnected
-      ? getUserStravaActivities(user.id, 5) // Récupérer les 5 dernières activités
-      : Promise.resolve([]),
+    user?.stravaConnected
+      ? getStravaDashboardStats(user.id)
+      : ({
+          id: user?.id || "",
+          stravaConnected: false,
+        } as DashboardStravaStats),
+    user?.stravaConnected ? getUserStravaActivities(user.id) : [],
   ]);
 
   // Récupérer les messages non lus
@@ -493,6 +496,7 @@ export default async function RoutePage(props: PageParams<{}>) {
                                   .split("T")[0]
                               : undefined
                           }
+                          max={new Date().toISOString().split("T")[0]}
                         />
                         <DialogClose asChild>
                           <Button type="submit">Enregistrer</Button>
@@ -501,6 +505,18 @@ export default async function RoutePage(props: PageParams<{}>) {
                     </DialogContent>
                   </Dialog>
                 </div>
+              </div>
+
+              <div className="mt-3 flex justify-center">
+                <Link href={`/profile/${user.id}`} className="w-full">
+                  <Button
+                    variant="outline"
+                    className="w-full text-sm font-normal"
+                  >
+                    <span>Voir mon profil public</span>
+                    <ExternalLink className="ml-2 size-4" />
+                  </Button>
+                </Link>
               </div>
 
               {/* Bouton Strava */}
@@ -513,20 +529,10 @@ export default async function RoutePage(props: PageParams<{}>) {
                     </p>
                     <Link
                       href="/api/auth/signin?provider=strava&callbackUrl=/dashboard"
-                      className={buttonVariants({
-                        className:
-                          "flex w-full items-center justify-center gap-2 bg-[#FC4C02] hover:bg-[#E34000]",
-                      })}
+                      className="flex w-full items-center justify-center gap-2 rounded-md border-0 bg-[#FC4C02] px-4 py-2 text-white transition-colors hover:bg-[#E34000]"
                     >
-                      <svg
-                        viewBox="0 0 24 24"
-                        width="20"
-                        height="20"
-                        fill="currentColor"
-                      >
-                        <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" />
-                      </svg>
-                      Connecter avec Strava
+                      <StravaLogo />
+                      <span>Connecter avec Strava</span>
                     </Link>
                   </div>
                 </div>
@@ -616,10 +622,10 @@ export default async function RoutePage(props: PageParams<{}>) {
           </Card>
 
           <Card className="md:col-span-2">
-            <StravaActivities
+            <StravaDashboard
               stats={stravaStats}
               recentActivities={stravaActivities}
-              isConnected={user.stravaConnected}
+              isConnected={user?.stravaConnected || false}
             />
           </Card>
 

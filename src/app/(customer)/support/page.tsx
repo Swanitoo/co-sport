@@ -3,10 +3,15 @@ import { Layout, LayoutTitle } from "@/components/layout";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
+import { prisma } from "@/prisma";
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { AdminPanel } from "./AdminPanel";
 import { ContactForm } from "./ContactForm";
 import { FeedbackForm } from "./FeedbackForm";
+import { ReviewsPanel } from "./ReviewsPanel";
+import { TicketsProvider } from "./TicketsContext";
+import { UserTickets } from "./UserTickets";
 
 // Configuration pour forcer le rendu dynamique et désactiver la génération statique
 export const dynamic = "force-dynamic";
@@ -14,6 +19,46 @@ export const generateStaticParams = undefined;
 
 // Activation de l'ISR pour cette page
 export const revalidate = 3600; // Revalider toutes les heures (la page de support change rarement)
+
+// Traductions pour la page de support
+const translations = {
+  fr: {
+    title: "Support & Aide",
+    contact: "Contact",
+    contactAdmin: "Contact (admin)",
+    feedback: "Avis",
+    admin: "Administration",
+    description:
+      "Besoin d'aide ou envie de partager votre expérience ? Nous sommes là pour vous aider !",
+    yourTickets: "Vos tickets de support",
+    testimonials: "Témoignages des utilisateurs",
+    adminSection: "Section Administration",
+  },
+  en: {
+    title: "Support & Help",
+    contact: "Contact",
+    contactAdmin: "Contact (admin)",
+    feedback: "Feedback",
+    admin: "Administration",
+    description:
+      "Need help or want to share your experience? We're here to help!",
+    yourTickets: "Your support tickets",
+    testimonials: "User testimonials",
+    adminSection: "Admin Section",
+  },
+  es: {
+    title: "Soporte & Ayuda",
+    contact: "Contacto",
+    contactAdmin: "Contacto (admin)",
+    feedback: "Comentarios",
+    admin: "Administración",
+    description:
+      "¿Necesitas ayuda o quieres compartir tu experiencia? ¡Estamos aquí para ayudarte!",
+    yourTickets: "Tus tickets de soporte",
+    testimonials: "Testimonios de usuarios",
+    adminSection: "Sección de Administración",
+  },
+};
 
 // Composant de secours pendant le chargement
 function FormSkeleton() {
@@ -26,26 +71,84 @@ function FormSkeleton() {
   );
 }
 
-export default async function SupportPage() {
-  await requiredCurrentUser();
+export default async function SupportPage({
+  params,
+}: {
+  params: { locale?: string };
+}) {
+  const user = await requiredCurrentUser();
+  const isAdmin = user.isAdmin || false;
+
+  // Déterminer la langue
+  const locale = params.locale || "fr";
+  const t =
+    translations[locale as keyof typeof translations] || translations.fr;
+
+  // Récupérer les 10 derniers avis pour la section publique
+  const recentReviews = await prisma.feedback.findMany({
+    take: 10,
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
 
   return (
     <Layout>
-      <LayoutTitle>Support</LayoutTitle>
+      <LayoutTitle>{t.title}</LayoutTitle>
       <Card className="p-6">
         <Tabs defaultValue="contact" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="contact">Nous contacter</TabsTrigger>
-            <TabsTrigger value="feedback">Donner son avis</TabsTrigger>
+            <TabsTrigger value="contact">
+              {isAdmin ? t.contactAdmin : t.contact}
+            </TabsTrigger>
+            <TabsTrigger value="feedback">{t.feedback}</TabsTrigger>
           </TabsList>
+
           <TabsContent value="contact" className="mt-6">
             <Suspense fallback={<FormSkeleton />}>
-              <ContactForm />
+              <TicketsProvider>
+                <div className="space-y-10">
+                  <ContactForm />
+
+                  <div className="border-t pt-8">
+                    <h2 className="mb-6 text-xl font-semibold">
+                      {t.yourTickets}
+                    </h2>
+                    <UserTickets />
+                  </div>
+
+                  {isAdmin && (
+                    <div className="border-t pt-8">
+                      <h2 className="mb-6 text-xl font-semibold">
+                        {t.adminSection}
+                      </h2>
+                      <AdminPanel />
+                    </div>
+                  )}
+                </div>
+              </TicketsProvider>
             </Suspense>
           </TabsContent>
+
           <TabsContent value="feedback" className="mt-6">
             <Suspense fallback={<FormSkeleton />}>
-              <FeedbackForm />
+              <div className="space-y-10">
+                <FeedbackForm />
+
+                <div className="border-t pt-8">
+                  <h2 className="mb-6 text-xl font-semibold">
+                    {t.testimonials}
+                  </h2>
+                  <ReviewsPanel reviews={recentReviews} />
+                </div>
+              </div>
             </Suspense>
           </TabsContent>
         </Tabs>
@@ -54,11 +157,18 @@ export default async function SupportPage() {
   );
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale?: string };
+}): Promise<Metadata> {
+  const locale = params.locale || "fr";
+  const t =
+    translations[locale as keyof typeof translations] || translations.fr;
+
   return createSeoMetadata({
-    title: "Support et Contact | co-sport.com",
-    description:
-      "Besoin d'aide ? Contactez notre équipe de support ou laissez-nous vos commentaires pour améliorer votre expérience sur co-sport.com.",
-    path: "/support",
+    title: t.title + " | co-sport.com",
+    description: t.description,
+    path: `/support`,
   });
 }

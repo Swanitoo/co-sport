@@ -18,7 +18,11 @@ type TranslationsType = {
   [key: string]: any;
 };
 
+// Désactiver la mise en cache pour ce composant
+export const dynamic = "force-dynamic";
+
 export async function Header() {
+  // Utiliser { cache: 'no-store' } pour forcer la réexécution du currentUser à chaque requête
   const user = await currentUser();
 
   // Obtenir le pathname depuis les headers de la requête

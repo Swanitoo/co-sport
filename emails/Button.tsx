@@ -1,13 +1,20 @@
 import { Button as ReactEmailButton } from "@react-email/components";
-import { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 
-export const Button = (
-  props: ComponentPropsWithoutRef<typeof ReactEmailButton>
-) => {
+export const Button = ({
+  ...props
+}: ComponentPropsWithoutRef<typeof ReactEmailButton>) => {
+  // On applique par défaut un style qui correspond au design de l'application
+  // Utilisation du jaune pour être cohérent avec le site
+  const defaultClassName =
+    "rounded-md bg-yellow-500 px-4 py-3 text-center text-base font-medium text-white no-underline hover:bg-yellow-600";
+
   return (
     <ReactEmailButton
-      className="block w-52 rounded bg-blue-600 py-3.5 text-center text-sm font-normal text-white no-underline"
+      className={props.className || defaultClassName}
       {...props}
     />
   );
 };
+
+export default Button;

@@ -135,7 +135,7 @@ export default function LoginPage() {
 
             <Button
               onClick={handleStravaLogin}
-              className="flex w-full items-center justify-center gap-2 bg-[#FC4C02] hover:bg-[#E34000]"
+              className="flex w-full items-center justify-center gap-2 bg-[#FC4C02] text-white hover:bg-[#E34000]"
               size="lg"
             >
               <svg
@@ -151,6 +151,10 @@ export default function LoginPage() {
                 ? "Se connecter avec Strava"
                 : "Continuer avec Strava"}
             </Button>
+            <p className="mt-2 max-w-full break-words text-center text-xs italic text-muted-foreground ">
+              (Connexion Strava en attente d'acceptation du site par Strava,
+              possible que cela ne fonctionne pas)
+            </p>
           </div>
         </CardContent>
       </Card>

@@ -1,52 +1,80 @@
 import {
-    Body,
-    Container,
-    Head,
-    Html,
-    Img,
-    Preview,
-    Section,
-    Tailwind,
-  } from "@react-email/components";
-  import * as React from "react";
-  
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
-  
-  export const EmailLayout = ({
-    children,
-    preview,
-  }: React.PropsWithChildren<{
-    preview?: string;
-  }>) => {
-    return (
-      <Tailwind>
-        <Html>
-          <Head />
-          {preview ? <Preview>Cosport reset your password</Preview> : null}
-          <Body
-            className="bg-gray-50 py-2"
-            style={{
-              fontFamily: "Arial, sans-serif",
-            }}
-          >
-            <Container className="border border-gray-200 bg-white p-11">
-              <div className="flex items-center gap-2">
-                <Img
-                  src={`${baseUrl}/icon.png`}
-                  width="50"
-                  height="auto"
-                  alt="Dropbox"
-                />
-                <h2>co-sport.com</h2>
-              </div>
-              <Section>{children}</Section>
-            </Container>
-          </Body>
-        </Html>
-      </Tailwind>
-    );
-  };
-  
-  export default EmailLayout;
+  Body,
+  Container,
+  Text as EmailText,
+  Head,
+  Hr,
+  Html,
+  Img,
+  Link,
+  Preview,
+  Section,
+  Tailwind,
+} from "@react-email/components";
+import * as React from "react";
+
+// Utiliser l'URL définie dans l'environnement ou une valeur par défaut
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://co-sport.com";
+
+export const EmailLayout = ({
+  children,
+  preview,
+}: React.PropsWithChildren<{
+  preview?: string;
+}>) => {
+  return (
+    <Tailwind>
+      <Html>
+        <Head />
+        {preview ? <Preview>{preview}</Preview> : null}
+        <Body
+          className="bg-slate-50 py-8"
+          style={{
+            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+          }}
+        >
+          <Container className="rounded-lg border border-slate-200 bg-white px-8 py-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-center border-b border-slate-200 pb-6">
+              <Img
+                src={`${baseUrl}/icon.png`}
+                width="50"
+                height="auto"
+                alt="Co-Sport"
+                className="mr-2"
+              />
+              <EmailText className="text-2xl font-bold text-slate-900">
+                co-sport.com
+              </EmailText>
+            </div>
+            <Section>{children}</Section>
+            <Hr className="my-6 border-slate-200" />
+            <Section className="text-center">
+              <EmailText className="text-xs text-slate-500">
+                © {new Date().getFullYear()} Co-Sport. Tous droits réservés.
+              </EmailText>
+              <EmailText className="mt-2 text-xs text-slate-500">
+                Si vous avez des questions, contactez-nous à{" "}
+                <Link
+                  href="mailto:support@co-sport.com"
+                  className="text-blue-600 underline"
+                >
+                  support@co-sport.com
+                </Link>
+              </EmailText>
+              <EmailText className="mt-2 text-xs text-slate-500">
+                <Link
+                  href={`${baseUrl}/profile`}
+                  className="text-blue-600 underline"
+                >
+                  Gérer mes préférences d'email
+                </Link>
+              </EmailText>
+            </Section>
+          </Container>
+        </Body>
+      </Html>
+    </Tailwind>
+  );
+};
+
+export default EmailLayout;

@@ -1,6 +1,5 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -24,9 +23,9 @@ export const StravaSyncHandler = ({ isConnected }: StravaSyncHandlerProps) => {
 
         // Si nous venons juste de nous connecter ou c'est la première visite, synchroniser
         if (justConnected || !hasTriedSync) {
-          // Afficher un toast de synchronisation
+          // Afficher un seul toast
           const toastId = toast.loading(
-            "Synchronisation de vos activités Strava..."
+            "Synchronisation de vos activités Strava en cours..."
           );
 
           const response = await fetch("/api/strava/sync", {
@@ -45,11 +44,12 @@ export const StravaSyncHandler = ({ isConnected }: StravaSyncHandlerProps) => {
 
           const data = await response.json();
 
+          // Mise à jour du même toast au lieu d'en créer un nouveau
           if (data.success) {
             toast.success("Synchronisation Strava réussie", {
-              id: toastId,
+              id: toastId, // Réutilisation du même ID pour mettre à jour le toast existant
               description:
-                "Vos activités Strava ont été synchronisées avec succès.",
+                "Vos données Strava ont été mises à jour avec succès.",
             });
           } else {
             toast.error("Échec de synchronisation des activités Strava", {
@@ -69,21 +69,13 @@ export const StravaSyncHandler = ({ isConnected }: StravaSyncHandlerProps) => {
       }
     };
 
-    syncStravaActivities();
+    // Délai léger pour éviter la concurrence avec d'autres initialisations
+    const timer = setTimeout(() => {
+      syncStravaActivities();
+    }, 500);
 
-    // Synchroniser à nouveau si la connexion change
+    return () => clearTimeout(timer);
   }, [isConnected, hasTriedSync, isSyncing]);
-
-  // Ce composant ne rend rien visuellement, mais vous pouvez ajouter un indicateur
-  // de chargement ou des messages pour informer l'utilisateur
-  if (isSyncing) {
-    return (
-      <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-md bg-primary/10 px-4 py-2 text-sm text-primary shadow-md">
-        <Loader2 className="size-4 animate-spin" />
-        Synchronisation Strava en cours...
-      </div>
-    );
-  }
 
   return null;
 };

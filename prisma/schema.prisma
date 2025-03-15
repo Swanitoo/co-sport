@@ -165,14 +165,19 @@ model UnreadMessage {
   @@map("unread_messages")
 }
 
-model ContactMessage {
-  id        String   @id @default(cuid())
-  subject   String
-  message   String
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model SupportTicket {
+  id         String          @id @default(cuid())
+  subject    String?
+  message    String
+  userId     String
+  parentId   String?         @map("parent_id")
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  isResolved Boolean         @default(false)
+  isAdmin    Boolean         @default(false)
+  parent     SupportTicket?  @relation("TicketReplies", fields: [parentId], references: [id])
+  replies    SupportTicket[] @relation("TicketReplies")
+  user       User            @relation("UserSupportTickets", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Feedback {
@@ -204,8 +209,6 @@ model User {
   nationality          String?
   profileCompleted     Boolean          @default(false)
   isAdmin              Boolean          @default(false)
-  
-  // Strava base fields
   stravaConnected      Boolean          @default(false)
   stravaCreatedAt      DateTime?
   stravaFTP            Int?
@@ -218,17 +221,13 @@ model User {
   stravaToken          String?
   stravaTokenExpiresAt Int?
   stravaWeight         Float?
-  
-  // Strava performance stats
-  stravaRunningPace    Int?             // Allure moyenne en secondes/km
-  stravaCyclingSpeed   Float?           // Vitesse moyenne à vélo en km/h
-  stravaStatsUpdatedAt DateTime?        // Date de dernière mise à jour des stats
-  stravaItraPoints     Int?             // Points ITRA (International Trail Running Association)
-  stravaAvgDistance    Float?           // Distance moyenne des activités en km
-  
-  // Relations
+  stravaCyclingSpeed   Float?
+  stravaItraPoints     Int?
+  stravaRunningPace    Int?
+  stravaStatsUpdatedAt DateTime?
+  stravaAvgDistance    Float?
   accounts             Account[]
-  ContactMessage       ContactMessage[]
+  emailPreferences     EmailPreference?
   Feedback             Feedback[]
   memberships          Membership[]
   products             Product[]
@@ -236,6 +235,7 @@ model User {
   sessions             Session[]
   StravaActivity       StravaActivity[]
   StravaSegment        StravaSegment[]
+  supportTickets       SupportTicket[]  @relation("UserSupportTickets")
   messages             Message[]        @relation("UserMessages")
   unreadMessages       UnreadMessage[]
 }
@@ -262,6 +262,21 @@ model StravaSegment {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   User               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model EmailPreference {
+  id                String   @id @default(cuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  userId            String   @unique
+  marketingEmails   Boolean  @default(true)
+  newMessagesEmails Boolean  @default(true)
+  joinRequestEmails Boolean  @default(true)
+  membershipEmails  Boolean  @default(true)
+  reviewEmails      Boolean  @default(true)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum Status {

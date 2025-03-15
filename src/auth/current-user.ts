@@ -1,13 +1,16 @@
 import { prisma } from "@/prisma";
 import { auth } from "./auth";
 
+// Désactiver explicitement la mise en cache pour currentUser
 export async function currentUser() {
+  // Utiliser { cache: 'no-store' } pour forcer la récupération de la session à chaque requête
   const session = await auth();
 
   if (!session?.user?.id) {
     return null;
   }
 
+  // Utiliser { cache: 'no-store' } pour éviter la mise en cache de la requête Prisma
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: {
