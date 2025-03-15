@@ -79,6 +79,12 @@ export function AdminPanel() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Ne pas exécuter ces requêtes pendant le build SSG/SSR
+        if (typeof window === "undefined") {
+          setLoading(false);
+          return;
+        }
+
         // Charger les messages de contact
         const contactRes = await fetch("/api/admin/messages");
         if (contactRes.ok) {
@@ -94,7 +100,10 @@ export function AdminPanel() {
         }
       } catch (error) {
         console.error("Erreur lors du chargement des données admin:", error);
-        toast.error("Impossible de charger les données");
+        // Éviter d'afficher des erreurs pendant le build
+        if (typeof window !== "undefined") {
+          toast.error("Impossible de charger les données");
+        }
       } finally {
         setLoading(false);
       }

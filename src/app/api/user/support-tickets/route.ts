@@ -2,6 +2,9 @@ import { requiredCurrentUser } from "@/auth/current-user";
 import { prisma } from "@/prisma";
 import { NextResponse } from "next/server";
 
+// Indique à Next.js que cette route est dynamique et ne doit pas être générée statiquement
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     // Vérifier que l'utilisateur est connecté

@@ -41,6 +41,12 @@ export function TicketsProvider({ children }: { children: ReactNode }) {
 
   const fetchTickets = async () => {
     try {
+      // Ne pas exécuter cette requête pendant le build SSG/SSR
+      if (typeof window === "undefined") {
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch("/api/user/support-tickets");
       if (!response.ok) {
         throw new Error("Erreur lors de la récupération des tickets");
@@ -49,7 +55,10 @@ export function TicketsProvider({ children }: { children: ReactNode }) {
       setTickets(data);
     } catch (error) {
       console.error("Erreur:", error);
-      toast.error("Impossible de charger vos tickets de support");
+      // Éviter d'afficher des erreurs pendant le build
+      if (typeof window !== "undefined") {
+        toast.error("Impossible de charger vos tickets de support");
+      }
     } finally {
       setLoading(false);
     }

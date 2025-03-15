@@ -1,6 +1,3 @@
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "stravaAvgDistance" DOUBLE PRECISION;
-
 -- CreateTable
 CREATE TABLE "EmailPreference" (
     "id" TEXT NOT NULL,
