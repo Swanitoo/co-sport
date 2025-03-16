@@ -10,6 +10,7 @@ interface SliderProps
   showValues?: boolean;
   showValuePrefix?: string;
   showValueSuffix?: string;
+  preventScrollOnChange?: boolean;
 }
 
 const Slider = React.forwardRef<
@@ -17,7 +18,14 @@ const Slider = React.forwardRef<
   SliderProps
 >(
   (
-    { className, showValues, showValuePrefix, showValueSuffix, ...props },
+    {
+      className,
+      showValues,
+      showValuePrefix,
+      showValueSuffix,
+      preventScrollOnChange,
+      ...props
+    },
     ref
   ) => {
     const defaultValue = Array.isArray(props.defaultValue)
@@ -31,6 +39,40 @@ const Slider = React.forwardRef<
         : [props.value]
       : undefined;
 
+    // Empêcher le scroll lors des changements de valeur
+    const handleValueChange = (newValue: number[]) => {
+      if (preventScrollOnChange && props.onValueChange) {
+        if (typeof window !== "undefined") {
+          // Capturer la position de défilement actuelle
+          const scrollPos = { x: window.scrollX, y: window.scrollY };
+
+          // Appeler le gestionnaire de valeur
+          props.onValueChange(newValue);
+
+          // Empêcher tout défilement en remettant immédiatement à la position précédente
+          // et en bloquant temporairement les événements de défilement
+          const preventScroll = (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+            window.scrollTo(scrollPos.x, scrollPos.y);
+          };
+
+          // Appliquer la prévention de défilement temporairement
+          window.addEventListener("scroll", preventScroll, { passive: false });
+          window.scrollTo(scrollPos.x, scrollPos.y);
+
+          // Retirer la prévention après un court délai
+          setTimeout(() => {
+            window.removeEventListener("scroll", preventScroll);
+          }, 100);
+        } else {
+          props.onValueChange(newValue);
+        }
+      } else if (props.onValueChange) {
+        props.onValueChange(newValue);
+      }
+    };
+
     return (
       <div className="relative space-y-2">
         <SliderPrimitive.Root
@@ -42,6 +84,7 @@ const Slider = React.forwardRef<
           {...props}
           defaultValue={defaultValue}
           value={value}
+          onValueChange={handleValueChange}
         >
           <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
             <SliderPrimitive.Range className="absolute h-full bg-primary" />

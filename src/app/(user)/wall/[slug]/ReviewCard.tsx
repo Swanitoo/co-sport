@@ -16,6 +16,7 @@ interface ReviewItemProps {
     } | null;
   };
   className?: string;
+  isAdmin?: boolean;
 }
 
 export function ReviewItem({ review, className }: ReviewItemProps) {

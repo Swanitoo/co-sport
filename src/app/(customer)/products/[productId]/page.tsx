@@ -25,6 +25,7 @@ import { Suspense } from "react";
 import { AcceptRequestButton } from "./AcceptButton";
 import { ChatComponent } from "./Chat";
 import { DeleteButton } from "./DeleteButton";
+import { DeleteReviewButton } from "./DeleteReviewButton";
 import { LEVEL_CLASSES, SPORTS } from "./edit/product.schema";
 import { JoinRequestButton } from "./JoinRequestButton";
 import { LeaveButton } from "./LeaveButton";
@@ -404,6 +405,12 @@ export default async function RoutePage({
                         {t("Products.Reviews.Rating", "Note")}
                       </TableHead>
                       <TableHead>{t("Products.Reviews", "Avis")}</TableHead>
+                      {/* Bouton de suppression pour les admins */}
+                      {user.isAdmin && (
+                        <TableHead>
+                          {t("Products.Reviews.Actions", "Actions")}
+                        </TableHead>
+                      )}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -412,6 +419,12 @@ export default async function RoutePage({
                         <TableCell>{review.name}</TableCell>
                         <TableCell>{review.rating}/5</TableCell>
                         <TableCell>{review.text}</TableCell>
+                        {/* Bouton de suppression pour les admins */}
+                        {user.isAdmin && (
+                          <TableCell className="text-right">
+                            <DeleteReviewButton reviewId={review.id} />
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                   </TableBody>

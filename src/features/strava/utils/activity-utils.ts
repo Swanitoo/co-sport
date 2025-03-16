@@ -101,20 +101,21 @@ export function formatPace(pace: number | null | undefined): string {
  * Vérifie si une allure est dans une plage donnée
  */
 export function isPaceInRange(
-  pace: number,
+  pace: number | null | undefined,
   minPace?: number,
   maxPace?: number
 ): boolean {
-  if (!pace) return false;
+  // Si aucun filtre n'est spécifié, on considère que la condition est remplie
+  if (minPace === undefined && maxPace === undefined) return true;
 
-  // Si la pace est 0, c'est une valeur non définie
-  if (pace === 0) return false;
+  // Si la valeur de pace est null ou undefined, on retourne false seulement si un filtre est spécifié
+  if (pace === null || pace === undefined || pace === 0) return false;
 
   // Min pace signifie allure la plus rapide (valeur numérique plus petite)
-  if (minPace && pace < minPace) return false;
+  if (minPace !== undefined && pace < minPace) return false;
 
   // Max pace signifie allure la plus lente (valeur numérique plus grande)
-  if (maxPace && pace > maxPace) return false;
+  if (maxPace !== undefined && pace > maxPace) return false;
 
   return true;
 }
@@ -123,20 +124,21 @@ export function isPaceInRange(
  * Vérifie si une vitesse est dans une plage donnée
  */
 export function isSpeedInRange(
-  speed: number,
+  speed: number | null | undefined,
   minSpeed?: number,
   maxSpeed?: number
 ): boolean {
-  if (!speed) return false;
+  // Si aucun filtre n'est spécifié, on considère que la condition est remplie
+  if (minSpeed === undefined && maxSpeed === undefined) return true;
 
-  // Si la vitesse est 0, c'est une valeur non définie
-  if (speed === 0) return false;
+  // Si la valeur de speed est null ou undefined, on retourne false seulement si un filtre est spécifié
+  if (speed === null || speed === undefined || speed === 0) return false;
 
   // Min speed signifie vitesse minimale
-  if (minSpeed && speed < minSpeed) return false;
+  if (minSpeed !== undefined && speed < minSpeed) return false;
 
   // Max speed signifie vitesse maximale
-  if (maxSpeed && speed > maxSpeed) return false;
+  if (maxSpeed !== undefined && speed > maxSpeed) return false;
 
   return true;
 }
@@ -148,9 +150,14 @@ export function isDistanceInRange(
   distance: number | null | undefined,
   minDistance?: number
 ): boolean {
-  if (!distance) return false;
+  // Si aucun filtre n'est spécifié, on considère que la condition est remplie
+  if (minDistance === undefined) return true;
 
-  if (minDistance && distance < minDistance) return false;
+  // Si la valeur de distance est null ou undefined, on retourne false seulement si un filtre est spécifié
+  if (distance === null || distance === undefined || distance === 0)
+    return false;
+
+  if (distance < minDistance) return false;
 
   return true;
 }

@@ -1,20 +1,23 @@
 "use client";
 
+import { StravaLogo } from "@/components/StravaLogo";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { StravaConnectDialog } from "@/features/strava/components/StravaConnectDialog";
 import { formatPace } from "@/features/strava/utils/activity-utils";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 // Valeurs par défaut pour les sliders d'allure de course
-const DEFAULT_MIN_RUN_PACE = 210; // 3:30 min/km
-const DEFAULT_MAX_RUN_PACE = 600; // 10:00 min/km
+const DEFAULT_MIN_RUN_PACE = 180; // 3:00 min/km (le plus rapide)
+const DEFAULT_MAX_RUN_PACE = 900; // 15:00 min/km (le plus lent)
 
 // Valeurs par défaut pour les sliders de vitesse à vélo
-const DEFAULT_MIN_CYCLING_SPEED = 10; // 10 km/h
-const DEFAULT_MAX_CYCLING_SPEED = 35; // 35 km/h
+const DEFAULT_MIN_CYCLING_SPEED = 5; // 5 km/h (le plus lent)
+const DEFAULT_MAX_CYCLING_SPEED = 50; // 50 km/h (le plus rapide)
 
 // Valeur par défaut pour la distance
-const DEFAULT_MIN_DISTANCE = 5; // 5 km
+const DEFAULT_MIN_DISTANCE = 1; // 1 km (minimum)
 
 // Limites pour les sliders
 const MIN_RUN_PACE = 180; // 3:00 min/km
@@ -46,6 +49,8 @@ export const SportPerformanceFilters = ({
 }: SportPerformanceFiltersProps) => {
   // État pour l'onglet actif
   const [activeTab, setActiveTab] = useState("running");
+  const { data: session } = useSession();
+  const [showStravaDialog, setShowStravaDialog] = useState(false);
 
   // Initialiser les valeurs des filtres avec les valeurs par défaut ou les valeurs prédéfinies
   const [filterValues, setFilterValues] = useState<SportPerformanceValues>({
@@ -61,6 +66,9 @@ export const SportPerformanceFilters = ({
   // Mémoriser les valeurs précédentes pour éviter les appels inutiles
   const [previousValues, setPreviousValues] =
     useState<SportPerformanceValues>(filterValues);
+
+  // Vérifier si l'utilisateur est connecté à Strava
+  const isStravaConnected = !!session?.user?.stravaConnected;
 
   // Déclencher le callback onChange uniquement lorsque les valeurs changent réellement
   useEffect(() => {
@@ -85,11 +93,42 @@ export const SportPerformanceFilters = ({
     key: keyof SportPerformanceValues,
     value: number | number[]
   ) => {
+    // Si l'utilisateur n'est pas connecté à Strava, afficher la boîte de dialogue
+    if (!isStravaConnected) {
+      setShowStravaDialog(true);
+      return;
+    }
+
     const newValue = Array.isArray(value) ? value[0] : value;
     setFilterValues((prev) => ({
       ...prev,
       [key]: newValue,
     }));
+  };
+
+  // Fonction pour mettre à jour les valeurs des filtres d'allure
+  const handleRangeValueChange = (value: number[]) => {
+    // Si l'utilisateur n'est pas connecté à Strava, afficher la boîte de dialogue
+    if (!isStravaConnected) {
+      setShowStravaDialog(true);
+      return;
+    }
+
+    if (value.length === 2) {
+      if (activeTab === "running") {
+        setFilterValues((prev) => ({
+          ...prev,
+          minRunPace: value[0],
+          maxRunPace: value[1],
+        }));
+      } else {
+        setFilterValues((prev) => ({
+          ...prev,
+          minCyclingSpeed: value[0],
+          maxCyclingSpeed: value[1],
+        }));
+      }
+    }
   };
 
   // Fonction pour réinitialiser tous les filtres
@@ -108,6 +147,12 @@ export const SportPerformanceFilters = ({
 
   return (
     <div className="w-full rounded-lg p-4 shadow-sm">
+      <h3 className="mb-4 flex items-center gap-2 font-medium">
+        Allure du partenaire
+        <span>
+          <StravaLogo />
+        </span>
+      </h3>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-4 grid w-full grid-cols-2">
           <TabsTrigger value="running">Course à pied</TabsTrigger>
@@ -129,18 +174,11 @@ export const SportPerformanceFilters = ({
               max={MAX_RUN_PACE}
               step={30}
               value={[filterValues.minRunPace!, filterValues.maxRunPace!]}
-              onValueChange={(value) => {
-                if (value.length === 2) {
-                  setFilterValues((prev) => ({
-                    ...prev,
-                    minRunPace: value[0],
-                    maxRunPace: value[1],
-                  }));
-                }
-              }}
+              onValueChange={handleRangeValueChange}
               showValues
               showValuePrefix=""
               showValueSuffix=" s/km"
+              preventScrollOnChange
             />
             <div className="mt-1 flex justify-between text-xs text-gray-500">
               <span>{formatPace(filterValues.minRunPace)}</span>
@@ -167,18 +205,11 @@ export const SportPerformanceFilters = ({
                 filterValues.minCyclingSpeed!,
                 filterValues.maxCyclingSpeed!,
               ]}
-              onValueChange={(value) => {
-                if (value.length === 2) {
-                  setFilterValues((prev) => ({
-                    ...prev,
-                    minCyclingSpeed: value[0],
-                    maxCyclingSpeed: value[1],
-                  }));
-                }
-              }}
+              onValueChange={handleRangeValueChange}
               showValues
               showValuePrefix=""
               showValueSuffix=" km/h"
+              preventScrollOnChange
             />
           </div>
         </TabsContent>
@@ -198,8 +229,14 @@ export const SportPerformanceFilters = ({
           showValues
           showValuePrefix=""
           showValueSuffix=" km"
+          preventScrollOnChange
         />
       </div>
+
+      {/* Modale pour inciter à la connexion Strava */}
+      <StravaConnectDialog
+        openState={[showStravaDialog, setShowStravaDialog]}
+      />
     </div>
   );
 };

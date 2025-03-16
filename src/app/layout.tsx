@@ -53,6 +53,9 @@ export const metadata: Metadata = {
   ],
   category: "sports",
   manifest: "/manifest.json",
+  verification: {
+    google: "wEjtYUJjXsMQInNKer1vqCSrvuA2FRYrbApEyLYNLfQ",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -83,6 +86,16 @@ export default async function RootLayout({
       <head>
         <ThemeScript />
         <meta name="mobile-web-app-capable" content="yes" />
+        <meta
+          name="google-site-verification"
+          content="wEjtYUJjXsMQInNKer1vqCSrvuA2FRYrbApEyLYNLfQ"
+        />
+        {/* Google AdSense */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9578850534114306"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className={cn(inter.className, "h-full")}>
         <ParallaxIcons />

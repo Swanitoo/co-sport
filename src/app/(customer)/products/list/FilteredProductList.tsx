@@ -12,11 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollToTop } from "@/components/ui/scrollTotop";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  isDistanceInRange,
-  isPaceInRange,
-  isSpeedInRange,
-} from "@/features/strava/utils/activity-utils";
 import { Filter, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
@@ -86,54 +81,26 @@ export function FilteredProductList({
 
   const applyFilters = useCallback(
     (products: any[]) => {
+      // Si les filtres de performance sont activés, les produits sont déjà filtrés par la requête SQL
+      // La filtration JavaScript n'est nécessaire que pour les autres filtres
       return products.filter((product) => {
         // Filtres existants
         if (filters.sport && product.sport !== filters.sport) return false;
         if (filters.level && product.level !== filters.level) return false;
         if (
           filters.countries?.length > 0 &&
-          !filters.countries.includes(product.user.country)
+          (!product.user.country ||
+            !filters.countries.includes(product.user.country))
         )
           return false;
         if (userSex === "F" && filters.onlyGirls && product.user.sex !== "F")
           return false;
-
-        // Nouveaux filtres de performance sportive
-
-        // Filtrer par allure en course à pied
         if (
-          (filters.minRunPace || filters.maxRunPace) &&
-          !isPaceInRange(
-            product.user.stravaRunningPace,
-            filters.minRunPace,
-            filters.maxRunPace
-          )
-        ) {
+          filters.venue &&
+          product.venueName !== filters.venue &&
+          product.venueAddress !== filters.venue
+        )
           return false;
-        }
-
-        // Filtrer par vitesse en vélo
-        if (
-          (filters.minCyclingSpeed || filters.maxCyclingSpeed) &&
-          !isSpeedInRange(
-            product.user.stravaCyclingSpeed,
-            filters.minCyclingSpeed,
-            filters.maxCyclingSpeed
-          )
-        ) {
-          return false;
-        }
-
-        // Filtrer par distance moyenne
-        if (
-          filters.minDistance &&
-          !isDistanceInRange(
-            product.user.stravaAvgDistance,
-            filters.minDistance
-          )
-        ) {
-          return false;
-        }
 
         return true;
       });

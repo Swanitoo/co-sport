@@ -109,3 +109,53 @@ export async function getUserResponsesForMessage(ticketId: string) {
     },
   });
 }
+
+/**
+ * Action serveur pour supprimer un ticket de support et toutes ses réponses.
+ * Seuls les administrateurs peuvent effectuer cette action.
+ */
+export async function deleteTicket(ticketId: string) {
+  const user = await requiredCurrentUser();
+  if (!user.isAdmin) {
+    throw new Error("Seuls les administrateurs peuvent effectuer cette action");
+  }
+
+  try {
+    // Supprimer d'abord toutes les réponses associées au ticket
+    await prisma.supportTicket.deleteMany({
+      where: { parentId: ticketId },
+    });
+
+    // Puis supprimer le ticket principal
+    await prisma.supportTicket.delete({
+      where: { id: ticketId },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Erreur lors de la suppression du ticket:", error);
+    throw new Error("Erreur lors de la suppression du ticket");
+  }
+}
+
+/**
+ * Action serveur pour supprimer un avis.
+ * Seuls les administrateurs peuvent effectuer cette action.
+ */
+export async function deleteFeedback(feedbackId: string) {
+  const user = await requiredCurrentUser();
+  if (!user.isAdmin) {
+    throw new Error("Seuls les administrateurs peuvent effectuer cette action");
+  }
+
+  try {
+    await prisma.feedback.delete({
+      where: { id: feedbackId },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Erreur lors de la suppression de l'avis:", error);
+    throw new Error("Erreur lors de la suppression de l'avis");
+  }
+}

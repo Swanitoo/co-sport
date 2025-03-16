@@ -114,7 +114,7 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
                   key={review.id}
                   className="flex items-start justify-between"
                 >
-                  <ReviewItem review={review} />
+                  <ReviewItem review={review} isAdmin={isAdmin} />
                   {isAdmin && (
                     <div className="flex gap-2">
                       <Link

@@ -146,7 +146,10 @@ export default async function SupportPage({
                   <h2 className="mb-6 text-xl font-semibold">
                     {t.testimonials}
                   </h2>
-                  <ReviewsPanel reviews={recentReviews} />
+                  <ReviewsPanel
+                    reviews={recentReviews}
+                    currentUser={{ isAdmin }}
+                  />
                 </div>
               </div>
             </Suspense>

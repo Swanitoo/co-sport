@@ -63,7 +63,7 @@ export const EmailLayout = ({
               </EmailText>
               <EmailText className="mt-2 text-xs text-slate-500">
                 <Link
-                  href={`${baseUrl}/profile`}
+                  href={`${baseUrl}/dashboard`}
                   className="text-blue-600 underline"
                 >
                   Gérer mes préférences d'email

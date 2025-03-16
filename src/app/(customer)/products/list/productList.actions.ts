@@ -7,6 +7,65 @@ export async function getFilteredProducts(
   filters: FilterType,
   userSex?: string | null
 ) {
+  // Préparer les conditions de filtre pour l'utilisateur
+  const userFilter: any = {};
+
+  // Filtre de pays
+  if (filters.countries?.length > 0) {
+    userFilter.country = {
+      in: filters.countries,
+    };
+  }
+
+  // Filtre d'allure de course à pied
+  if (filters.minRunPace !== undefined || filters.maxRunPace !== undefined) {
+    userFilter.stravaRunningPace = { not: null };
+
+    if (filters.minRunPace !== undefined) {
+      userFilter.stravaRunningPace = {
+        ...userFilter.stravaRunningPace,
+        gte: filters.minRunPace,
+      };
+    }
+
+    if (filters.maxRunPace !== undefined) {
+      userFilter.stravaRunningPace = {
+        ...userFilter.stravaRunningPace,
+        lte: filters.maxRunPace,
+      };
+    }
+  }
+
+  // Filtre de vitesse à vélo
+  if (
+    filters.minCyclingSpeed !== undefined ||
+    filters.maxCyclingSpeed !== undefined
+  ) {
+    userFilter.stravaCyclingSpeed = { not: null };
+
+    if (filters.minCyclingSpeed !== undefined) {
+      userFilter.stravaCyclingSpeed = {
+        ...userFilter.stravaCyclingSpeed,
+        gte: filters.minCyclingSpeed,
+      };
+    }
+
+    if (filters.maxCyclingSpeed !== undefined) {
+      userFilter.stravaCyclingSpeed = {
+        ...userFilter.stravaCyclingSpeed,
+        lte: filters.maxCyclingSpeed,
+      };
+    }
+  }
+
+  // Filtre de distance moyenne
+  if (filters.minDistance !== undefined) {
+    userFilter.stravaAvgDistance = {
+      not: null,
+      gte: filters.minDistance,
+    };
+  }
+
   const where: any = {
     AND: [
       // Condition de base pour les annonces "only girls"
@@ -25,7 +84,7 @@ export async function getFilteredProducts(
     ],
   };
 
-  // Ajouter les autres filtres
+  // Ajouter les filtres communs
   if (filters.sport) {
     where.AND.push({ sport: filters.sport });
   }
@@ -40,14 +99,9 @@ export async function getFilteredProducts(
     where.AND.push({ level: filters.level });
   }
 
-  if (filters.countries.length > 0) {
-    where.AND.push({
-      user: {
-        country: {
-          in: filters.countries,
-        },
-      },
-    });
+  // Ajouter le filtre utilisateur combiné s'il y a des conditions
+  if (Object.keys(userFilter).length > 0) {
+    where.AND.push({ user: userFilter });
   }
 
   return await prisma.product.findMany({
@@ -61,6 +115,10 @@ export async function getFilteredProducts(
           country: true,
           name: true,
           image: true,
+          stravaRunningPace: true,
+          stravaCyclingSpeed: true,
+          stravaAvgDistance: true,
+          stravaItraPoints: true,
         },
       },
     },
@@ -87,16 +145,78 @@ export async function fetchMoreProducts(
   filters: FilterType,
   userSex: string | null | undefined
 ) {
+  // Préparer les conditions de filtre pour l'utilisateur
+  const userFilter: any = {};
+
+  // Filtre pour "only girls"
+  if (filters.onlyGirls && userSex === "F") {
+    userFilter.sex = "F";
+  }
+
+  // Filtre de pays
+  if (filters.countries?.length > 0) {
+    userFilter.country = {
+      in: filters.countries,
+    };
+  }
+
+  // Filtre d'allure de course à pied
+  if (filters.minRunPace !== undefined || filters.maxRunPace !== undefined) {
+    userFilter.stravaRunningPace = { not: null };
+
+    if (filters.minRunPace !== undefined) {
+      userFilter.stravaRunningPace = {
+        ...userFilter.stravaRunningPace,
+        gte: filters.minRunPace,
+      };
+    }
+
+    if (filters.maxRunPace !== undefined) {
+      userFilter.stravaRunningPace = {
+        ...userFilter.stravaRunningPace,
+        lte: filters.maxRunPace,
+      };
+    }
+  }
+
+  // Filtre de vitesse à vélo
+  if (
+    filters.minCyclingSpeed !== undefined ||
+    filters.maxCyclingSpeed !== undefined
+  ) {
+    userFilter.stravaCyclingSpeed = { not: null };
+
+    if (filters.minCyclingSpeed !== undefined) {
+      userFilter.stravaCyclingSpeed = {
+        ...userFilter.stravaCyclingSpeed,
+        gte: filters.minCyclingSpeed,
+      };
+    }
+
+    if (filters.maxCyclingSpeed !== undefined) {
+      userFilter.stravaCyclingSpeed = {
+        ...userFilter.stravaCyclingSpeed,
+        lte: filters.maxCyclingSpeed,
+      };
+    }
+  }
+
+  // Filtre de distance moyenne
+  if (filters.minDistance !== undefined) {
+    userFilter.stravaAvgDistance = {
+      not: null,
+      gte: filters.minDistance,
+    };
+  }
+
   const where: any = {
     AND: [
       // Si c'est un homme, on exclut les annonces onlyGirls
       userSex === "M" ? { onlyGirls: false } : {},
-      // Si c'est une femme et qu'elle veut voir que les annonces de filles
-      filters.onlyGirls && userSex === "F" ? { user: { sex: "F" } } : {},
     ],
   };
 
-  // Ajouter les autres filtres
+  // Ajouter les filtres communs
   if (filters.sport) {
     where.AND.push({ sport: filters.sport });
   }
@@ -105,14 +225,9 @@ export async function fetchMoreProducts(
     where.AND.push({ level: filters.level });
   }
 
-  if (filters.countries?.length > 0) {
-    where.AND.push({
-      user: {
-        country: {
-          in: filters.countries,
-        },
-      },
-    });
+  // Ajouter le filtre utilisateur combiné s'il y a des conditions
+  if (Object.keys(userFilter).length > 0) {
+    where.AND.push({ user: userFilter });
   }
 
   return await prisma.product.findMany({
@@ -129,6 +244,10 @@ export async function fetchMoreProducts(
           country: true,
           name: true,
           image: true,
+          stravaRunningPace: true,
+          stravaCyclingSpeed: true,
+          stravaAvgDistance: true,
+          stravaItraPoints: true,
         },
       },
     },

@@ -151,10 +151,7 @@ export function ProductFilters({
 
       <div className="space-y-4">
         <h3 className="font-medium">
-          {t(
-            "Products.Filters.PartnerCulture",
-            "Affinités culturelles du partenaire"
-          )}
+          {t("Products.Filters.PartnerCulture", "Allure du partenaire")}
         </h3>
         <Select value="" onValueChange={(value) => handleCountryChange(value)}>
           <SelectTrigger>

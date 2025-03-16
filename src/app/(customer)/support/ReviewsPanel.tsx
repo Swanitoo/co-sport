@@ -16,11 +16,17 @@ type ReviewsPanelProps = {
     createdAt: Date;
     user: {
       name: string | null;
+      email?: string | null;
     };
   }[];
+  currentUser?: {
+    isAdmin?: boolean;
+  };
 };
 
-export function ReviewsPanel({ reviews }: ReviewsPanelProps) {
+export function ReviewsPanel({ reviews, currentUser }: ReviewsPanelProps) {
+  const isAdmin = currentUser?.isAdmin || false;
+
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString("fr-FR", {
       day: "2-digit",
@@ -62,6 +68,11 @@ export function ReviewsPanel({ reviews }: ReviewsPanelProps) {
               </div>
               <CardDescription>
                 De : {review.user.name || "Utilisateur anonyme"}
+                {isAdmin && review.user.email && (
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    ({review.user.email})
+                  </span>
+                )}
               </CardDescription>
             </CardHeader>
             <CardContent>

@@ -118,7 +118,7 @@ export function ProductList({
                 </div>
               )}
 
-              <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
+              <p className="mb-3 line-clamp-1 text-sm text-muted-foreground">
                 {product.description}
               </p>
 
