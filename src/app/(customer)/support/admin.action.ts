@@ -1,6 +1,7 @@
 "use server";
 
 import { requiredCurrentUser } from "@/auth/current-user";
+import { sendSupportResponseEmail } from "@/lib/emails";
 import { prisma } from "@/prisma";
 
 /**
@@ -37,6 +38,24 @@ export async function replyToContactMessage(
     throw new Error("Seuls les administrateurs peuvent effectuer cette action");
   }
 
+  // Récupérer les informations du ticket et de l'utilisateur
+  const ticket = await prisma.supportTicket.findUnique({
+    where: { id: ticketId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  if (!ticket || !ticket.user || !ticket.user.email) {
+    throw new Error("Ticket ou utilisateur introuvable");
+  }
+
   // Créer une réponse à ce ticket (un ticket enfant)
   await prisma.supportTicket.create({
     data: {
@@ -50,13 +69,28 @@ export async function replyToContactMessage(
   // Marquer le ticket comme résolu seulement si demandé
   if (markAsResolved) {
     await prisma.supportTicket.update({
-      where: {
-        id: ticketId,
-      },
-      data: {
-        isResolved: true,
-      },
+      where: { id: ticketId },
+      data: { isResolved: true },
     });
+  }
+
+  // Envoyer un email à l'utilisateur
+  try {
+    const { success } = await sendSupportResponseEmail({
+      email: ticket.user.email,
+      userName: ticket.user.name || "Utilisateur",
+      subject: ticket.subject || "Votre demande",
+      originalMessage: ticket.message,
+      adminResponse: response,
+      userId: ticket.user.id,
+    });
+
+    if (!success) {
+      console.error("Échec de l'envoi de l'email de réponse au support");
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'envoi de l'email de réponse:", error);
+    // On continue malgré l'erreur d'envoi d'email
   }
 }
 

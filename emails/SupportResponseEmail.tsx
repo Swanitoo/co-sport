@@ -10,10 +10,10 @@ interface SupportResponseEmailProps {
 }
 
 export const SupportResponseEmail = ({
-  userName = "Utilisateur",
-  subject = "Votre demande",
-  originalMessage = "Message original...",
-  adminResponse = "Réponse de l'administrateur...",
+  userName,
+  subject,
+  originalMessage,
+  adminResponse,
 }: SupportResponseEmailProps) => {
   // S'assurer que le nom est valide
   const safeName = userName || "cher utilisateur";

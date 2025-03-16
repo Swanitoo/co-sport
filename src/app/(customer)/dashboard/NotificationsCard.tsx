@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare, Star, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -107,7 +107,7 @@ export function NotificationsCard({
 
   if (totalNotifications === 0) {
     return (
-      <Card className="p-4 h-fit">
+      <Card className="h-fit p-4">
         <CardHeader className="flex justify-between">
           <div className="flex items-center gap-2">
             <CardTitle>Notifications</CardTitle>
@@ -130,19 +130,51 @@ export function NotificationsCard({
           </span>
         </div>
       </CardHeader>
-      <CardContent className="max-h-[60vh] overflow-y-auto space-y-4">
+      <CardContent className="max-h-[60vh] space-y-4 overflow-y-auto">
         {pendingRequests.map((request) => (
           <Link
             key={request.id}
             href={`/products/${request.productId}`}
-            onClick={() => handleNotificationClick(request.id, request.productId)}
+            onClick={() =>
+              handleNotificationClick(request.id, request.productId)
+            }
+            className="block"
           >
-            <Button variant="ghost" className="w-full justify-start gap-2 text-left">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-2 text-left"
+            >
               <UserPlus className="size-4 shrink-0" />
-              <div className="flex-1 truncate">
-                <span className="font-medium">{request.userName}</span> souhaite
-                rejoindre votre annonce{" "}
-                <span className="font-medium">{request.productName}</span>
+              <div
+                className="min-w-0 flex-1"
+                style={{ maxWidth: "calc(100% - 28px)" }}
+              >
+                <div className="max-w-full truncate">
+                  {(() => {
+                    // Formatage avec limite stricte
+                    const userName = request.userName || "";
+                    const productName = request.productName || "";
+
+                    // Version ultra-courte
+                    const shortUserName =
+                      userName.length > 7
+                        ? userName.substring(0, 7) + "..."
+                        : userName;
+                    const shortProductName =
+                      productName.length > 7
+                        ? productName.substring(0, 7) + "..."
+                        : productName;
+
+                    return (
+                      <>
+                        <span className="font-medium">{shortUserName}</span>
+                        <span className="sm:inline">souhaite rejoindre </span>
+                        <span className="hidden sm:inline">votre annonce </span>
+                        <span className="font-medium">{shortProductName}</span>
+                      </>
+                    );
+                  })()}
+                </div>
               </div>
             </Button>
           </Link>
@@ -155,16 +187,40 @@ export function NotificationsCard({
             onClick={() =>
               handleNotificationClick(request.id, request.productId)
             }
+            className="block"
           >
             <Button
               variant="ghost"
               className="w-full justify-start gap-2 text-left"
             >
               <UserPlus className="size-4 shrink-0" />
-              <div className="flex-1 truncate">
-                Votre demande pour rejoindre{" "}
-                <span className="font-medium">{request.productName}</span> a été
-                acceptée
+              <div
+                className="min-w-0 flex-1"
+                style={{ maxWidth: "calc(100% - 28px)" }}
+              >
+                <div className="max-w-full truncate">
+                  {(() => {
+                    const productName = request.productName || "";
+                    const shortProductName =
+                      productName.length > 7
+                        ? productName.substring(0, 7) + "..."
+                        : productName;
+
+                    return (
+                      <>
+                        <span className="hidden sm:inline">
+                          Votre demande pour rejoindre{" "}
+                        </span>
+                        <span className="sm:hidden">Rejoint </span>
+                        <span className="font-medium">{shortProductName}</span>
+                        <span className="hidden sm:inline">
+                          {" "}
+                          a été acceptée
+                        </span>
+                      </>
+                    );
+                  })()}
+                </div>
               </div>
             </Button>
           </Link>
@@ -177,33 +233,56 @@ export function NotificationsCard({
             onClick={() =>
               handleMessageClick(message.messageIds, message.productId)
             }
+            className="block w-full"
           >
             <Button
               variant="ghost"
-              className="w-full justify-start gap-2 text-left"
+              className="relative w-full justify-start gap-2 text-left"
             >
               <MessageSquare className="size-4 shrink-0" />
-              <div className="flex-1 truncate">
-                <span className="font-medium">{message.userName}</span>
-                {message.messageCount > 1 ? (
-                  <>
-                    a envoyé{" "}
+              <div
+                className="min-w-0 flex-1"
+                style={{ maxWidth: "calc(100% - 28px)" }}
+              >
+                {/* Version mobile - très simplifiée avec br */}
+                <div className="block sm:hidden">
+                  <div className="truncate font-medium">
+                    {message.userName &&
+                      (message.userName.length > 10
+                        ? message.userName.substring(0, 10) + "..."
+                        : message.userName)}
+                  </div>
+                  <div className="truncate text-xs text-muted-foreground">
+                    vous a envoyé un message
+                  </div>
+                </div>
+
+                {/* Version desktop plus complète */}
+                <div className="hidden sm:block">
+                  <div className="max-w-full truncate">
                     <span className="font-medium">
-                      {message.messageCount} nouveaux messages
-                    </span>{" "}
-                    dans{" "}
-                  </>
-                ) : (
-                  <> a envoyé un message dans </>
-                )}
-                <span className="font-medium">{message.productName}</span>
+                      {message.userName || ""}
+                    </span>
+                    {message.messageCount > 1
+                      ? ` a envoyé ${message.messageCount} messages dans `
+                      : ` a envoyé un message dans `}
+                    <span className="font-medium">
+                      {message.productName || ""}
+                    </span>
+                  </div>
+                  {message.messageText && (
+                    <p className="truncate text-sm text-muted-foreground">
+                      {message.messageText}
+                    </p>
+                  )}
+                </div>
               </div>
             </Button>
           </Link>
         ))}
 
         {unreadReviews.map((review) => (
-          <div key={review.id} className="flex">
+          <div key={review.id} className="block">
             <Button
               variant="ghost"
               className="w-full justify-start gap-2 text-left"
@@ -217,32 +296,59 @@ export function NotificationsCard({
               }
             >
               <Star className="size-4 shrink-0" />
-              <div className="flex-1">
-                <div className="truncate">
-                  <Link
-                    href={`/users/${review.userName}`}
-                    className="font-medium hover:underline"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      router.push(`/users/${review.userName}`);
-                    }}
-                  >
-                    {review.userName}
-                  </Link>{" "}
-                  a laissé un avis sur{" "}
-                  <span className="font-medium">{review.productName}</span>
+              <div
+                className="min-w-0 flex-1"
+                style={{ maxWidth: "calc(100% - 28px)" }}
+              >
+                <div className="max-w-full truncate">
+                  {(() => {
+                    const userName = review.userName || "";
+                    const productName = review.productName || "";
+
+                    const shortUserName =
+                      userName.length > 7
+                        ? userName.substring(0, 7) + "..."
+                        : userName;
+                    const shortProductName =
+                      productName.length > 7
+                        ? productName.substring(0, 7) + "..."
+                        : productName;
+
+                    return (
+                      <>
+                        <span className="font-medium">{shortUserName}</span>
+                        <span className="hidden sm:inline">
+                          {" "}
+                          a laissé un avis sur{" "}
+                        </span>
+                        <span className="sm:hidden"> avis </span>
+                        <span className="font-medium">{shortProductName}</span>
+                      </>
+                    );
+                  })()}
                 </div>
-                <div className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
-                  <div className="flex">
-                    {Array.from({ length: review.rating }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="size-3 fill-yellow-400 text-yellow-400"
-                      />
-                    ))}
+                <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                  <div className="flex shrink-0">
+                    {Array.from({ length: Math.min(review.rating, 3) }).map(
+                      (_, i) => (
+                        <Star
+                          key={i}
+                          className="size-3 fill-yellow-400 text-yellow-400"
+                        />
+                      )
+                    )}
+                    {review.rating > 3 && (
+                      <span className="text-xs">+{review.rating - 3}</span>
+                    )}
                   </div>
-                  <span className="truncate">{review.text}</span>
+                  <span
+                    className="truncate"
+                    style={{ maxWidth: "calc(100% - 60px)" }}
+                  >
+                    {review.text && review.text.length > 15
+                      ? `${review.text.substring(0, 15)}...`
+                      : review.text}
+                  </span>
                 </div>
               </div>
             </Button>

@@ -1,7 +1,6 @@
 "use server";
 
 import { prisma } from "@/prisma";
-import { redirect } from "next/navigation";
 
 export async function updateEmailPreferences(formData: FormData) {
   const userId = formData.get("userId") as string;
@@ -22,8 +21,7 @@ export async function updateEmailPreferences(formData: FormData) {
 
     if (!user) {
       console.error("Utilisateur non trouvé:", userId);
-      redirect("/dashboard?error=user-not-found");
-      return;
+      return { success: false, error: "Utilisateur non trouvé" };
     }
 
     // Si l'utilisateur a déjà des préférences, les mettre à jour
@@ -52,8 +50,7 @@ export async function updateEmailPreferences(formData: FormData) {
       });
     }
 
-    // Rediriger vers le dashboard
-    redirect("/dashboard");
+    return { success: true };
   } catch (error) {
     console.error(
       "Erreur lors de la mise à jour des préférences d'email:",
@@ -86,13 +83,16 @@ export async function updateEmailPreferences(formData: FormData) {
         },
       });
 
-      redirect("/dashboard");
+      return { success: true };
     } catch (secondError) {
       console.error(
         "Erreur secondaire lors de la mise à jour des préférences:",
         secondError
       );
-      redirect("/dashboard?error=update-failed");
+      return {
+        success: false,
+        error: "Erreur lors de la mise à jour des préférences",
+      };
     }
   }
 }

@@ -303,42 +303,48 @@ export function AdminPanel() {
                 }
               >
                 <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <CardTitle className="text-base font-medium">
                       {message.subject}
                     </CardTitle>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       {!message.isResolved && (
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleMarkAsResolved(message.id)}
+                          className="grow sm:grow-0"
                         >
-                          <CheckCircle className="mr-1 size-4" /> Résolu
+                          <CheckCircle className="mr-1 size-4" />
+                          <span className="sm:inline">Résolu</span>
                         </Button>
                       )}
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => openReplyDialog(message.id)}
+                        className="grow sm:grow-0"
                       >
-                        <Reply className="mr-1 size-4" /> Répondre
+                        <Reply className="mr-1 size-4" />
+                        <span className="sm:inline">Répondre</span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setDeleteTicketId(message.id)}
+                        className="grow sm:grow-0"
                       >
-                        <Trash2 className="mr-1 size-4" /> Supprimer
+                        <Trash2 className="mr-1 size-4" />
+                        <span className="sm:inline">Supprimer</span>
                       </Button>
                     </div>
                   </div>
-                  <CardDescription className="flex items-center justify-between">
-                    <span>
+                  <CardDescription className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="truncate">
                       De: {message.user.name || "Utilisateur"} (
-                      {message.user.email})
+                      <span className="text-xs">{message.user.email}</span>)
                     </span>
-                    <span className="flex items-center text-xs text-muted-foreground">
+                    <span className="flex shrink-0 items-center text-xs text-muted-foreground">
                       <Clock className="mr-1 size-3" />
                       {formatDate(message.createdAt)}
                     </span>
@@ -399,18 +405,18 @@ export function AdminPanel() {
             feedbacks.map((feedback) => (
               <Card key={feedback.id}>
                 <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <CardTitle className="text-base font-medium">
                         {renderStarRating(feedback.rating)} ({feedback.rating}
                         /5)
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="truncate">
                         De: {feedback.user.name || "Utilisateur"} (
-                        {feedback.user.email})
+                        <span className="text-xs">{feedback.user.email}</span>)
                       </CardDescription>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"
@@ -419,6 +425,7 @@ export function AdminPanel() {
                           setEditFeedbackText(feedback.feedback);
                           setEditFeedbackRating(feedback.rating);
                         }}
+                        className="grow sm:grow-0"
                       >
                         <Pencil className="mr-1 size-4" /> Modifier
                       </Button>
@@ -426,10 +433,11 @@ export function AdminPanel() {
                         variant="outline"
                         size="sm"
                         onClick={() => setDeleteFeedbackId(feedback.id)}
+                        className="grow sm:grow-0"
                       >
                         <Trash2 className="mr-1 size-4" /> Supprimer
                       </Button>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="w-full text-xs text-muted-foreground sm:w-auto">
                         {formatDate(feedback.createdAt)}
                       </span>
                     </div>

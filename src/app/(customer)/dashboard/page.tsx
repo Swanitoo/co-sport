@@ -53,11 +53,17 @@ import {
   updateLocation,
   updateName,
 } from "./dashboard.action";
+import { EmailPreferencesDialog } from "./EmailPreferencesDialog";
 import { NotificationsCard } from "./NotificationsCard";
 import { ProfileCompletionButton } from "./ProfileCompletionButton";
 
 export default async function RoutePage(props: PageParams<{}>) {
   const user = await requiredCurrentUser();
+
+  // Récupérer les préférences email de l'utilisateur pour les passer à la modale
+  const emailPreferences = await prisma.emailPreference.findUnique({
+    where: { userId: user.id },
+  });
 
   const [
     productsCount,
@@ -603,6 +609,10 @@ export default async function RoutePage(props: PageParams<{}>) {
               >
                 Liste des annonces
               </Link>
+              <EmailPreferencesDialog
+                userId={user.id}
+                initialPreferences={emailPreferences}
+              />
             </CardContent>
           </Card>
 
