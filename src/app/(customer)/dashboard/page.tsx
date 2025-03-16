@@ -1,6 +1,6 @@
 import { requiredCurrentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
-import { StravaLogo } from "@/components/StravaLogo";
+import { StravaLogo, StravaLogoWhite } from "@/components/StravaLogo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -537,7 +537,7 @@ export default async function RoutePage(props: PageParams<{}>) {
                       href="/api/auth/signin?provider=strava&callbackUrl=/dashboard"
                       className="flex w-full items-center justify-center gap-2 rounded-md border-0 bg-[#FC4C02] px-4 py-2 text-white transition-colors hover:bg-[#E34000]"
                     >
-                      <StravaLogo />
+                      <StravaLogoWhite />
                       <span>Connecter avec Strava</span>
                     </Link>
                   </div>

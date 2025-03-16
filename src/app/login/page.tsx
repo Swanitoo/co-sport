@@ -91,7 +91,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex justify-center">
             <Image
-              src="/opengraph-image.png"
+              src="/logo.png"
               alt="CO-Sport Logo"
               width={120}
               height={120}

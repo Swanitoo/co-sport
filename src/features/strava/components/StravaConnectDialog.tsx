@@ -1,4 +1,4 @@
-import { StravaLogo } from "@/components/StravaLogo";
+import { StravaLogo, StravaLogoWhite } from "@/components/StravaLogo";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -48,7 +48,7 @@ export function StravaConnectDialog({
               onClick={() => setOpen(false)}
               className="flex w-full items-center justify-center gap-2 bg-[#FC4C02] hover:bg-[#E34902]"
             >
-              <StravaLogo />
+              <StravaLogoWhite />
               <span>Connecter avec Strava</span>
             </Button>
           </Link>
