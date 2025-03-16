@@ -4,6 +4,7 @@ import { getServerTranslations } from "@/components/server-translation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SocialShareButtons } from "@/components/ui/social-share-buttons";
 import {
   Table,
   TableBody,
@@ -374,6 +375,18 @@ export default async function RoutePage({
                     {product.description}
                   </p>
                 </div>
+
+                <div className="mt-6 border-t pt-4">
+                  <h3 className="mb-3 text-base font-medium">
+                    {t("Products.Share", "Partager cette annonce")}
+                  </h3>
+                  <SocialShareButtons
+                    title={product.name}
+                    description={
+                      product.description || "Découvrez cette activité sportive"
+                    }
+                  />
+                </div>
               </CardContent>
             </Card>
           </Suspense>
@@ -514,13 +527,45 @@ export async function generateMetadata({
   }
 
   // Préparer une description optimisée pour le SEO
-  const seoDescription = `${product.description.substring(0, 160)}... Sport: ${
-    product.sport
-  }, Niveau: ${product.level}`;
+  const seoDescription = `${
+    product.description?.substring(0, 160) || ""
+  }... Sport: ${product.sport}, Niveau: ${product.level}`;
 
-  return createSeoMetadata({
+  // Base URL pour les URLs absolues
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://co-sport.com";
+
+  return {
     title: `${product.name} | co-sport.com`,
     description: seoDescription,
-    path: `/products/${params.productId}`,
-  });
+    openGraph: {
+      title: product.name,
+      description: seoDescription,
+      url: `${baseUrl}/products/${params.productId}`,
+      siteName: "Co-Sport",
+      images: [
+        {
+          url: `${baseUrl}/opengraph-image.png`,
+          width: 1200,
+          height: 630,
+          alt: "Co-Sport - Trouver des partenaires d'entraînement",
+          type: "image/png",
+        },
+      ],
+      locale: "fr_FR",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: seoDescription,
+      images: [`${baseUrl}/opengraph-image.png`],
+      site: "@co_sport",
+    },
+    // Compatibilité avec la fonction createSeoMetadata
+    ...createSeoMetadata({
+      title: `${product.name} | co-sport.com`,
+      description: seoDescription,
+      path: `/products/${params.productId}`,
+    }),
+  };
 }

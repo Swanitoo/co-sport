@@ -1,0 +1,1 @@
+User-agent: *\nAllow: /\n\n# Sitemap\nSitemap: https://co-sport.com/sitemap.xml

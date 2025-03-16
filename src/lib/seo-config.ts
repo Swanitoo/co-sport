@@ -31,6 +31,7 @@ const baseConfig = {
         width: 1200,
         height: 630,
         alt: "co-sport.com - Trouve ton partenaire de sport",
+        type: "image/png",
       },
     ],
   },
@@ -39,6 +40,7 @@ const baseConfig = {
     title: "co-sport.com",
     description: "Trouve ton partenaire de sport et progressez ensemble !",
     images: ["/opengraph-image.png"],
+    site: "@co_sport",
   },
 };
 
