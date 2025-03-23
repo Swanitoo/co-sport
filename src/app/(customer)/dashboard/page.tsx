@@ -1,6 +1,11 @@
 import { requiredCurrentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
-import { StravaLogo, StravaLogoWhite } from "@/components/StravaLogo";
+import { StravaLogoWhite } from "@/components/StravaLogo";
+import {
+  calculateUserBadges,
+  getUserBadges,
+} from "@/components/ui/badges/badge.actions";
+import { BADGES } from "@/components/ui/badges/badge.config";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -60,6 +65,12 @@ import { ProfileCompletionButton } from "./ProfileCompletionButton";
 export default async function RoutePage(props: PageParams<{}>) {
   const user = await requiredCurrentUser();
 
+  // Récupérer showBadges directement depuis la base de données
+  const userShowBadges = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { showBadges: true },
+  });
+
   // Récupérer les préférences email de l'utilisateur pour les passer à la modale
   const emailPreferences = await prisma.emailPreference.findUnique({
     where: { userId: user.id },
@@ -71,6 +82,8 @@ export default async function RoutePage(props: PageParams<{}>) {
     lastReview,
     stravaStats,
     stravaActivities,
+    userBadges,
+    completedBadgeIds,
   ] = await Promise.all([
     prisma.product.count({
       where: { userId: user.id },
@@ -95,6 +108,8 @@ export default async function RoutePage(props: PageParams<{}>) {
           stravaConnected: false,
         } as DashboardStravaStats),
     user?.stravaConnected ? getUserStravaActivities(user.id) : [],
+    getUserBadges(user.id),
+    calculateUserBadges(user.id),
   ]);
 
   // Récupérer les messages non lus
@@ -631,11 +646,18 @@ export default async function RoutePage(props: PageParams<{}>) {
             </CardContent>
           </Card>
 
-          <Card className="md:col-span-2">
+          <Card className="col-span-full">
             <StravaDashboard
               stats={stravaStats}
               recentActivities={stravaActivities}
               isConnected={user?.stravaConnected || false}
+              badges={{
+                userBadges,
+                completedBadgeIds,
+                badgesList: BADGES,
+                showBadges: userShowBadges?.showBadges !== false,
+                userId: user.id,
+              }}
             />
           </Card>
 

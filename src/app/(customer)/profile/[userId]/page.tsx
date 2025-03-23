@@ -1,5 +1,6 @@
 import { Layout, LayoutTitle } from "@/components/layout";
 import { getServerTranslations } from "@/components/server-translation";
+import { ProfileBadges } from "@/components/ui/badges/profile-badges";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCountryFlag } from "@/data/country";
 import { getUserStravaActivities } from "@/features/strava/services/strava-activity.service";
@@ -13,7 +14,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReviewItem } from "../../../(user)/wall/[slug]/ReviewCard";
 import { ProfileAvatar } from "./ProfileAvatar";
-import { StravaStats } from "./StravaStats";
 
 // Activer le mode dynamique pour permettre une détection correcte de l'authentification
 export const dynamic = "force-dynamic"; // Changé de force-static à force-dynamic
@@ -105,6 +105,9 @@ export default async function ProfilePage({
         }
       : null;
 
+    // Vérifier si l'utilisateur a Strava connecté
+    const hasStravaConnection = user.stravaConnected;
+
     return (
       <Layout>
         <div className="space-y-6">
@@ -177,14 +180,7 @@ export default async function ProfilePage({
             </CardContent>
           </Card>
 
-          {user.stravaConnected && (
-            <StravaStats
-              userId={userId}
-              initialData={clientStravaStats || undefined}
-              recentActivities={stravaActivities}
-              disableAutoFetch={true}
-            />
-          )}
+          {hasStravaConnection && <ProfileBadges userId={userId} />}
 
           <Card>
             <CardHeader>

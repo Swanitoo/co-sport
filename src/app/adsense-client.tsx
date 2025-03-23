@@ -13,6 +13,18 @@ export function GoogleAdsenseScript() {
   );
 }
 
+/**
+ * Composant d'emplacement publicitaire AdSense
+ * IMPORTANT: Ce composant doit être utilisé UNIQUEMENT sur des pages avec:
+ * 1. Un contenu éditorial riche et original (au moins 300 mots de texte)
+ * 2. Un contenu qui apporte une réelle valeur aux utilisateurs
+ * 3. Des pages complètement terminées (pas en construction)
+ *
+ * Évitez de placer des annonces sur:
+ * - Pages de connexion/inscription
+ * - Pages vides ou avec peu de contenu
+ * - Pages de navigation ou de transition
+ */
 export function AdPlaceholder() {
   return (
     <div className="my-6 flex justify-center">

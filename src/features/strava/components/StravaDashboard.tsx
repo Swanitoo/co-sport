@@ -2,6 +2,9 @@
 
 import { StravaLogo, StravaLogoWhite } from "@/components/StravaLogo";
 import { Badge } from "@/components/ui/badge";
+import { BadgeCard } from "@/components/ui/badges/badge-card";
+import { BadgeSettings } from "@/components/ui/badges/badge-settings";
+import { Badge as BadgeType } from "@/components/ui/badges/badge.schemas";
 import { Button } from "@/components/ui/button";
 import {
   CardContent,
@@ -11,6 +14,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   formatDuration,
   formatDistance as libFormatDistance,
@@ -56,10 +65,20 @@ type StravaUserStats = {
   itraPoints?: number;
 };
 
+// Type pour les badges
+type BadgesProps = {
+  userBadges: Array<{ badgeId: string; completedAt: Date }>;
+  completedBadgeIds: string[];
+  badgesList: BadgeType[];
+  showBadges: boolean;
+  userId: string;
+};
+
 type StravaDashboardProps = {
   stats: DashboardStravaStats;
   recentActivities: StravaActivity[];
   isConnected: boolean;
+  badges?: BadgesProps;
 };
 
 // Format d'allure pour la course (min:sec par km)
@@ -173,6 +192,7 @@ export function StravaDashboard({
   stats,
   recentActivities,
   isConnected,
+  badges,
 }: StravaDashboardProps) {
   const params = useParams();
   const hasLocale = params.locale !== undefined;
@@ -348,190 +368,240 @@ export function StravaDashboard({
 
   return (
     <>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+      <CardHeader className="pb-2 pt-3">
+        <div className="flex flex-row items-center justify-between">
+          <div className="flex items-center gap-2">
             <StravaLogo />
             <CardTitle>Strava</CardTitle>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleSync}
-            disabled={isLoading}
-          >
-            <RotateCw
-              className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`}
-            />
-            Synchroniser
-          </Button>
+          {isConnected && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSync}
+              disabled={isLoading}
+            >
+              <RotateCw
+                className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`}
+              />
+              Synchroniser
+            </Button>
+          )}
         </div>
         <CardDescription>Vos statistiques et activités Strava</CardDescription>
       </CardHeader>
-      <CardContent>
-        <Tabs
-          defaultValue="statistics"
-          value={activeTab}
-          onValueChange={setActiveTab}
-        >
-          <TabsList className="mb-4 grid w-full grid-cols-2">
-            <TabsTrigger value="statistics">Statistiques</TabsTrigger>
-            <TabsTrigger value="activities">Activités Récentes</TabsTrigger>
-          </TabsList>
 
-          <TabsContent value="statistics" className="space-y-4">
-            {/* Utiliser avgRunningPace calculé à partir des activités récentes si disponible, 
-                sinon utiliser la valeur de stats */}
-            {(avgRunningPace !== undefined ||
-              (stats.running && stats.running.pace)) && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Course à pied - Allure
-                </span>
-                <span className="font-medium">
-                  {formatPace(avgRunningPace || stats.running?.pace || 0)}
-                </span>
-              </div>
-            )}
+      {!isConnected ? (
+        <CardContent>
+          <div className="flex flex-col items-center gap-4 p-8">
+            <p className="text-center text-muted-foreground">
+              Connectez votre compte Strava pour importer vos activités
+              sportives
+            </p>
+            <Link
+              href={`${
+                hasLocale ? `/${locale}` : ""
+              }/api/auth/signin?provider=strava&callbackUrl=${
+                hasLocale ? `/${locale}` : ""
+              }/dashboard`}
+              className="flex items-center justify-center gap-2 rounded-md border-0 bg-[#FC4C02] px-4 py-2 text-white transition-colors hover:bg-[#E34000]"
+            >
+              <StravaLogoWhite />
+              <span>Connecter avec Strava</span>
+            </Link>
+          </div>
+        </CardContent>
+      ) : (
+        <>
+          <CardContent className="p-3">
+            <Tabs
+              defaultValue="statistics"
+              value={activeTab}
+              onValueChange={setActiveTab}
+            >
+              <TabsList className="mb-2 w-full">
+                <TabsTrigger value="statistics" className="flex-1">
+                  Statistiques
+                </TabsTrigger>
+                <TabsTrigger value="activities" className="flex-1">
+                  Activités Récentes
+                </TabsTrigger>
+              </TabsList>
 
-            {/* Utiliser avgCyclingSpeed calculé à partir des activités récentes si disponible, 
-                sinon utiliser la valeur de stats */}
-            {(avgCyclingSpeed !== undefined ||
-              (stats.cycling && stats.cycling.speed)) && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Vélo - Vitesse
-                </span>
-                <span className="font-medium">
-                  {formatSpeed(avgCyclingSpeed || stats.cycling?.speed || 0)}
-                </span>
-              </div>
-            )}
-
-            {/* Utiliser avgDistance calculé à partir des activités récentes si disponible, 
-                sinon utiliser la valeur de stats */}
-            {(avgDistance !== undefined || stats.avgDistance !== undefined) && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Distance moyenne
-                </span>
-                <span className="font-medium">
-                  {formatDistance(avgDistance || stats.avgDistance || 0)}
-                </span>
-              </div>
-            )}
-
-            {avgElevation !== undefined && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Dénivelé moyen
-                </span>
-                <span className="font-medium">
-                  {formatElevation(avgElevation)}
-                </span>
-              </div>
-            )}
-
-            {stats.itraPoints !== undefined && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Points ITRA
-                </span>
-                <span className="font-medium">
-                  {formatItraPoints(stats.itraPoints || 0)}
-                </span>
-              </div>
-            )}
-
-            {!avgRunningPace &&
-              !stats.running?.pace &&
-              !avgCyclingSpeed &&
-              !stats.cycling?.speed &&
-              !avgDistance &&
-              stats.avgDistance === undefined &&
-              stats.itraPoints === undefined &&
-              avgElevation === undefined && (
-                <div className="text-center text-muted-foreground">
-                  Aucune statistique disponible. Synchronisez vos activités
-                  Strava.
-                </div>
-              )}
-          </TabsContent>
-
-          <TabsContent value="activities">
-            {recentActivities.length > 0 ? (
-              <div className="space-y-4">
-                {recentActivities.slice(0, 5).map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex flex-col space-y-2 rounded-md border p-3"
-                  >
+              <TabsContent value="statistics" className="py-1">
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between">
+                  <div className="space-y-2 md:w-2/3">
                     <div className="flex items-center justify-between">
-                      <span className="truncate text-sm font-medium">
-                        {activity.name}
+                      <span className="text-muted-foreground">
+                        Course à pied - Allure
                       </span>
-                      <Badge variant="outline">{activity.activityType}</Badge>
+                      <span className="font-medium">
+                        {formatPace(stats.running?.pace ?? avgRunningPace ?? 0)}
+                      </span>
                     </div>
-                    <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
-                      <div>
-                        <span className="flex items-center gap-1">
-                          <span className="text-[#FC4C02]">📏</span> Distance
-                        </span>
-                        <p className="font-medium text-foreground">
-                          {formatDistance(activity.distance)}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="flex items-center gap-1">
-                          <span className="text-[#FC4C02]">⏱️</span> Durée
-                        </span>
-                        <p className="font-medium text-foreground">
-                          {formatDuration(activity.movingTime)}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="flex items-center gap-1">
-                          <span className="text-[#FC4C02]">⛰️</span> D+
-                        </span>
-                        <p className="font-medium text-foreground">
-                          {formatElevation(activity.totalElevationGain || 0)}
-                        </p>
-                      </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        Vélo - Vitesse
+                      </span>
+                      <span className="font-medium">
+                        {formatSpeed(
+                          stats.cycling?.speed ?? avgCyclingSpeed ?? 0
+                        )}
+                      </span>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {new Date(activity.startDate).toLocaleDateString()}
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        Distance moyenne
+                      </span>
+                      <span className="font-medium">
+                        {formatDistance((stats.avgDistance ?? 0) * 1000)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        Dénivelé moyen
+                      </span>
+                      <span className="font-medium">
+                        {formatElevation(avgElevation ?? 0)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Points ITRA</span>
+                      <span className="font-medium">
+                        {formatItraPoints(stats.itraPoints)}
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-8 text-center text-muted-foreground">
-                Aucune activité récente. Synchronisez vos activités Strava.
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
 
-        {/* Lien vers le profil Strava */}
-        {stats.stravaId && (
-          <div className="mt-6 flex justify-center">
-            <a
-              href={stravaProfileUrl}
+                  {badges && (
+                    <div className="mt-3 border-t pt-3 md:ml-4 md:mt-0 md:w-1/3 md:border-l md:border-t-0 md:pl-6 md:pt-0">
+                      <div className="mb-3 flex flex-row items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="text-sm font-medium">Mes badges</div>
+                        </div>
+                        <div className="flex items-center gap-2 pr-2">
+                          <span className="text-xs text-muted-foreground">
+                            Visible
+                          </span>
+                          <BadgeSettings
+                            userId={badges.userId}
+                            showBadges={badges.showBadges}
+                            compact={true}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3">
+                        <TooltipProvider>
+                          {badges.badgesList.map((badge) => {
+                            const isCompleted =
+                              badges.completedBadgeIds.includes(badge.id);
+                            const userBadge = badges.userBadges.find(
+                              (ub) => ub.badgeId === badge.id
+                            );
+
+                            return (
+                              <Tooltip key={badge.id}>
+                                <TooltipTrigger asChild>
+                                  <div>
+                                    <BadgeCard
+                                      badge={badge}
+                                      isCompleted={isCompleted}
+                                      completedAt={userBadge?.completedAt}
+                                      compact={true}
+                                    />
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent className="border border-border bg-popover/95">
+                                  <p className="text-sm text-foreground">
+                                    {badge.description}
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            );
+                          })}
+                        </TooltipProvider>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="activities">
+                {recentActivities.length > 0 ? (
+                  <div className="space-y-4">
+                    {recentActivities.slice(0, 5).map((activity) => (
+                      <div
+                        key={activity.id}
+                        className="flex flex-col space-y-2 rounded-md border p-3"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="truncate text-sm font-medium">
+                            {activity.name}
+                          </span>
+                          <Badge variant="outline">
+                            {activity.activityType}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
+                          <div>
+                            <span className="flex items-center gap-1">
+                              <span className="text-[#FC4C02]">📏</span>{" "}
+                              Distance
+                            </span>
+                            <p className="font-medium text-foreground">
+                              {formatDistance(activity.distance)}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="flex items-center gap-1">
+                              <span className="text-[#FC4C02]">⏱️</span> Durée
+                            </span>
+                            <p className="font-medium text-foreground">
+                              {formatDuration(activity.movingTime)}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="flex items-center gap-1">
+                              <span className="text-[#FC4C02]">⛰️</span> D+
+                            </span>
+                            <p className="font-medium text-foreground">
+                              {formatElevation(
+                                activity.totalElevationGain || 0
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {new Date(activity.startDate).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-8 text-center text-muted-foreground">
+                    Aucune activité récente. Synchronisez vos activités Strava.
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+          <CardFooter className="justify-between border-t px-5 py-2">
+            <div className="text-xs text-muted-foreground">
+              Dernière synchro: {syncTime || "N/A"}
+            </div>
+            <Link
+              href={`https://www.strava.com/athletes/${stats.stravaId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center text-sm text-[#FC4C02] hover:underline"
+              className="flex items-center gap-1 text-xs text-[#FC4C02] hover:underline"
             >
               <span>Voir mon profil Strava</span>
-              <ExternalLink className="ml-1 size-4" />
-            </a>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="pt-0">
-        <div className="text-xs text-muted-foreground">
-          {syncTime && `Dernière synchronisation: ${syncTime}`}
-        </div>
-      </CardFooter>
+              <ExternalLink className="size-3" />
+            </Link>
+          </CardFooter>
+        </>
+      )}
     </>
   );
 }

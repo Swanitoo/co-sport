@@ -1,4 +1,5 @@
 import { currentUser } from "@/auth/current-user";
+import { BadgesExplanationSection } from "@/features/landing/BadgesExplanationSection";
 import { CTASection } from "@/features/landing/CTASection";
 import { FAQSection } from "@/features/landing/FAQSection";
 import { FeatureBoxes } from "@/features/landing/FeatureBoxes";
@@ -139,6 +140,9 @@ export default async function Home() {
       </Suspense>
       <Suspense fallback={<LatestProductsSkeleton />}>
         <LatestProductsWrapper />
+      </Suspense>
+      <Suspense>
+        <BadgesExplanationSection />
       </Suspense>
       <Suspense>
         <FeatureSection />

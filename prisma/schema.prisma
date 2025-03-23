@@ -190,6 +190,16 @@ model Feedback {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model UserBadge {
+  id          String    @id @default(cuid())
+  userId      String
+  badgeId     String
+  completedAt DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, badgeId])
+}
+
 model User {
   id                   String           @id @default(cuid())
   name                 String?
@@ -226,6 +236,7 @@ model User {
   stravaRunningPace    Int?
   stravaStatsUpdatedAt DateTime?
   stravaAvgDistance    Float?
+  showBadges           Boolean          @default(true)
   accounts             Account[]
   emailPreferences     EmailPreference?
   Feedback             Feedback[]
@@ -238,6 +249,7 @@ model User {
   supportTickets       SupportTicket[]  @relation("UserSupportTickets")
   messages             Message[]        @relation("UserMessages")
   unreadMessages       UnreadMessage[]
+  badges               UserBadge[]
 }
 
 model StravaSegment {

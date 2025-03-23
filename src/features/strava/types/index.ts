@@ -82,6 +82,7 @@ export interface SportPerformanceFilter {
   maxCyclingSpeed?: number; // Vitesse maximale en km/h
   minDistance?: number; // Distance minimale parcourue (km)
   maxDistance?: number; // Distance maximale parcourue (km)
+  requiredBadges?: string[]; // Badges requis du créateur
 }
 
 /**

@@ -1,10 +1,10 @@
 import { Layout, LayoutTitle } from "@/components/layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProfileBadges } from "@/components/ui/badges/profile-badges";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCountryFlag } from "@/data/country";
 import { Header } from "@/features/layout/Header";
 import { getUserStravaActivities } from "@/features/strava/services/strava-activity.service";
-import { getStravaStatsForUser } from "@/features/strava/services/strava-stats.server";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
 import { formatDistance } from "date-fns";
@@ -14,7 +14,6 @@ import type { Metadata, Viewport } from "next";
 import { unstable_setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { StravaStats } from "../../../(customer)/profile/[userId]/StravaStats";
 import { Locale, locales } from "../../../../../locales";
 
 // Activer le mode dynamique pour permettre une détection correcte de l'authentification
@@ -90,26 +89,15 @@ export default async function ProfilePage({ params }: PageProps) {
       notFound();
     }
 
-    // Récupérer les statistiques Strava directement depuis la base de données
-    const stravaStats = user.stravaConnected
-      ? await getStravaStatsForUser(params.userId)
-      : null;
-
     // Récupérer les activités Strava récentes
     const stravaActivities = user.stravaConnected
       ? await getUserStravaActivities(params.userId, 5) // Récupérer les 5 dernières activités
       : [];
 
-    // Convertir la date en chaîne pour la compatibilité avec le composant client
-    const clientStravaStats = stravaStats
-      ? {
-          ...stravaStats,
-          lastUpdated: stravaStats.lastUpdated
-            ? stravaStats.lastUpdated.toISOString()
-            : undefined,
-        }
-      : null;
+    // Vérifier si l'utilisateur est connecté à Strava
+    const hasStravaConnection = user.stravaConnected;
 
+    // Calculer l'âge
     const age = user.birthDate
       ? Math.floor(
           (new Date().getTime() - user.birthDate.getTime()) /
@@ -230,15 +218,8 @@ export default async function ProfilePage({ params }: PageProps) {
               </CardContent>
             </Card>
 
-            {/* Passer les données récupérées directement au composant StravaStats */}
-            {user.stravaConnected && (
-              <StravaStats
-                userId={params.userId}
-                initialData={clientStravaStats || undefined}
-                recentActivities={stravaActivities}
-                disableAutoFetch={true}
-              />
-            )}
+            {/* Remplacer StravaStats par ProfileBadges */}
+            {hasStravaConnection && <ProfileBadges userId={params.userId} />}
 
             <Card>
               <CardHeader>
