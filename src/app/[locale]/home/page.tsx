@@ -7,6 +7,7 @@ import { FeatureSection } from "@/features/landing/FeatureSection";
 import { FooterSection } from "@/features/landing/Footersection";
 import { HeroSection } from "@/features/landing/HeroSection";
 import { LandingHeader } from "@/features/landing/LandingHeader";
+import { SupportSection } from "@/features/landing/SupportSection";
 import { prisma } from "@/prisma";
 import { unstable_setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -97,6 +98,7 @@ export default async function LocalizedHomePage({ params: { locale } }: Props) {
       <HeroSection translations={heroTranslations} />
       <LatestProducts products={latestProducts} isAuthenticated={!!user} />
       <FeatureSection />
+      <SupportSection />
       <FAQSection />
       <CTASection translations={ctaTranslations} />
       <FooterSection />

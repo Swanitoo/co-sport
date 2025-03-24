@@ -7,6 +7,7 @@ import { FeatureSection } from "@/features/landing/FeatureSection";
 import { FooterSection } from "@/features/landing/Footersection";
 import { HeroSection } from "@/features/landing/HeroSection";
 import { LandingHeader } from "@/features/landing/LandingHeader";
+import { SupportSection } from "@/features/landing/SupportSection";
 import { prisma } from "@/prisma";
 import type { Metadata } from "next";
 import { Suspense } from "react";
@@ -146,6 +147,9 @@ export default async function Home() {
       </Suspense>
       <Suspense>
         <FeatureSection />
+      </Suspense>
+      <Suspense>
+        <SupportSection />
       </Suspense>
       <Suspense>
         <FAQSection />

@@ -20,7 +20,7 @@ export const BadgesExplanationSection = () => {
             {BADGES.map((badge) => (
               <div
                 key={badge.id}
-                className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
+                className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-primary/50 dark:bg-black"
               >
                 <div className="mb-5 flex items-center">
                   <div className="relative mr-4 size-14 shrink-0 rounded-full bg-primary/10 p-2">

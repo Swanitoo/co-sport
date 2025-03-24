@@ -96,7 +96,7 @@ export const SportPerformanceFilters = ({
 
   return (
     <div
-      className="w-full rounded-lg p-4 shadow-sm"
+      className="w-full rounded-lg shadow-sm"
       data-has-active-filters={hasActiveFilters ? "true" : "false"}
     >
       {/* Filtre pour les badges */}
@@ -106,7 +106,7 @@ export const SportPerformanceFilters = ({
             Badges du créateur
           </label>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="flex flex-col gap-2">
           {BADGES.map((badge) => (
             <div
               key={badge.id}
