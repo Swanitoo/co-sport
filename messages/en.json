@@ -102,7 +102,34 @@
     "features_subtitle": "Discover everything CoSport has to offer",
     "soon": "Coming soon",
     "app_mobile": "Mobile app",
-    "LatestProducts": "Latest activities"
+    "LatestProducts": "Latest activities",
+    "Badges": {
+      "title": "Sports Badges",
+      "subtitle": "Stand out with our sports badges that recognize your achievements on Strava",
+      "how_to_get": "How to get it:",
+      "profile": "Regular practice (at least 10 activities)",
+      "mountain": "Accumulate more than 1000m of positive elevation",
+      "endurance1": "Run at less than 6 min/km on flat terrain",
+      "endurance2": "Or less than 7min30/km with elevation",
+      "long_distance": "Complete at least one run of more than 15 km",
+      "multi_sport": "Practice at least 3 different sports",
+      "trail": "Participate in at least 5 trail or hiking activities"
+    },
+    "Support": {
+      "title": "Support co-sport.com",
+      "subtitle": "An independent project serving the sports community",
+      "story": "Our story",
+      "story_p1": "co-sport.com was born from a passion for sport and a vision: to create an inclusive community where everyone can find their ideal sports partner.",
+      "story_p2": "Developed by a single passionate developer, this project is built with the ambition to make sport more accessible and safer for everyone, especially for women who want to practice safely.",
+      "story_p3": "To date, co-sport.com remains entirely free for all users. Our priority is to build a solid community above all.",
+      "how_to_support": "How to support us",
+      "support_p1": "To maintain this service and continue developing new features, we rely on the support of our community. Here's how you can contribute:",
+      "buy_coffee": "Buy me a coffee",
+      "become_partner": "Become a partner",
+      "support": "Support",
+      "collaborate": "Collaborate",
+      "future_p1": "In the future, co-sport.com may integrate targeted and non-intrusive ads or partnerships to maintain the service, but we are committed to always offering a quality experience."
+    }
   },
   "Language": {
     "Select": "Select language",
@@ -118,14 +145,18 @@
   "Features": {
     "Title": "It's simple! Here are the steps to follow:",
     "Step1": {
-      "Title": "Filter ads according to your criteria to find the ideal partner."
+      "Title": "Filter ads according to your criteria to find the ideal partner.",
+      "SportWomen": "Sport between women",
+      "SportWomenDesc": "Are you a woman who wants to practice sports with other women? Thanks to our exclusive system, find sports partners near you safely.",
+      "JoinCommunity": "Join the female community"
     },
     "Step2": {
       "Title": "Find the ad that matches you",
       "ExampleTitle": "Looking for a workout partner",
       "Sport": "Sport",
       "ExampleDescription": "I'm looking for a workout partner to stay motivated and progress together. Available on weekdays after 6pm.",
-      "Level": "Level"
+      "Level": "Level",
+      "FindPartner": "Find your ideal partner"
     },
     "Step3": {
       "Title": "Join the group and start practicing!",
@@ -137,7 +168,9 @@
       "Sport": "Sport",
       "Level": "Level",
       "ExampleLevel": "Intermediate",
-      "ExampleDescription": "Complete workout program with warm-up, compound exercises and isolations. Suitable for all levels."
+      "ExampleDescription": "Complete workout program with warm-up, compound exercises and isolations. Suitable for all levels.",
+      "FindCoach": "Find your sports expert",
+      "CoachDesc": "Looking for a personal coach or professional guide? Book qualified experts directly: sports coaches, mountain guides, physical trainers and more."
     },
     "Step4": {
       "Title": "That's it! You can now start practicing with your new partners.",

@@ -94,15 +94,42 @@
   },
   "Home": {
     "latest_products": "Últimas actividades",
-    "hero_title": "Encuentra tu compañero de deportes",
+    "hero_title": "Encuentra tu compañero deportivo",
     "hero_subtitle": "Elige tu deporte, encuentra tu compañero ideal y progresen juntos.",
     "cta_button": "Comenzar",
     "cta_secondary": "Ver video",
     "features_title": "Características",
-    "features_subtitle": "Descubre todo lo que CoSport tiene para ofrecer",
+    "features_subtitle": "Descubre todo lo que CoSport puede ofrecerte",
     "soon": "Próximamente",
-    "app_mobile": "Aplicación móvil",
-    "LatestProducts": "Últimas actividades"
+    "app_mobile": "La aplicación móvil",
+    "LatestProducts": "Últimas actividades",
+    "Badges": {
+      "title": "Insignias Deportivas",
+      "subtitle": "Destaca con nuestras insignias deportivas que reconocen tus logros en Strava",
+      "how_to_get": "Cómo obtenerla:",
+      "profile": "Práctica regular (al menos 10 actividades)",
+      "mountain": "Acumular más de 1000m de elevación positiva",
+      "endurance1": "Correr a menos de 6 min/km en terreno plano",
+      "endurance2": "O menos de 7min30/km con elevación",
+      "long_distance": "Completar al menos una carrera de más de 15 km",
+      "multi_sport": "Practicar al menos 3 deportes diferentes",
+      "trail": "Participar en al menos 5 actividades de trail o senderismo"
+    },
+    "Support": {
+      "title": "Apoya co-sport.com",
+      "subtitle": "Un proyecto independiente al servicio de la comunidad deportiva",
+      "story": "Nuestra historia",
+      "story_p1": "co-sport.com nació de una pasión por el deporte y una visión: crear una comunidad inclusiva donde todos puedan encontrar su compañero deportivo ideal.",
+      "story_p2": "Desarrollado por un único desarrollador apasionado, este proyecto se construye con la ambición de hacer el deporte más accesible y seguro para todos, especialmente para las mujeres que quieren practicar con seguridad.",
+      "story_p3": "Hasta la fecha, co-sport.com sigue siendo completamente gratuito para todos los usuarios. Nuestra prioridad es construir una comunidad sólida ante todo.",
+      "how_to_support": "Cómo apoyarnos",
+      "support_p1": "Para mantener este servicio y seguir desarrollando nuevas funcionalidades, contamos con el apoyo de nuestra comunidad. Así es cómo puedes contribuir:",
+      "buy_coffee": "Invítame a un café",
+      "become_partner": "Conviértete en socio",
+      "support": "Apoyar",
+      "collaborate": "Colaborar",
+      "future_p1": "En el futuro, co-sport.com podría integrar anuncios dirigidos y no intrusivos o asociaciones para mantener el servicio, pero nos comprometemos a ofrecer siempre una experiencia de calidad."
+    }
   },
   "Language": {
     "Select": "Seleccionar idioma",
@@ -118,14 +145,18 @@
   "Features": {
     "Title": "¡Es simple! Aquí están los pasos a seguir:",
     "Step1": {
-      "Title": "Filtra los anuncios según tus criterios para encontrar el compañero ideal."
+      "Title": "Filtra los anuncios según tus criterios para encontrar el compañero ideal.",
+      "SportWomen": "Deporte entre mujeres",
+      "SportWomenDesc": "¿Eres mujer y quieres practicar deporte con otras mujeres? Gracias a nuestro sistema exclusivo, encuentra compañeras deportivas cerca de ti con total seguridad.",
+      "JoinCommunity": "Únete a la comunidad femenina"
     },
     "Step2": {
       "Title": "Encuentra el anuncio que te corresponde",
       "ExampleTitle": "Buscando compañero de entrenamiento",
       "Sport": "Deporte",
       "ExampleDescription": "Busco un compañero de entrenamiento para motivarnos y progresar juntos. Disponible entre semana después de las 18h.",
-      "Level": "Nivel"
+      "Level": "Nivel",
+      "FindPartner": "Encuentra tu compañero ideal"
     },
     "Step3": {
       "Title": "¡Únete al grupo y empieza a practicar!",
@@ -137,7 +168,9 @@
       "Sport": "Deporte",
       "Level": "Nivel",
       "ExampleLevel": "Intermedio",
-      "ExampleDescription": "Programa completo de entrenamiento con calentamiento, ejercicios compuestos y aislamientos. Adaptado a todos los niveles."
+      "ExampleDescription": "Programa completo de entrenamiento con calentamiento, ejercicios compuestos y aislamientos. Adaptado a todos los niveles.",
+      "FindCoach": "Encuentra tu experto deportivo",
+      "CoachDesc": "¿Buscas un entrenador personal o un guía profesional? Reserva directamente expertos cualificados: entrenadores deportivos, guías de montaña, preparadores físicos y más."
     },
     "Step4": {
       "Title": "¡Eso es todo! Ya puedes empezar a practicar con tus nuevos compañeros.",

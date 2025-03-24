@@ -102,7 +102,34 @@
     "features_subtitle": "Découvrez tout ce que CoSport peut vous offrir",
     "soon": "Prochainement",
     "app_mobile": "L'application mobile",
-    "LatestProducts": "Dernières annonces"
+    "LatestProducts": "Dernières annonces",
+    "Badges": {
+      "title": "Les Badges Sportifs",
+      "subtitle": "Distingues-toi grâce à nos badges sportifs qui reconnaissent tes accomplissements sur Strava",
+      "how_to_get": "Comment l'obtenir :",
+      "profile": "Pratiquer régulièrement (au moins 10 activités)",
+      "mountain": "Cumuler plus de 1000m de dénivelé positif",
+      "endurance1": "Courir à moins de 6 min/km sur terrain plat",
+      "endurance2": "Ou moins de 7min30/km avec dénivelé",
+      "long_distance": "Réaliser au moins une course de plus de 15 km",
+      "multi_sport": "Pratiquer au moins 3 disciplines sportives différentes",
+      "trail": "Participer à au moins 5 activités de trail ou randonnée"
+    },
+    "Support": {
+      "title": "Soutenez co-sport.com",
+      "subtitle": "Un projet indépendant au service de la communauté sportive",
+      "story": "Notre histoire",
+      "story_p1": "co-sport.com est né d'une passion pour le sport et d'une vision : créer une communauté inclusive où chacun peut trouver son partenaire sportif idéal.",
+      "story_p2": "Développé par un unique développeur passionné, ce projet est construit avec l'ambition de rendre le sport plus accessible et plus sûr pour tous, particulièrement pour les femmes qui souhaitent pratiquer en toute sécurité.",
+      "story_p3": "À ce jour, co-sport.com reste entièrement gratuit pour tous les utilisateurs. Notre priorité est de construire une communauté solide avant tout.",
+      "how_to_support": "Comment nous soutenir",
+      "support_p1": "Pour maintenir ce service et continuer à développer de nouvelles fonctionnalités, nous comptons sur le soutien de notre communauté. Voici comment vous pouvez contribuer :",
+      "buy_coffee": "M'offrir un café",
+      "become_partner": "Devenir partenaire",
+      "support": "Soutenir",
+      "collaborate": "Collaborer",
+      "future_p1": "À l'avenir, co-sport.com pourrait intégrer des publicités ciblées et non-intrusives ou des partenariats pour maintenir le service, mais nous nous engageons à toujours proposer une expérience de qualité."
+    }
   },
   "Language": {
     "Select": "Sélectionner la langue",
@@ -118,14 +145,18 @@
   "Features": {
     "Title": "Rien de plus simple ! Voici les étapes à suivre :",
     "Step1": {
-      "Title": "Filtre les annonces selon tes critères pour trouver le partenaire idéal."
+      "Title": "Filtre les annonces selon tes critères pour trouver le partenaire idéal.",
+      "SportWomen": "Sport entre femmes",
+      "SportWomenDesc": "Vous êtes une femme et vous souhaitez pratiquer du sport avec d'autres femmes ? Grâce à notre système exclusif, trouvez des partenaires sportives près de chez vous en toute sécurité.",
+      "JoinCommunity": "Rejoignez la communauté féminine"
     },
     "Step2": {
       "Title": "Trouve l'annonce qui te correspond",
       "ExampleTitle": "Recherche partenaire de musculation",
       "Sport": "Sport",
       "ExampleDescription": "Je recherche un partenaire de musculation pour me motiver et progresser ensemble. Disponible en semaine après 18h.",
-      "Level": "Niveau"
+      "Level": "Niveau",
+      "FindPartner": "Trouvez votre partenaire idéal"
     },
     "Step3": {
       "Title": "Rejoins le groupe et commence à pratiquer !",
@@ -137,7 +168,9 @@
       "Sport": "Sport",
       "Level": "Niveau",
       "ExampleLevel": "Intermédiaire",
-      "ExampleDescription": "Programme complet de musculation avec échauffement, exercices composés et isolations. Adapté à tous les niveaux."
+      "ExampleDescription": "Programme complet de musculation avec échauffement, exercices composés et isolations. Adapté à tous les niveaux.",
+      "FindCoach": "Trouvez votre expert sportif",
+      "CoachDesc": "Vous cherchez un coach personnel ou un guide professionnel ? Réservez directement des experts qualifiés : coachs sportifs, guides de montagne, préparateurs physiques et plus encore."
     },
     "Step4": {
       "Title": "C'est tout ! Tu peux maintenant commencer à pratiquer avec tes nouveaux partenaires.",
