@@ -19,7 +19,7 @@ export const SupportSection = () => {
 
         {/* Version mobile : une colonne */}
         <div className="space-y-6 lg:hidden">
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-primary/50 dark:bg-black">
             <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
               Notre histoire
             </h3>
@@ -35,15 +35,12 @@ export const SupportSection = () => {
               </p>
               <p>
                 À ce jour, co-sport.com reste entièrement{" "}
-                <span className="font-semibold text-primary">
-                  gratuit et sans publicité
-                </span>
-                .
+                <span className="font-semibold text-primary">gratuit</span>.
               </p>
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-primary/50 dark:bg-black">
             <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
               Comment nous soutenir
             </h3>
@@ -108,10 +105,8 @@ export const SupportSection = () => {
               </p>
               <p>
                 À ce jour, co-sport.com reste entièrement{" "}
-                <span className="font-semibold text-primary">
-                  gratuit et sans publicité
-                </span>{" "}
-                pour tous les utilisateurs. Notre priorité est de construire une
+                <span className="font-semibold text-primary">gratuit</span> pour
+                tous les utilisateurs. Notre priorité est de construire une
                 communauté solide avant tout.
               </p>
             </div>
