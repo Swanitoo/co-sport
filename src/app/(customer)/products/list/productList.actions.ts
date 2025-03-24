@@ -17,55 +17,6 @@ export async function getFilteredProducts(
     };
   }
 
-  // Filtre d'allure de course à pied
-  if (filters.minRunPace !== undefined || filters.maxRunPace !== undefined) {
-    userFilter.stravaRunningPace = { not: null };
-
-    if (filters.minRunPace !== undefined) {
-      userFilter.stravaRunningPace = {
-        ...userFilter.stravaRunningPace,
-        gte: filters.minRunPace,
-      };
-    }
-
-    if (filters.maxRunPace !== undefined) {
-      userFilter.stravaRunningPace = {
-        ...userFilter.stravaRunningPace,
-        lte: filters.maxRunPace,
-      };
-    }
-  }
-
-  // Filtre de vitesse à vélo
-  if (
-    filters.minCyclingSpeed !== undefined ||
-    filters.maxCyclingSpeed !== undefined
-  ) {
-    userFilter.stravaCyclingSpeed = { not: null };
-
-    if (filters.minCyclingSpeed !== undefined) {
-      userFilter.stravaCyclingSpeed = {
-        ...userFilter.stravaCyclingSpeed,
-        gte: filters.minCyclingSpeed,
-      };
-    }
-
-    if (filters.maxCyclingSpeed !== undefined) {
-      userFilter.stravaCyclingSpeed = {
-        ...userFilter.stravaCyclingSpeed,
-        lte: filters.maxCyclingSpeed,
-      };
-    }
-  }
-
-  // Filtre de distance moyenne
-  if (filters.minDistance !== undefined) {
-    userFilter.stravaAvgDistance = {
-      not: null,
-      gte: filters.minDistance,
-    };
-  }
-
   const where: any = {
     AND: [
       // Condition de base pour les annonces "only girls"
@@ -97,6 +48,55 @@ export async function getFilteredProducts(
 
   if (filters.level) {
     where.AND.push({ level: filters.level });
+  }
+
+  // Ajouter le filtre pour les badges requis
+  if (filters.requiredBadges && filters.requiredBadges.length > 0) {
+    // Obtenir tous les utilisateurs qui ont complété les badges requis
+    const badgeCompletions = await prisma.userBadge.findMany({
+      where: {
+        badgeId: {
+          in: filters.requiredBadges,
+        },
+        completedAt: {
+          not: undefined,
+        },
+      },
+      select: {
+        userId: true,
+        badgeId: true,
+      },
+    });
+
+    // Organiser les badges par utilisateur
+    const userBadges: { [userId: string]: Set<string> } = {};
+
+    badgeCompletions.forEach((completion) => {
+      if (!userBadges[completion.userId]) {
+        userBadges[completion.userId] = new Set();
+      }
+      userBadges[completion.userId].add(completion.badgeId);
+    });
+
+    // Trouver les utilisateurs qui ont tous les badges requis
+    const userIds = Object.entries(userBadges)
+      .filter(([userId, badges]) => {
+        // Vérifier si l'utilisateur possède AU MOINS UN des badges requis (comme le filtre "only girls")
+        return filters.requiredBadges!.some((badgeId) => badges.has(badgeId));
+      })
+      .map(([userId]) => userId);
+
+    // Filtrer pour ne montrer que les annonces créées par ces utilisateurs
+    if (userIds.length > 0) {
+      where.AND.push({
+        userId: {
+          in: userIds,
+        },
+      });
+    } else {
+      // Si aucun utilisateur n'a les badges requis, ne renvoyer aucun résultat
+      where.AND.push({ id: "none" });
+    }
   }
 
   // Ajouter le filtre utilisateur combiné s'il y a des conditions
@@ -160,59 +160,24 @@ export async function fetchMoreProducts(
     };
   }
 
-  // Filtre d'allure de course à pied
-  if (filters.minRunPace !== undefined || filters.maxRunPace !== undefined) {
-    userFilter.stravaRunningPace = { not: null };
-
-    if (filters.minRunPace !== undefined) {
-      userFilter.stravaRunningPace = {
-        ...userFilter.stravaRunningPace,
-        gte: filters.minRunPace,
-      };
-    }
-
-    if (filters.maxRunPace !== undefined) {
-      userFilter.stravaRunningPace = {
-        ...userFilter.stravaRunningPace,
-        lte: filters.maxRunPace,
-      };
-    }
-  }
-
-  // Filtre de vitesse à vélo
-  if (
-    filters.minCyclingSpeed !== undefined ||
-    filters.maxCyclingSpeed !== undefined
-  ) {
-    userFilter.stravaCyclingSpeed = { not: null };
-
-    if (filters.minCyclingSpeed !== undefined) {
-      userFilter.stravaCyclingSpeed = {
-        ...userFilter.stravaCyclingSpeed,
-        gte: filters.minCyclingSpeed,
-      };
-    }
-
-    if (filters.maxCyclingSpeed !== undefined) {
-      userFilter.stravaCyclingSpeed = {
-        ...userFilter.stravaCyclingSpeed,
-        lte: filters.maxCyclingSpeed,
-      };
-    }
-  }
-
-  // Filtre de distance moyenne
-  if (filters.minDistance !== undefined) {
-    userFilter.stravaAvgDistance = {
-      not: null,
-      gte: filters.minDistance,
-    };
-  }
+  // Les filtres relatifs à l'allure, vitesse et distance ont été supprimés
+  // car nous utilisons maintenant les badges pour ces performances
 
   const where: any = {
     AND: [
       // Si c'est un homme, on exclut les annonces onlyGirls
-      userSex === "M" ? { onlyGirls: false } : {},
+      {
+        OR: [
+          { onlyGirls: false },
+          {
+            AND: [
+              { onlyGirls: true },
+              { user: { sex: "F" } },
+              userSex === "F" ? {} : { id: "none" },
+            ],
+          },
+        ],
+      },
     ],
   };
 
@@ -221,8 +186,63 @@ export async function fetchMoreProducts(
     where.AND.push({ sport: filters.sport });
   }
 
+  if (filters.venue) {
+    where.AND.push({
+      OR: [{ venueName: filters.venue }, { venueAddress: filters.venue }],
+    });
+  }
+
   if (filters.level) {
     where.AND.push({ level: filters.level });
+  }
+
+  // Ajouter le filtre pour les badges requis
+  if (filters.requiredBadges && filters.requiredBadges.length > 0) {
+    // Obtenir tous les utilisateurs qui ont complété les badges requis
+    const badgeCompletions = await prisma.userBadge.findMany({
+      where: {
+        badgeId: {
+          in: filters.requiredBadges,
+        },
+        completedAt: {
+          not: undefined,
+        },
+      },
+      select: {
+        userId: true,
+        badgeId: true,
+      },
+    });
+
+    // Organiser les badges par utilisateur
+    const userBadges: { [userId: string]: Set<string> } = {};
+
+    badgeCompletions.forEach((completion) => {
+      if (!userBadges[completion.userId]) {
+        userBadges[completion.userId] = new Set();
+      }
+      userBadges[completion.userId].add(completion.badgeId);
+    });
+
+    // Trouver les utilisateurs qui ont tous les badges requis
+    const userIds = Object.entries(userBadges)
+      .filter(([userId, badges]) => {
+        // Vérifier si l'utilisateur possède AU MOINS UN des badges requis (comme le filtre "only girls")
+        return filters.requiredBadges!.some((badgeId) => badges.has(badgeId));
+      })
+      .map(([userId]) => userId);
+
+    // Filtrer pour ne montrer que les annonces créées par ces utilisateurs
+    if (userIds.length > 0) {
+      where.AND.push({
+        userId: {
+          in: userIds,
+        },
+      });
+    } else {
+      // Si aucun utilisateur n'a les badges requis, ne renvoyer aucun résultat
+      where.AND.push({ id: "none" });
+    }
   }
 
   // Ajouter le filtre utilisateur combiné s'il y a des conditions

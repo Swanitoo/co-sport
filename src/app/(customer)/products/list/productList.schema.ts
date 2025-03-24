@@ -47,15 +47,8 @@ export const FilterSchema = z.object({
       lng: z.number(),
     })
     .optional(),
-  // Nouveaux filtres de performance sportive
-  minRunPace: z.number().optional(),
-  maxRunPace: z.number().optional(),
-  minCyclingSpeed: z.number().optional(),
-  maxCyclingSpeed: z.number().optional(),
-  minDistance: z.number().optional(),
-  maxDistance: z.number().optional(),
-  minItraPoints: z.number().optional(),
-  maxItraPoints: z.number().optional(),
+  // Badges requis
+  requiredBadges: z.array(z.string()).optional(),
 });
 
 export type FilterType = z.infer<typeof FilterSchema>;

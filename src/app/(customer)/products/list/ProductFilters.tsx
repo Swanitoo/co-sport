@@ -43,11 +43,7 @@ export function ProductFilters({
 
   const handleSportPerformanceChange = (values: SportPerformanceValues) => {
     updateFilters({
-      minRunPace: values.minRunPace,
-      maxRunPace: values.maxRunPace,
-      minCyclingSpeed: values.minCyclingSpeed,
-      maxCyclingSpeed: values.maxCyclingSpeed,
-      minDistance: values.minDistance,
+      requiredBadges: values.requiredBadges,
     });
   };
 
@@ -202,11 +198,7 @@ export function ProductFilters({
       <SportPerformanceFilters
         onChange={handleSportPerformanceChange}
         defaultValues={{
-          minRunPace: filters.minRunPace,
-          maxRunPace: filters.maxRunPace,
-          minCyclingSpeed: filters.minCyclingSpeed,
-          maxCyclingSpeed: filters.maxCyclingSpeed,
-          minDistance: filters.minDistance,
+          requiredBadges: filters.requiredBadges,
         }}
       />
 

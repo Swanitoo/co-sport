@@ -3,7 +3,6 @@ import { Layout, LayoutTitle } from "@/components/layout";
 import { getServerTranslations } from "@/components/server-translation";
 import { buttonVariants } from "@/components/ui/button";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
-import { prisma } from "@/prisma";
 import { Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -13,7 +12,11 @@ import {
   FilteredProductList,
   ProductListFallback,
 } from "./list/FilteredProductList";
-import { getUniqueVenues } from "./list/productList.actions";
+import {
+  getFilteredProducts,
+  getUniqueVenues,
+} from "./list/productList.actions";
+import { FilterType } from "./list/productList.schema";
 import { MiniMap } from "./MiniMap";
 
 // Activation de l'ISR pour cette page
@@ -34,50 +37,29 @@ export default async function RoutePage({
 
   const isAdmin = user.isAdmin ?? false;
 
+  // Construire les filtres initiaux basés sur les paramètres de l'URL
+  const initialFilters: FilterType = {
+    sport:
+      typeof searchParams.sport === "string" ? searchParams.sport : undefined,
+    level:
+      typeof searchParams.level === "string" ? searchParams.level : undefined,
+    onlyGirls: searchParams.onlyGirls === "true",
+    countries:
+      typeof searchParams.countries === "string"
+        ? searchParams.countries.split(",").filter(Boolean)
+        : [],
+    venue:
+      typeof searchParams.venue === "string" ? searchParams.venue : undefined,
+    requiredBadges:
+      typeof searchParams.badges === "string"
+        ? searchParams.badges.split(",").filter(Boolean)
+        : [],
+  };
+
   // Utilisation de Promise.all pour paralléliser les requêtes et réduire le temps de chargement
   const [initialProducts, venues] = await Promise.all([
-    prisma.product.findMany({
-      where: {
-        AND: [
-          // Si c'est un homme, on exclut les annonces onlyGirls
-          user.sex === "M" ? { onlyGirls: false } : {},
-          // Si c'est une femme et qu'elle veut voir que les annonces de filles
-          searchParams?.onlyGirls === "true" && user.sex === "F"
-            ? { user: { sex: "F" } }
-            : {},
-        ],
-      },
-      orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        sport: true,
-        level: true,
-        userId: true,
-        venueName: true,
-        venueAddress: true,
-        venueLat: true,
-        venueLng: true,
-        onlyGirls: true,
-        createdAt: true,
-        updatedAt: true,
-        enabled: true,
-        slug: true,
-        memberships: true,
-        user: {
-          select: {
-            id: true,
-            sex: true,
-            country: true,
-            name: true,
-            image: true,
-          },
-        },
-      },
-      // Limiter le nombre initial de produits pour accélérer le chargement
-      take: 20,
-    }),
+    // Utiliser getFilteredProducts pour appliquer tous les filtres dès le chargement initial
+    getFilteredProducts(initialFilters, user.sex),
     getUniqueVenues(),
   ]);
 

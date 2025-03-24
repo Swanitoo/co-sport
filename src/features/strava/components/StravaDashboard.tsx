@@ -474,7 +474,7 @@ export function StravaDashboard({
                   </div>
 
                   {badges && (
-                    <div className="mt-3 border-t pt-3 md:ml-4 md:mt-0 md:w-1/3 md:border-l md:border-t-0 md:pl-6 md:pt-0">
+                    <div className="mt-3 border-t pt-3 md:ml-4 md:mt-0 md:w-2/3 md:border-l md:border-t-0 md:pl-6 md:pt-0">
                       <div className="mb-3 flex flex-row items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="text-sm font-medium">Mes badges</div>

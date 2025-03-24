@@ -70,19 +70,15 @@ export function FilteredProductList({
     onlyGirls: searchParams?.get("onlyGirls") === "true",
     countries: searchParams?.get("countries")?.split(",").filter(Boolean) || [],
     location: undefined,
-    // Initialiser les filtres de performance sportive depuis les paramètres d'URL
-    minRunPace: getNumberParam("minRunPace"),
-    maxRunPace: getNumberParam("maxRunPace"),
-    minCyclingSpeed: getNumberParam("minCyclingSpeed"),
-    maxCyclingSpeed: getNumberParam("maxCyclingSpeed"),
-    minDistance: getNumberParam("minDistance"),
-    maxDistance: getNumberParam("maxDistance"),
+    // Initialiser les filtres de badges
+    requiredBadges:
+      searchParams?.get("badges")?.split(",").filter(Boolean) || [],
   });
 
   const applyFilters = useCallback(
     (products: any[]) => {
-      // Si les filtres de performance sont activés, les produits sont déjà filtrés par la requête SQL
-      // La filtration JavaScript n'est nécessaire que pour les autres filtres
+      // Les produits sont déjà filtrés par le serveur selon les filtres d'URL
+      // La filtration JavaScript n'est nécessaire que pour les changements de filtre locaux
       return products.filter((product) => {
         // Filtres existants
         if (filters.sport && product.sport !== filters.sport) return false;
@@ -101,6 +97,9 @@ export function FilteredProductList({
           product.venueAddress !== filters.venue
         )
           return false;
+
+        // Pour les badges, le filtrage est déjà fait côté serveur
+        // via getFilteredProducts, donc pas besoin de filtrer ici
 
         return true;
       });
@@ -182,21 +181,12 @@ export function FilteredProductList({
       params.delete("countries");
     }
 
-    // Nouveaux paramètres de performance sportive
-    const updateNumberParam = (name: string, value: number | undefined) => {
-      if (value !== undefined) {
-        params.set(name, value.toString());
-      } else {
-        params.delete(name);
-      }
-    };
-
-    updateNumberParam("minRunPace", newFilters.minRunPace);
-    updateNumberParam("maxRunPace", newFilters.maxRunPace);
-    updateNumberParam("minCyclingSpeed", newFilters.minCyclingSpeed);
-    updateNumberParam("maxCyclingSpeed", newFilters.maxCyclingSpeed);
-    updateNumberParam("minDistance", newFilters.minDistance);
-    updateNumberParam("maxDistance", newFilters.maxDistance);
+    // Paramètres de badges
+    if (newFilters.requiredBadges && newFilters.requiredBadges.length > 0) {
+      params.set("badges", newFilters.requiredBadges.join(","));
+    } else {
+      params.delete("badges");
+    }
 
     router.push(`?${params.toString()}`);
     setFilters(newFilters);
@@ -211,13 +201,8 @@ export function FilteredProductList({
       onlyGirls: false,
       countries: [],
       location: undefined,
-      // Réinitialiser les filtres de performance sportive
-      minRunPace: undefined,
-      maxRunPace: undefined,
-      minCyclingSpeed: undefined,
-      maxCyclingSpeed: undefined,
-      minDistance: undefined,
-      maxDistance: undefined,
+      // Réinitialiser les filtres de badges
+      requiredBadges: [],
     };
     router.push(window.location.pathname);
     setFilters(emptyFilters);
@@ -231,12 +216,7 @@ export function FilteredProductList({
       !!filters.level ||
       filters.onlyGirls ||
       (filters.countries?.length || 0) > 0 ||
-      !!filters.minRunPace ||
-      !!filters.maxRunPace ||
-      !!filters.minCyclingSpeed ||
-      !!filters.maxCyclingSpeed ||
-      !!filters.minDistance ||
-      !!filters.maxDistance
+      (filters.requiredBadges?.length || 0) > 0
     );
   }, [filters]);
 
