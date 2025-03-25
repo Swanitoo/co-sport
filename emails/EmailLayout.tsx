@@ -36,16 +36,16 @@ export const EmailLayout = ({
           }}
         >
           <Container className="rounded-lg border border-slate-200 bg-white px-8 py-6 shadow-sm">
-            <div className="mb-6 flex items-center justify-center border-b border-slate-200 pb-6">
+            <div className="mb-6 flex flex-col items-center justify-center border-b border-slate-200 pb-6">
               <Link href={baseUrl} style={{ textDecoration: "none" }}>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col items-center">
                   <Img
                     src={`${baseUrl}/icon.png`}
-                    width="40"
-                    height="40"
+                    width="80"
+                    height="80"
                     alt="Co-Sport"
                     style={{
-                      objectFit: "contain",
+                      marginBottom: "8px",
                     }}
                   />
                   <EmailText
