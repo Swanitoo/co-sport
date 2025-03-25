@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppTranslations } from "@/components/i18n-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { Map, Marker, Overlay } from "pigeon-maps";
 import { useEffect, useState } from "react";
-import { LEVEL_CLASSES, SPORTS } from "../[productId]/edit/product.schema";
+import { LEVEL_CLASSES, SPORTS } from "../[slug]/edit/product.schema";
 import { ProductWithMemberships } from "./productList.schema";
 
 // Types pour notre composant
@@ -44,6 +45,7 @@ export const MapComponent = ({
   miniVersion = false,
   highlightSingleProduct = false,
 }: MapComponentProps) => {
+  const { locale } = useAppTranslations();
   const { theme, systemTheme } = useTheme();
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
@@ -366,7 +368,10 @@ export const MapComponent = ({
               </div>
 
               {/* Titre et contenu */}
-              <Link href={`/products/${selectedProduct.id}`} target="_blank">
+              <Link
+                href={`/${locale}/products/${selectedProduct.slug}`}
+                target="_blank"
+              >
                 <h3
                   className={`mb-2 font-medium hover:underline ${
                     isDarkTheme ? "text-white" : "text-black"
@@ -430,7 +435,10 @@ export const MapComponent = ({
                     Fermer
                   </Button>
                 )}
-                <Link href={`/products/${selectedProduct.id}`} target="_blank">
+                <Link
+                  href={`/${locale}/products/${selectedProduct.slug}`}
+                  target="_blank"
+                >
                   <Button size="sm" className="rounded-full text-xs">
                     Voir l'annonce
                   </Button>

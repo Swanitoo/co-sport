@@ -1,6 +1,7 @@
 "use server";
 
 import { currentUser } from "@/auth/current-user";
+import { sendReviewReceivedEmail } from "@/lib/emails";
 import { prisma } from "@/prisma";
 import { ActionError, action } from "@/safe-actions";
 import { headers } from "next/headers";
@@ -62,6 +63,8 @@ export const updateReviewAction = action(ReviewSchema, async (input) => {
   };
 
   let review;
+  let isNewReview = false;
+
   if (input.id) {
     review = await prisma.review.update({
       where: {
@@ -77,10 +80,20 @@ export const updateReviewAction = action(ReviewSchema, async (input) => {
             socialLink: true,
           },
         },
-        product: true,
+        product: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
   } else {
+    isNewReview = true;
     review = await prisma.review.create({
       data: {
         ...reviewData,
@@ -95,9 +108,31 @@ export const updateReviewAction = action(ReviewSchema, async (input) => {
             socialLink: true,
           },
         },
-        product: true,
+        product: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
+
+    // Envoyer un email au propriétaire du produit lors d'un nouvel avis
+    if (review.product?.user?.email) {
+      await sendReviewReceivedEmail({
+        email: review.product.user.email,
+        productName: review.product.name,
+        productId: review.product.id,
+        reviewerName: user.name || "Un utilisateur",
+        rating: review.rating,
+        reviewText: review.text || "",
+        userId: review.product.user.id,
+      });
+    }
   }
 
   return review;

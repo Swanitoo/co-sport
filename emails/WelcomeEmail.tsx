@@ -41,11 +41,11 @@ export const WelcomeEmail = ({ name }: { name: string }) => {
       <Hr className="my-6 border-slate-200" />
 
       <Text>
-        Pour toute question, n'hésitez pas à consulter notre{" "}
+        Pour toute question, n'hésitez pas à consulter notre FAQ ou à nous
+        contacter directement via notre
         <Link href={`${baseUrl}/support`} className="text-blue-600 underline">
-          page d'aide
+          formulaire de contact.
         </Link>{" "}
-        ou à nous contacter directement via notre formulaire de contact.
       </Text>
 
       <Text>À bientôt sur Co-Sport !</Text>

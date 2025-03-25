@@ -1,4 +1,5 @@
 import { auth } from "@/auth/auth";
+import { sendNewMessageEmail } from "@/lib/emails";
 import { prisma } from "@/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -143,6 +144,43 @@ export async function POST(req: NextRequest) {
       await prisma.unreadMessage.createMany({
         data: notificationsToCreate,
       });
+
+      // Récupérer les informations sur les destinataires pour les emails
+      const recipients = await prisma.user.findMany({
+        where: {
+          id: {
+            in: members.map((member) => member.userId),
+          },
+        },
+        select: { id: true, email: true },
+      });
+
+      // Récupérer les détails du produit
+      const productDetails = await prisma.product.findUnique({
+        where: { id: productId },
+        select: { name: true },
+      });
+
+      // Récupérer les informations de l'expéditeur
+      const sender = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { name: true },
+      });
+
+      // Envoyer un email à chaque destinataire
+      for (const recipient of recipients) {
+        if (recipient.email) {
+          await sendNewMessageEmail(
+            recipient.email,
+            productDetails?.name || "Activité",
+            productId,
+            sender?.name || "Un utilisateur",
+            text,
+            1,
+            recipient.id
+          );
+        }
+      }
     }
 
     return NextResponse.json({ success: true, message });

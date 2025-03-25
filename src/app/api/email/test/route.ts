@@ -1,32 +1,92 @@
-import { sendNewMessageEmail } from "@/lib/emails";
-import { NextResponse } from "next/server";
+import {
+  sendJoinRequestEmail,
+  sendMembershipAcceptedEmail,
+  sendNewMessageEmail,
+  sendReviewReceivedEmail,
+  sendWelcomeEmail,
+} from "@/lib/emails";
+import { PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+const prisma = new PrismaClient();
+
+// Route de test pour tous les types d'emails
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const emailType = searchParams.get("type") || "message";
+  const email = searchParams.get("email") || "swan.marin@gmail.com";
+
   try {
-    const result = await sendNewMessageEmail(
-      "swan.marin@gmail.com", // Remplacez par votre email
-      "Tennis Club Paris",
-      "prod_123",
-      "John Doe",
-      "Salut ! Je suis intéressé par votre annonce.",
-      1
-    );
+    let result;
+
+    switch (emailType) {
+      case "welcome":
+        result = await sendWelcomeEmail(email, "[TEST] Nouvel Utilisateur");
+        break;
+
+      case "join_request":
+        result = await sendJoinRequestEmail(
+          email,
+          "[TEST] Club de Tennis",
+          "test_id_123",
+          "[TEST] Jean Dupont",
+          "test_user_id"
+        );
+        break;
+
+      case "membership_accepted":
+        result = await sendMembershipAcceptedEmail(
+          email,
+          "[TEST] Club de Tennis",
+          "test_id_123",
+          "test_user_id"
+        );
+        break;
+
+      case "review":
+        result = await sendReviewReceivedEmail({
+          email,
+          productName: "[TEST] Club de Tennis",
+          productId: "test_id_123",
+          reviewerName: "[TEST] Jean Dupont",
+          rating: 4,
+          reviewText: "Ceci est un avis de test pour vérifier les emails.",
+          userId: "test_user_id",
+        });
+        break;
+
+      case "message":
+      default:
+        result = await sendNewMessageEmail(
+          email,
+          "[TEST] Club de Tennis",
+          "test_id_123",
+          "[TEST] Jean Dupont",
+          "Ceci est un message de test pour vérifier le système d'email. Ce n'est pas un vrai message.",
+          1
+        );
+        break;
+    }
 
     if (!result.success) {
       return NextResponse.json(
-        { error: "Échec de l'envoi de l'email" },
+        { error: `Échec de l'envoi de l'email de test (${emailType})` },
         { status: 500 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      message: "Email envoyé avec succès",
+      message: `Email de test (${emailType}) envoyé avec succès à ${email}`,
+      type: emailType,
     });
   } catch (error) {
-    console.error("Erreur lors de l'envoi de l'email:", error);
+    console.error(
+      `Erreur lors de l'envoi de l'email de test (${emailType}):`,
+      error
+    );
     return NextResponse.json(
-      { error: "Erreur lors de l'envoi de l'email" },
+      { error: `Erreur lors de l'envoi de l'email de test (${emailType})` },
       { status: 500 }
     );
   }

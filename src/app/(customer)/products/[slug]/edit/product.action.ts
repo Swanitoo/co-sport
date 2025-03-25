@@ -1,6 +1,11 @@
 "use server";
 
 import { auth } from "@/auth/auth";
+import {
+  sendJoinRequestEmail,
+  sendMembershipAcceptedEmail,
+  sendNewMessageEmail,
+} from "@/lib/emails";
 import { prisma } from "@/prisma";
 import { userAction } from "@/safe-actions";
 import { revalidatePath } from "next/cache";
@@ -82,7 +87,11 @@ export async function createProductAction(data: ProductType) {
 
     console.log("Création de groupe : Succès", product);
 
+    // Revalider les chemins pour toutes les locales
     revalidatePath("/products");
+    revalidatePath("/en/products");
+    revalidatePath("/fr/products");
+    revalidatePath("/es/products");
     return { data: product };
   } catch (error) {
     console.error("Création de groupe : Erreur", error);
@@ -160,8 +169,19 @@ export async function updateProductAction({
       },
     });
 
+    // Revalider les chemins pour toutes les locales
     revalidatePath("/products");
+    revalidatePath("/en/products");
+    revalidatePath("/fr/products");
+    revalidatePath("/es/products");
     revalidatePath(`/products/${id}`);
+    revalidatePath(`/products/${slug}`);
+    revalidatePath(`/en/products/${id}`);
+    revalidatePath(`/en/products/${slug}`);
+    revalidatePath(`/fr/products/${id}`);
+    revalidatePath(`/fr/products/${slug}`);
+    revalidatePath(`/es/products/${id}`);
+    revalidatePath(`/es/products/${slug}`);
     return { data: updatedProduct };
   } catch (error) {
     return { serverError: "Erreur lors de la modification du groupe" };
@@ -194,7 +214,11 @@ export async function leaveGroupAction({
       },
     });
 
+    // Revalider les chemins pour toutes les locales
     revalidatePath(`/products/${productId}`);
+    revalidatePath(`/en/products/${productId}`);
+    revalidatePath(`/fr/products/${productId}`);
+    revalidatePath(`/es/products/${productId}`);
     return { success: true };
   } catch (error) {
     return { serverError: "Erreur lors de la suppression du membre" };
@@ -231,7 +255,11 @@ export async function deleteProductAction(
       where: { id: productId },
     });
 
+    // Revalider les chemins pour toutes les locales
     revalidatePath("/products");
+    revalidatePath("/en/products");
+    revalidatePath("/fr/products");
+    revalidatePath("/es/products");
     return { success: true };
   } catch (error) {
     return { serverError: "Erreur lors de la suppression du groupe" };
@@ -251,6 +279,29 @@ export async function createMembershipAction({
   }
 
   try {
+    // Récupérer les informations du produit et de l'utilisateur
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      include: {
+        user: {
+          select: {
+            email: true,
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (!product) {
+      return { serverError: "Ce groupe n'existe pas" };
+    }
+
+    // Récupérer les informations de l'utilisateur qui fait la demande
+    const requestingUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { name: true },
+    });
+
     await prisma.membership.create({
       data: {
         productId,
@@ -259,6 +310,17 @@ export async function createMembershipAction({
         status: "PENDING",
       },
     });
+
+    // Envoyer un email au propriétaire du groupe
+    if (product.user.email && requestingUser?.name) {
+      await sendJoinRequestEmail(
+        product.user.email,
+        product.name,
+        productId,
+        requestingUser.name,
+        product.user.id
+      );
+    }
 
     revalidatePath(`/products/${productId}`);
     return { success: true };
@@ -321,6 +383,16 @@ export const acceptMembershipAction = userAction(
             userId: product.userId, // Le message est "envoyé" par le propriétaire
           },
         });
+
+        // Envoyer un email à l'utilisateur pour l'informer que sa demande a été acceptée
+        if (updatedMembership.user.email) {
+          await sendMembershipAcceptedEmail(
+            updatedMembership.user.email,
+            product.name,
+            productId,
+            userId
+          );
+        }
       }
 
       revalidatePath(`/products/${productId}`);
@@ -521,6 +593,11 @@ export const sendMessageAction = userAction(
         select: { userId: true },
       });
 
+      // Si le propriétaire n'est pas l'expéditeur, l'ajouter aux membres pour notification
+      if (product.userId !== user.id) {
+        members.push({ userId: product.userId });
+      }
+
       const message = await prisma.message.findFirst({
         where: {
           productId,
@@ -530,6 +607,7 @@ export const sendMessageAction = userAction(
       });
 
       if (message) {
+        // Créer les notifications dans la base de données
         await prisma.unreadMessage.createMany({
           data: members.map((member) => ({
             userId: member.userId,
@@ -537,6 +615,43 @@ export const sendMessageAction = userAction(
           })),
           skipDuplicates: true,
         });
+
+        // Récupérer les informations sur les destinataires pour les emails
+        const recipients = await prisma.user.findMany({
+          where: {
+            id: {
+              in: members.map((member) => member.userId),
+            },
+          },
+          select: { id: true, email: true },
+        });
+
+        // Récupérer les détails du produit
+        const productDetails = await prisma.product.findUnique({
+          where: { id: productId },
+          select: { name: true },
+        });
+
+        // Récupérer les informations de l'expéditeur
+        const sender = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { name: true },
+        });
+
+        // Envoyer un email à chaque destinataire
+        for (const recipient of recipients) {
+          if (recipient.email) {
+            await sendNewMessageEmail(
+              recipient.email,
+              productDetails?.name || "Activité",
+              productId,
+              sender?.name || "Un utilisateur",
+              text,
+              1,
+              recipient.id
+            );
+          }
+        }
       }
 
       revalidatePath(`/products/${productId}`);

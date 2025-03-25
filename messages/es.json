@@ -94,6 +94,7 @@
   },
   "Home": {
     "latest_products": "Últimas actividades",
+    "latest_products_subtitle": "Descubre las últimas actividades deportivas añadidas por nuestros miembros",
     "hero_title": "Encuentra tu compañero deportivo",
     "hero_subtitle": "Elige tu deporte, encuentra tu compañero ideal y progresen juntos.",
     "cta_button": "Comenzar",
@@ -107,13 +108,37 @@
       "title": "Insignias Deportivas",
       "subtitle": "Destaca con nuestras insignias deportivas que reconocen tus logros en Strava",
       "how_to_get": "Cómo obtenerla:",
-      "profile": "Práctica regular (al menos 10 actividades)",
-      "mountain": "Acumular más de 1000m de elevación positiva",
-      "endurance1": "Correr a menos de 6 min/km en terreno plano",
-      "endurance2": "O menos de 7min30/km con elevación",
-      "long_distance": "Completar al menos una carrera de más de 15 km",
-      "multi_sport": "Practicar al menos 3 deportes diferentes",
-      "trail": "Participar en al menos 5 actividades de trail o senderismo"
+      "profile": {
+        "title": "Perfil Deportivo",
+        "description": "Práctica regular de actividades deportivas"
+      },
+      "mountain": {
+        "title": "Montañero",
+        "description": "Acumulación significativa de elevación positiva"
+      },
+      "endurance": {
+        "title": "Resistencia",
+        "description": "Buena velocidad de carrera mantenida"
+      },
+      "long_distance": {
+        "title": "Larga Distancia",
+        "description": "Finalización de carreras de larga distancia"
+      },
+      "multi_sport": {
+        "title": "Multi-Deporte",
+        "description": "Práctica de múltiples disciplinas deportivas"
+      },
+      "trail": {
+        "title": "Corredor de Trail",
+        "description": "Participación regular en trails o caminatas"
+      },
+      "profile_req": "Práctica regular (al menos 10 actividades)",
+      "mountain_req": "Acumular más de 1000m de elevación positiva",
+      "endurance1_req": "Correr a menos de 6 min/km en terreno plano",
+      "endurance2_req": "O menos de 7min30/km con elevación",
+      "long_distance_req": "Completar al menos una carrera de más de 15 km",
+      "multi_sport_req": "Practicar al menos 3 deportes diferentes",
+      "trail_req": "Participar en al menos 5 actividades de trail o senderismo"
     },
     "Support": {
       "title": "Apoya co-sport.com",
@@ -123,7 +148,7 @@
       "story_p2": "Desarrollado por un único desarrollador apasionado, este proyecto se construye con la ambición de hacer el deporte más accesible y seguro para todos, especialmente para las mujeres que quieren practicar con seguridad.",
       "story_p3": "Hasta la fecha, co-sport.com sigue siendo completamente gratuito para todos los usuarios. Nuestra prioridad es construir una comunidad sólida ante todo.",
       "how_to_support": "Cómo apoyarnos",
-      "support_p1": "Para mantener este servicio y seguir desarrollando nuevas funcionalidades, contamos con el apoyo de nuestra comunidad. Así es cómo puedes contribuir:",
+      "support_p1": "Para mantener este servicio gratuito y seguir desarrollando nuevas funcionalidades, contamos con el apoyo de nuestra comunidad. Así es cómo puedes contribuir:",
       "buy_coffee": "Invítame a un café",
       "become_partner": "Conviértete en socio",
       "support": "Apoyar",

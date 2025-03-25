@@ -36,9 +36,9 @@ export const FeatureSection = () => {
         className="light rounded-lg bg-primary/90 py-12 md:min-h-[550px] lg:min-h-[650px]"
         id="features"
       >
-        <h2 className="text-center text-3xl font-bold text-white">
+        <h3 className="text-center text-3xl font-bold text-white">
           {t("Features.Title")}
-        </h2>
+        </h3>
         <div className={cn("w-full flex flex-col items-center py-4")}>
           <AnimatePresence mode="wait">
             {step === 0 && (

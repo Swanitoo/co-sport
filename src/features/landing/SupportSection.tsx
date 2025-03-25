@@ -9,9 +9,9 @@ export const SupportSection = () => {
     <section className="py-12" id="support">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+          <h3 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
             Soutenez co-sport.com
-          </h2>
+          </h3>
           <p className="mx-auto mt-3 max-w-2xl text-lg text-gray-500 dark:text-gray-400">
             Un projet indépendant au service de la communauté sportive
           </p>

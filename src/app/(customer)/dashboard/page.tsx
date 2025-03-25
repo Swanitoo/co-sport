@@ -47,10 +47,7 @@ import { ExternalLink, Globe, MapPin, Pencil } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ReviewItem } from "../../(user)/wall/[slug]/ReviewCard";
-import {
-  LEVEL_CLASSES,
-  SPORTS,
-} from "../products/[productId]/edit/product.schema";
+import { LEVEL_CLASSES, SPORTS } from "../products/[slug]/edit/product.schema";
 import {
   updateBio,
   updateBirthDate,

@@ -12,7 +12,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { COUNTRIES } from "@/data/country";
 import { cn } from "@/lib/utils";
-import { LEVEL_CLASSES, SPORTS } from "../[productId]/edit/product.schema";
+import { LEVEL_CLASSES, SPORTS } from "../[slug]/edit/product.schema";
 import {
   SportPerformanceFilters,
   SportPerformanceValues,

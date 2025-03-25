@@ -54,65 +54,6 @@ export const LocalizedFeatureBoxes = ({
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
   const isMobileRef = useRef(false);
 
-  // Hook pour gérer l'animation des icônes auxiliaires
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    // Fonction pour gérer le déploiement des icônes au survol
-    const handleMouseEffects = () => {
-      cardsRef.current.forEach((card, cardIndex) => {
-        if (!card) return;
-
-        const iconElements = card.querySelectorAll("[data-final-x]");
-
-        const handleMouseEnter = () => {
-          if (iconElements) {
-            iconElements.forEach((icon) => {
-              const finalX = icon.getAttribute("data-final-x");
-              const finalY = icon.getAttribute("data-final-y");
-              if (finalX && finalY) {
-                (
-                  icon as HTMLElement
-                ).style.transform = `translate(${finalX}px, ${finalY}px)`;
-              }
-            });
-          }
-        };
-
-        const handleMouseLeave = () => {
-          if (iconElements) {
-            iconElements.forEach((icon) => {
-              const initialX = icon.getAttribute("data-initial-x");
-              const initialY = icon.getAttribute("data-initial-y");
-              if (initialX && initialY) {
-                (
-                  icon as HTMLElement
-                ).style.transform = `translate(${initialX}px, ${initialY}px)`;
-              }
-            });
-          }
-        };
-
-        // Ajouter les écouteurs d'événements
-        card.addEventListener("mouseenter", handleMouseEnter);
-        card.addEventListener("mouseleave", handleMouseLeave);
-
-        // Nettoyer
-        return () => {
-          card.removeEventListener("mouseenter", handleMouseEnter);
-          card.removeEventListener("mouseleave", handleMouseLeave);
-        };
-      });
-    };
-
-    // Délai pour s'assurer que les éléments DOM sont bien chargés
-    const timer = setTimeout(() => {
-      handleMouseEffects();
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   useEffect(() => {
     // Vérifier si on est sur mobile
     if (typeof window !== "undefined") {
@@ -129,7 +70,7 @@ export const LocalizedFeatureBoxes = ({
             if (entry.isIntersecting) {
               setHoveredCardIndex(cardIndex);
 
-              // Animer les icônes quand la carte est visible
+              // Animer les icônes quand la carte est visible sur mobile
               const iconElements =
                 cardElement.querySelectorAll("[data-final-x]");
               iconElements.forEach((icon) => {
@@ -138,7 +79,7 @@ export const LocalizedFeatureBoxes = ({
                 if (finalX && finalY) {
                   (
                     icon as HTMLElement
-                  ).style.transform = `translate(${finalX}px, ${finalY}px)`;
+                  ).style.transform = `translate(calc(-50% + ${finalX}px), calc(-50% + ${finalY}px))`;
                 }
               });
             } else if (hoveredCardIndex === cardIndex) {
@@ -153,7 +94,7 @@ export const LocalizedFeatureBoxes = ({
                 if (initialX && initialY) {
                   (
                     icon as HTMLElement
-                  ).style.transform = `translate(${initialX}px, ${initialY}px)`;
+                  ).style.transform = `translate(calc(-50% + ${initialX}px), calc(-50% + ${initialY}px))`;
                 }
               });
             }
@@ -182,7 +123,6 @@ export const LocalizedFeatureBoxes = ({
     }
   };
 
-  // Définir les fonctionnalités avec des traductions
   const features = [
     {
       title: t("Step1.SportWomen"),
@@ -261,84 +201,171 @@ export const LocalizedFeatureBoxes = ({
     });
   };
 
-  return (
-    <section className="py-12">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-            {t("Title")}
-          </h2>
-        </div>
+  // Effet pour gérer le déploiement des icônes au survol
+  useEffect(() => {
+    cardsRef.current.forEach((card, cardIndex) => {
+      if (!card) return;
 
-        <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      const iconElements = card.querySelectorAll("[data-final-x]");
+
+      const handleMouseEnter = () => {
+        iconElements.forEach((icon) => {
+          const finalX = icon.getAttribute("data-final-x");
+          const finalY = icon.getAttribute("data-final-y");
+          if (finalX && finalY) {
+            (
+              icon as HTMLElement
+            ).style.transform = `translate(calc(-50% + ${finalX}px), calc(-50% + ${finalY}px))`;
+          }
+        });
+      };
+
+      const handleMouseLeave = () => {
+        iconElements.forEach((icon, i) => {
+          const initialX = icon.getAttribute("data-initial-x");
+          const initialY = icon.getAttribute("data-initial-y");
+          if (initialX && initialY) {
+            (
+              icon as HTMLElement
+            ).style.transform = `translate(calc(-50% + ${initialX}px), calc(-50% + ${initialY}px))`;
+          }
+        });
+      };
+
+      card.addEventListener("mouseenter", handleMouseEnter);
+      card.addEventListener("mouseleave", handleMouseLeave);
+
+      return () => {
+        card.removeEventListener("mouseenter", handleMouseEnter);
+        card.removeEventListener("mouseleave", handleMouseLeave);
+      };
+    });
+  }, []);
+
+  return (
+    <>
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <h3 className="mb-8 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+          {t("Title")}
+        </h3>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => {
             const iconPositions = getPrecomputedPositions(
-              feature.auxiliaryIcons
+              feature.auxiliaryIcons || []
             );
+            const isHovered = index === hoveredCardIndex;
+
             return (
-              <Card
+              <div
                 key={index}
                 ref={(el) => {
                   cardsRef.current[index] = el;
-                  return undefined;
                 }}
                 data-card-index={index}
-                className={`group relative cursor-pointer overflow-hidden border-0 shadow-lg transition-all duration-300 hover:shadow-xl ${
-                  hoveredCardIndex === index ? "border-2 border-primary" : ""
-                }`}
-                onClick={() => handleRedirect(feature.path)}
               >
-                <div
-                  className={`absolute inset-0 -z-10 bg-gradient-to-br ${feature.bgColor} opacity-30 dark:opacity-5`}
-                />
+                <Card
+                  onClick={() => handleRedirect(feature.path)}
+                  className={`group relative flex h-[500px] cursor-pointer flex-col overflow-hidden transition-all duration-300 ${
+                    isHovered
+                      ? "scale-[1.02] border-primary/50 shadow-xl"
+                      : "hover:scale-[1.02] hover:border-primary/50 hover:shadow-xl"
+                  }`}
+                >
+                  <div
+                    className={`relative h-48 w-full shrink-0 bg-gradient-to-br ${
+                      feature.bgColor
+                    } flex items-center justify-center transition-all duration-300 ${
+                      isHovered
+                        ? "saturate-[1.2]"
+                        : "group-hover:saturate-[1.2]"
+                    }`}
+                  >
+                    <div className="relative">
+                      {feature.auxiliaryIcons?.map((icon, i) => {
+                        const positions = iconPositions[i];
+                        return (
+                          <div
+                            key={i}
+                            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-80 transition-all duration-300 ease-in-out ${
+                              isHovered ? "opacity-90" : ""
+                            } group-hover:opacity-90`}
+                            style={{
+                              transform: isHovered
+                                ? `translate(calc(-50% + ${positions.finalX}px), calc(-50% + ${positions.finalY}px))`
+                                : `translate(calc(-50% + ${positions.initialX}px), calc(-50% + ${positions.initialY}px))`,
+                              transitionProperty: "transform, opacity",
+                              zIndex: 5,
+                            }}
+                            data-initial-x={positions.initialX}
+                            data-initial-y={positions.initialY}
+                            data-final-x={positions.finalX}
+                            data-final-y={positions.finalY}
+                          >
+                            <div
+                              className={`transition-transform duration-300 ease-in-out ${
+                                isHovered ? "scale-110" : ""
+                              } group-hover:scale-110`}
+                              style={{
+                                transformOrigin: "center",
+                              }}
+                            >
+                              {icon}
+                            </div>
+                          </div>
+                        );
+                      })}
 
-                <CardHeader>
-                  <div className="mb-3 flex">
-                    <div
-                      className={`relative flex size-16 items-center justify-center rounded-full ${feature.iconBgColor} transition-all duration-300 group-hover:scale-110`}
-                    >
-                      {feature.icon}
-
-                      {/* Icônes auxiliaires */}
-                      {feature.auxiliaryIcons.map((icon, iconIndex) => (
-                        <div
-                          key={iconIndex}
-                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-500"
-                          style={{
-                            transform: `translate(${iconPositions[iconIndex].initialX}px, ${iconPositions[iconIndex].initialY}px)`,
-                          }}
-                          data-initial-x={iconPositions[iconIndex].initialX}
-                          data-initial-y={iconPositions[iconIndex].initialY}
-                          data-final-x={iconPositions[iconIndex].finalX}
-                          data-final-y={iconPositions[iconIndex].finalY}
-                        >
-                          {icon}
-                        </div>
-                      ))}
+                      <div
+                        className={`relative z-10 flex items-center justify-center rounded-full ${
+                          feature.iconBgColor
+                        } p-4 shadow-sm transition-all duration-300 ${
+                          isHovered ? "scale-110 shadow-md" : ""
+                        } group-hover:scale-110 group-hover:shadow-md`}
+                      >
+                        {feature.icon}
+                      </div>
                     </div>
                   </div>
-                  <CardTitle className="text-xl font-bold">
-                    {feature.title}
-                  </CardTitle>
-                </CardHeader>
 
-                <CardContent>
-                  <CardDescription className="text-base">
-                    {feature.shortDescription}
-                  </CardDescription>
-                </CardContent>
+                  <div className="flex h-[calc(500px-192px)] flex-col">
+                    <div className="flex-1 p-4">
+                      <CardHeader className="p-0 pb-2">
+                        <CardTitle className="text-xl font-bold leading-tight">
+                          <span className="line-clamp-2">{feature.title}</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-0 pt-2">
+                        <CardDescription asChild>
+                          <span className="line-clamp-4 text-base leading-relaxed text-gray-600 dark:text-gray-300">
+                            {feature.shortDescription}
+                          </span>
+                        </CardDescription>
+                      </CardContent>
+                    </div>
 
-                <CardFooter>
-                  <button className="group/button flex w-full items-center justify-between rounded-md bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition-all hover:bg-primary/20">
-                    <span>{feature.cta}</span>
-                    <ArrowRight className="size-4 transition-transform group-hover/button:translate-x-1" />
-                  </button>
-                </CardFooter>
-              </Card>
+                    <div className="relative h-[60px] overflow-hidden">
+                      <CardFooter
+                        className={`absolute inset-x-0 bottom-0 flex h-[60px] items-center border-t bg-card p-4 shadow-sm transition-all duration-300 ease-out ${
+                          isHovered ? "translate-y-0" : "translate-y-full"
+                        } group-hover:translate-y-0`}
+                      >
+                        <div className="flex items-center gap-2 text-primary">
+                          {feature.cta}
+                          <ArrowRight
+                            className={`size-4 transition-transform duration-300 ${
+                              isHovered ? "translate-x-1" : ""
+                            } group-hover:translate-x-1`}
+                          />
+                        </div>
+                      </CardFooter>
+                    </div>
+                  </div>
+                </Card>
+              </div>
             );
           })}
         </div>
       </div>
-    </section>
+    </>
   );
 };

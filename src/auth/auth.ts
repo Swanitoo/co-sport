@@ -1,4 +1,5 @@
 import { CustomPrismaAdapter } from "@/lib/auth-adapter";
+import { sendWelcomeEmail } from "@/lib/emails";
 import { prisma } from "@/prisma";
 import { AdapterUser } from "@auth/core/adapters";
 import NextAuth from "next-auth";
@@ -390,10 +391,34 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           );
           return true;
         }
+
+        // Vérifier si c'est une première connexion pour envoyer un email de bienvenue
+        if (account && user.email) {
+          // Vérifier si c'est un nouvel utilisateur (pas d'historique de connexion précédente)
+          const existingUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { id: true, emailVerified: true },
+          });
+
+          if (!existingUser || !existingUser.emailVerified) {
+            // C'est un nouvel utilisateur, envoyer un email de bienvenue
+            await sendWelcomeEmail(
+              user.email,
+              user.name || "nouvel utilisateur"
+            );
+
+            // Mettre à jour emailVerified pour indiquer que l'email de bienvenue a été envoyé
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { emailVerified: new Date() },
+            });
+          }
+        }
+
         return true;
       } catch (error) {
-        console.error("Erreur lors de l'authentification:", error);
-        return false;
+        console.error("Erreur lors de la connexion:", error);
+        return true; // Autoriser la connexion même en cas d'erreur d'email
       }
     },
     async jwt({ token, user, account }) {

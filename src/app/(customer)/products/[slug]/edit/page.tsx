@@ -1,5 +1,6 @@
 import { requiredCurrentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
+import { getServerTranslations } from "@/components/server-translation";
 import { prisma } from "@/prisma";
 import type { PageParams } from "@/types/next";
 import { ChevronRight, Home } from "lucide-react";
@@ -9,14 +10,22 @@ import { ProductForm } from "./ProductForm";
 
 export default async function RoutePage(
   props: PageParams<{
-    productId: string;
-  }>,
+    slug: string;
+  }>
 ) {
+  const { t, locale } = await getServerTranslations();
   const user = await requiredCurrentUser();
 
+  // Si le slug est undefined, rediriger vers 404
+  if (!props.params.slug) {
+    console.error("Slug est undefined dans la page d'édition");
+    notFound();
+  }
+
+  // Rechercher le produit par slug
   const product = await prisma.product.findUnique({
     where: {
-      id: props.params.productId,
+      slug: props.params.slug,
     },
   });
 
@@ -26,27 +35,36 @@ export default async function RoutePage(
 
   const transformedProduct = {
     ...product,
-    onlyGirls: false,
+    onlyGirls: product.onlyGirls ?? false,
     venueName: product.venueName ?? undefined,
     venueAddress: product.venueAddress ?? undefined,
-    venueLat: product.venueLat ?? undefined,
-    venueLng: product.venueLng ?? undefined,
+    venueLatitude: product.venueLat ?? undefined,
+    venueLongitude: product.venueLng ?? undefined,
   };
 
   return (
     <Layout>
       <div className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
-        <Link href="/home" className="hover:text-foreground">
+        <Link href={`/${locale}/home`} className="hover:text-foreground">
           <Home className="size-4" />
         </Link>
         <ChevronRight className="size-4" />
-        <Link href="/products" className="hover:text-foreground">
-          Annonces
+        <Link href={`/${locale}/products`} className="hover:text-foreground">
+          {t("Products.Title", "Annonces")}
         </Link>
         <ChevronRight className="size-4" />
-        <span className="text-foreground">Créer une annonce</span>
+        <Link
+          href={`/${locale}/products/${product.slug}`}
+          className="hover:text-foreground"
+        >
+          {product.name}
+        </Link>
+        <ChevronRight className="size-4" />
+        <span className="text-foreground">
+          {t("Products.Edit", "Modifier")}
+        </span>
       </div>
-      <LayoutTitle>Créer une annonce</LayoutTitle>
+      <LayoutTitle>{t("Products.EditTitle", "Modifier l'annonce")}</LayoutTitle>
       <ProductForm
         defaultValues={transformedProduct}
         productId={product.id}

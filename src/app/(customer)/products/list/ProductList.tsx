@@ -1,12 +1,13 @@
 "use client";
 
+import { useAppTranslations } from "@/components/i18n-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { COUNTRIES } from "@/data/country";
 import { CheckCircle, Crown, Globe, Hourglass } from "lucide-react";
 import Link from "next/link";
-import { LEVEL_CLASSES, SPORTS } from "../[productId]/edit/product.schema";
+import { LEVEL_CLASSES, SPORTS } from "../[slug]/edit/product.schema";
 import { ProductListProps } from "./productList.schema";
 
 export function ProductSkeleton() {
@@ -34,6 +35,8 @@ export function ProductList({
   userId,
   isLoading,
 }: ProductListProps & { isLoading?: boolean }) {
+  const { locale } = useAppTranslations();
+
   const getSportIcon = (sportName: string) => {
     const sport = SPORTS.find((s) => s.name === sportName);
     return sport?.icon || "🎯";
@@ -68,7 +71,7 @@ export function ProductList({
         return (
           <Link
             key={`product-${product.id}-${index}`}
-            href={`/products/${product.id}`}
+            href={`/${locale}/products/${product.slug}`}
           >
             <Card className="cursor-pointer p-4 transition-colors hover:bg-accent/50">
               <div className="mb-4 flex items-center gap-3">

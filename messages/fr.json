@@ -94,6 +94,7 @@
   },
   "Home": {
     "latest_products": "Dernières annonces",
+    "latest_products_subtitle": "Découvrez les dernières activités sportives ajoutées par nos membres",
     "hero_title": "Trouve ton partenaire de sport",
     "hero_subtitle": "Choisis ton sport, trouve ton partenaire idéal et progressez ensemble.",
     "cta_button": "Commencer",
@@ -107,13 +108,37 @@
       "title": "Les Badges Sportifs",
       "subtitle": "Distingues-toi grâce à nos badges sportifs qui reconnaissent tes accomplissements sur Strava",
       "how_to_get": "Comment l'obtenir :",
-      "profile": "Pratiquer régulièrement (au moins 10 activités)",
-      "mountain": "Cumuler plus de 1000m de dénivelé positif",
-      "endurance1": "Courir à moins de 6 min/km sur terrain plat",
-      "endurance2": "Ou moins de 7min30/km avec dénivelé",
-      "long_distance": "Réaliser au moins une course de plus de 15 km",
-      "multi_sport": "Pratiquer au moins 3 disciplines sportives différentes",
-      "trail": "Participer à au moins 5 activités de trail ou randonnée"
+      "profile": {
+        "title": "Profil Sportif",
+        "description": "Pratique régulière d'activités sportives"
+      },
+      "mountain": {
+        "title": "Montagnard",
+        "description": "Cumul important de dénivelé positif"
+      },
+      "endurance": {
+        "title": "Endurant",
+        "description": "Bonne vitesse de course maintenue"
+      },
+      "long_distance": {
+        "title": "Longue Distance",
+        "description": "Complétion de courses de longue distance"
+      },
+      "multi_sport": {
+        "title": "Multi-Sport",
+        "description": "Pratique de plusieurs disciplines sportives"
+      },
+      "trail": {
+        "title": "Traileur",
+        "description": "Participation régulière à des trails ou randonnées"
+      },
+      "profile_req": "Pratiquer régulièrement (au moins 10 activités)",
+      "mountain_req": "Cumuler plus de 1000m de dénivelé positif",
+      "endurance1_req": "Courir à moins de 6 min/km sur terrain plat",
+      "endurance2_req": "Ou moins de 7min30/km avec dénivelé",
+      "long_distance_req": "Réaliser au moins une course de plus de 15 km",
+      "multi_sport_req": "Pratiquer au moins 3 disciplines sportives différentes",
+      "trail_req": "Participer à au moins 5 activités de trail ou randonnée"
     },
     "Support": {
       "title": "Soutenez co-sport.com",
@@ -123,7 +148,7 @@
       "story_p2": "Développé par un unique développeur passionné, ce projet est construit avec l'ambition de rendre le sport plus accessible et plus sûr pour tous, particulièrement pour les femmes qui souhaitent pratiquer en toute sécurité.",
       "story_p3": "À ce jour, co-sport.com reste entièrement gratuit pour tous les utilisateurs. Notre priorité est de construire une communauté solide avant tout.",
       "how_to_support": "Comment nous soutenir",
-      "support_p1": "Pour maintenir ce service et continuer à développer de nouvelles fonctionnalités, nous comptons sur le soutien de notre communauté. Voici comment vous pouvez contribuer :",
+      "support_p1": "Pour maintenir ce service gratuit et continuer à développer de nouvelles fonctionnalités, nous comptons sur le soutien de notre communauté. Voici comment vous pouvez contribuer :",
       "buy_coffee": "M'offrir un café",
       "become_partner": "Devenir partenaire",
       "support": "Soutenir",

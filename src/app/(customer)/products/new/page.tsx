@@ -2,7 +2,7 @@ import { requiredCurrentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { ChevronRight, Home } from "lucide-react";
 import Link from "next/link";
-import { ProductForm } from "../[productId]/edit/ProductForm";
+import { ProductForm } from "../[slug]/edit/ProductForm";
 
 export default async function RoutePage() {
   const user = await requiredCurrentUser();

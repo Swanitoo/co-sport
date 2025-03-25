@@ -1,3 +1,8 @@
+import {
+  SupportedLocale,
+  translateLevel,
+  translateSport,
+} from "@/app/(customer)/products/[slug]/edit/product.schema";
 import { LatestProducts } from "@/app/(landing)/home/LatestProducts";
 import { currentUser } from "@/auth/current-user";
 import { ParallaxIcons } from "@/components/parallax/ParallaxIcons";
@@ -61,7 +66,14 @@ export default async function LocalizedHomePage({ params: { locale } }: Props) {
     cta_button: messages.Home.cta_button,
   };
 
-  const latestProducts = await prisma.product.findMany({
+  // Extraire les traductions pour LatestProducts
+  const latestProductsTranslations = {
+    title: messages.Home.latest_products,
+    subtitle: messages.Home.latest_products_subtitle,
+  };
+
+  // Récupérer les derniers produits
+  let latestProducts = await prisma.product.findMany({
     where: {
       enabled: true,
     },
@@ -92,6 +104,20 @@ export default async function LocalizedHomePage({ params: { locale } }: Props) {
     },
   });
 
+  // Si nous ne sommes pas en français, traduire les sports et niveaux
+  // en utilisant les nouvelles fonctions utilitaires du schéma de produit
+  if (locale !== "fr") {
+    latestProducts = latestProducts.map((product) => {
+      return {
+        ...product,
+        originalSportName: product.sport,
+        originalLevelName: product.level,
+        sport: translateSport(product.sport, locale as SupportedLocale),
+        level: translateLevel(product.level, locale as SupportedLocale),
+      };
+    });
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <ParallaxIcons />
@@ -99,7 +125,11 @@ export default async function LocalizedHomePage({ params: { locale } }: Props) {
       <LandingHeader />
       <HeroSection translations={heroTranslations} />
       <LocalizedFeatureBoxes isAuthenticated={!!user} />
-      <LatestProducts products={latestProducts} isAuthenticated={!!user} />
+      <LatestProducts
+        products={latestProducts}
+        isAuthenticated={!!user}
+        translations={latestProductsTranslations}
+      />
       <LocalizedBadgesExplanationSection />
       <FeatureSection />
       <LocalizedSupportSection />

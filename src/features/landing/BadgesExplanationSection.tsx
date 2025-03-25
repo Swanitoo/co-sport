@@ -6,9 +6,9 @@ export const BadgesExplanationSection = () => {
     <section className="py-12" id="badges">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+          <h3 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
             Les Badges Sportifs
-          </h2>
+          </h3>
           <p className="mx-auto mt-3 max-w-2xl text-xl text-gray-500 dark:text-gray-400 sm:mt-4">
             Distingues-toi grâce à nos badges sportifs qui reconnaissent tes
             accomplissements sur Strava

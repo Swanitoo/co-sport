@@ -71,8 +71,8 @@ function MapSkeleton() {
 }
 
 export default async function RoutePage({
-  params: { productId },
-}: PageParams<{ productId: string }>) {
+  params: { slug },
+}: PageParams<{ slug: string }>) {
   // Obtenir les traductions
   const { t, locale } = await getServerTranslations();
 
@@ -80,6 +80,15 @@ export default async function RoutePage({
 
   if (!user) {
     redirect("/auth/signin");
+  }
+
+  // Vérification améliorée du slug
+  if (!slug || typeof slug !== "string") {
+    console.error(
+      `Erreur critique: Slug invalide. Valeur reçue: "${slug}", type: ${typeof slug}`
+    );
+    // On pourrait rediriger vers la page liste des produits comme fallback
+    redirect(`/${locale}/products`);
   }
 
   const getSportIcon = (sportName: string) => {
@@ -94,7 +103,7 @@ export default async function RoutePage({
 
   const product = await prisma.product.findUnique({
     where: {
-      id: productId,
+      slug: slug,
     },
     include: {
       user: {
@@ -129,6 +138,7 @@ export default async function RoutePage({
   });
 
   if (!product) {
+    console.error(`Produit non trouvé pour le slug: "${slug}"`);
     notFound();
   }
 
@@ -258,7 +268,7 @@ export default async function RoutePage({
                 <>
                   {isOwner && <Crown size={16} className="text-yellow-500" />}
                   <Link
-                    href={`/${locale}/products/${product.id}/edit`}
+                    href={`/products/${encodeURIComponent(product.slug)}/edit`}
                     className={buttonVariants({
                       size: "sm",
                       variant: "secondary",
@@ -503,7 +513,7 @@ export default async function RoutePage({
         {canViewMessages && (
           <Suspense fallback={<ChatSkeleton />}>
             <ChatComponent
-              productId={productId}
+              productId={product.id}
               userId={user.id}
               isAdmin={user.isAdmin}
             />
@@ -518,10 +528,10 @@ export default async function RoutePage({
 export async function generateMetadata({
   params,
 }: {
-  params: { productId: string };
+  params: { slug: string };
 }): Promise<Metadata> {
   const product = await prisma.product.findUnique({
-    where: { id: params.productId },
+    where: { slug: params.slug },
     select: {
       name: true,
       description: true,
@@ -534,7 +544,7 @@ export async function generateMetadata({
     return createSeoMetadata({
       title: "Annonce non trouvée | co-sport.com",
       description: "Cette annonce n'existe pas ou a été supprimée.",
-      path: `/products/${params.productId}`,
+      path: `/products/${params.slug}`,
       noindex: true,
     });
   }
@@ -553,7 +563,7 @@ export async function generateMetadata({
     openGraph: {
       title: product.name,
       description: seoDescription,
-      url: `${baseUrl}/products/${params.productId}`,
+      url: `${baseUrl}/products/${params.slug}`,
       siteName: "Co-Sport",
       images: [
         {
@@ -578,7 +588,7 @@ export async function generateMetadata({
     ...createSeoMetadata({
       title: `${product.name} | co-sport.com`,
       description: seoDescription,
-      path: `/products/${params.productId}`,
+      path: `/products/${params.slug}`,
     }),
   };
 }

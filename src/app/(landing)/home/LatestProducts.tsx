@@ -8,13 +8,15 @@ import { useEffect, useRef, useState } from "react";
 import {
   LEVEL_CLASSES,
   SPORTS,
-} from "../../(customer)/products/[productId]/edit/product.schema";
+} from "../../(customer)/products/[slug]/edit/product.schema";
 
 type Product = {
   id: string;
   name: string;
   sport: string;
   level: string;
+  originalSportName?: string;
+  originalLevelName?: string;
   description: string;
   venueName: string | null;
   venueAddress: string | null;
@@ -31,11 +33,16 @@ type Product = {
 type LatestProductsProps = {
   products: Product[];
   isAuthenticated: boolean;
+  translations?: {
+    title?: string;
+    subtitle?: string;
+  };
 };
 
 export function LatestProducts({
   products,
   isAuthenticated,
+  translations,
 }: LatestProductsProps) {
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
@@ -72,15 +79,23 @@ export function LatestProducts({
     return () => observer.disconnect();
   }, [hoveredCardIndex]);
 
+  // Texte pour les avis
+  const getReviewsText = (count: number) => {
+    // La vérification de la locale est enlevée car elle est inutile côté client
+    // et cause des erreurs d'hydratation
+    return count > 0 ? ` (${count} avis)` : "";
+  };
+
   return (
     <section className="w-full">
       <div className="container mx-auto px-4 md:px-6">
         <div className="mb-12 flex flex-col items-center space-y-4 text-center">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-            Les dernières annonces
-          </h2>
+          <h3 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            {translations?.title || "Les dernières annonces"}
+          </h3>
           <p className="max-w-[700px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed">
-            Découvrez les dernières activités sportives ajoutées par nos membres
+            {translations?.subtitle ||
+              "Découvrez les dernières activités sportives ajoutées par nos membres"}
           </p>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
@@ -124,8 +139,7 @@ export function LatestProducts({
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <span>
                             {product.user.name}
-                            {product._count.reviews > 0 &&
-                              ` (${product._count.reviews} avis)`}
+                            {getReviewsText(product._count.reviews)}
                           </span>
                           {product.user.country && (
                             <span>{product.user.country}</span>
@@ -147,15 +161,24 @@ export function LatestProducts({
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <span className="text-lg">
-                          {SPORTS.find((s) => s.name === product.sport)?.icon}
+                          {
+                            SPORTS.find(
+                              (s) =>
+                                s.name ===
+                                (product.originalSportName || product.sport)
+                            )?.icon
+                          }
                         </span>
                         <span className="truncate">{product.sport}</span>
                       </span>
                       <span className="flex items-center gap-1">
                         <span className="text-lg">
                           {
-                            LEVEL_CLASSES.find((l) => l.name === product.level)
-                              ?.icon
+                            LEVEL_CLASSES.find(
+                              (l) =>
+                                l.name ===
+                                (product.originalLevelName || product.level)
+                            )?.icon
                           }
                         </span>
                         <span>{product.level}</span>

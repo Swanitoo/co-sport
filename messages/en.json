@@ -94,6 +94,7 @@
   },
   "Home": {
     "latest_products": "Latest activities",
+    "latest_products_subtitle": "Discover the latest sports activities added by our members",
     "hero_title": "Find your sports partner",
     "hero_subtitle": "Choose your sport, find your ideal partner and progress together.",
     "cta_button": "Get started",
@@ -107,13 +108,37 @@
       "title": "Sports Badges",
       "subtitle": "Stand out with our sports badges that recognize your achievements on Strava",
       "how_to_get": "How to get it:",
-      "profile": "Regular practice (at least 10 activities)",
-      "mountain": "Accumulate more than 1000m of positive elevation",
-      "endurance1": "Run at less than 6 min/km on flat terrain",
-      "endurance2": "Or less than 7min30/km with elevation",
-      "long_distance": "Complete at least one run of more than 15 km",
-      "multi_sport": "Practice at least 3 different sports",
-      "trail": "Participate in at least 5 trail or hiking activities"
+      "profile": {
+        "title": "Sports Profile",
+        "description": "Regular practice of sports activities"
+      },
+      "mountain": {
+        "title": "Mountaineer",
+        "description": "Significant accumulation of positive elevation"
+      },
+      "endurance": {
+        "title": "Endurance",
+        "description": "Good running speed maintained"
+      },
+      "long_distance": {
+        "title": "Long Distance",
+        "description": "Completion of long distance runs"
+      },
+      "multi_sport": {
+        "title": "Multi-Sport",
+        "description": "Practice of multiple sports disciplines"
+      },
+      "trail": {
+        "title": "Trail Runner",
+        "description": "Regular participation in trails or hikes"
+      },
+      "profile_req": "Regular practice (at least 10 activities)",
+      "mountain_req": "Accumulate more than 1000m of positive elevation",
+      "endurance1_req": "Run at less than 6 min/km on flat terrain",
+      "endurance2_req": "Or less than 7min30/km with elevation",
+      "long_distance_req": "Complete at least one run of more than 15 km",
+      "multi_sport_req": "Practice at least 3 different sports",
+      "trail_req": "Participate in at least 5 trail or hiking activities"
     },
     "Support": {
       "title": "Support co-sport.com",
@@ -123,7 +148,7 @@
       "story_p2": "Developed by a single passionate developer, this project is built with the ambition to make sport more accessible and safer for everyone, especially for women who want to practice safely.",
       "story_p3": "To date, co-sport.com remains entirely free for all users. Our priority is to build a solid community above all.",
       "how_to_support": "How to support us",
-      "support_p1": "To maintain this service and continue developing new features, we rely on the support of our community. Here's how you can contribute:",
+      "support_p1": "To maintain this free service and continue developing new features, we rely on the support of our community. Here's how you can contribute:",
       "buy_coffee": "Buy me a coffee",
       "become_partner": "Become a partner",
       "support": "Support",

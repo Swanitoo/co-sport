@@ -1,6 +1,6 @@
 import { Membership, Product } from "@prisma/client";
 import { z } from "zod";
-import { LEVEL_CLASSES, SPORTS } from "../[productId]/edit/product.schema";
+import { LEVEL_CLASSES, SPORTS } from "../[slug]/edit/product.schema";
 
 export interface ProductWithMemberships extends Product {
   memberships: Membership[];

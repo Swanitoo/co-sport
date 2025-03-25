@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppTranslations } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -43,6 +44,7 @@ export type ProductFormProps = {
 };
 
 export const ProductForm = (props: ProductFormProps) => {
+  const { t, locale } = useAppTranslations();
   const router = useRouter();
   const isCreate = !props.defaultValues;
 
@@ -85,14 +87,14 @@ export const ProductForm = (props: ProductFormProps) => {
       if (data) {
         toast.success(
           isCreate
-            ? "Annonce créée avec succès"
-            : "Annonce modifiée avec succès"
+            ? t("Products.CreateSuccess", "Annonce créée avec succès")
+            : t("Products.UpdateSuccess", "Annonce modifiée avec succès")
         );
-        router.push(`/products/${data.id}`);
+        router.push(`/${locale}/products/${data.slug}`);
         router.refresh();
       } else {
         console.error("Pas de données reçues du serveur");
-        toast.error("Une erreur est survenue");
+        toast.error(t("Products.Error", "Une erreur est survenue"));
       }
     },
   });

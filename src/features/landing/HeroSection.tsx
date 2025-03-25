@@ -29,9 +29,9 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
       <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-foreground  md:text-5xl lg:text-6xl">
         {translations.hero_title}
       </h1>
-      <p className="mb-8 text-lg font-normal text-muted-foreground sm:px-16 lg:text-xl xl:px-48">
+      <h2 className="mb-8 text-lg font-normal text-muted-foreground sm:px-16 lg:text-xl xl:px-48">
         {translations.hero_subtitle}
-      </p>
+      </h2>
       <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0 lg:mb-16">
         <CTASection translations={{ cta_button: translations.cta_button }} />
         {/* <a
