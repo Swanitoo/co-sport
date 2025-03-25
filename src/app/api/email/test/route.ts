@@ -2,6 +2,7 @@ import {
   sendJoinRequestEmail,
   sendMembershipAcceptedEmail,
   sendNewMessageEmail,
+  sendProductCreatedEmail,
   sendReviewReceivedEmail,
   sendWelcomeEmail,
 } from "@/lib/emails";
@@ -15,6 +16,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const emailType = searchParams.get("type") || "message";
   const email = searchParams.get("email") || "swan.marin@gmail.com";
+  const testSlug = "test-club-de-tennis"; // Slug de test pour tous les exemples
 
   try {
     let result;
@@ -24,13 +26,24 @@ export async function GET(request: NextRequest) {
         result = await sendWelcomeEmail(email, "[TEST] Nouvel Utilisateur");
         break;
 
+      case "product_created":
+        result = await sendProductCreatedEmail({
+          email,
+          productName: "[TEST] Club de Tennis",
+          productId: "test_id_123",
+          isFirstProduct: true,
+          slug: testSlug,
+        });
+        break;
+
       case "join_request":
         result = await sendJoinRequestEmail(
           email,
           "[TEST] Club de Tennis",
           "test_id_123",
           "[TEST] Jean Dupont",
-          "test_user_id"
+          "test_user_id",
+          testSlug
         );
         break;
 
@@ -39,7 +52,8 @@ export async function GET(request: NextRequest) {
           email,
           "[TEST] Club de Tennis",
           "test_id_123",
-          "test_user_id"
+          "test_user_id",
+          testSlug
         );
         break;
 
@@ -52,6 +66,7 @@ export async function GET(request: NextRequest) {
           rating: 4,
           reviewText: "Ceci est un avis de test pour vérifier les emails.",
           userId: "test_user_id",
+          slug: testSlug,
         });
         break;
 
@@ -63,7 +78,9 @@ export async function GET(request: NextRequest) {
           "test_id_123",
           "[TEST] Jean Dupont",
           "Ceci est un message de test pour vérifier le système d'email. Ce n'est pas un vrai message.",
-          1
+          1,
+          "test_user_id",
+          testSlug
         );
         break;
     }

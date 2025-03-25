@@ -12,17 +12,21 @@ export const NewMessageEmail = ({
   senderName,
   messagePreview,
   messageCount = 1,
+  slug,
 }: {
   productName: string;
   productId: string;
   senderName: string;
   messagePreview: string;
   messageCount?: number;
+  slug?: string;
 }) => {
   // S'assurer que les valeurs sont valides
   const safeProductName = productName || "l'activité";
   const safeProductId = productId || "";
   const safeSenderName = senderName || "Un utilisateur";
+  // Utiliser le slug s'il est disponible, sinon utiliser l'ID
+  const urlPath = slug || safeProductId;
 
   const subject =
     messageCount > 1
@@ -72,7 +76,7 @@ export const NewMessageEmail = ({
       </Text>
 
       <Section className="my-8 text-center">
-        <Button href={`${baseUrl}/products/${safeProductId}/chat`}>
+        <Button href={`${baseUrl}/products/${urlPath}/chat`}>
           Voir {messageCount > 1 ? "les messages" : "le message"}
         </Button>
       </Section>

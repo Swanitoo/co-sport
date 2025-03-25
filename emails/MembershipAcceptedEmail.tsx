@@ -9,13 +9,17 @@ const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://co-sport.com";
 export const MembershipAcceptedEmail = ({
   productName,
   productId,
+  slug,
 }: {
   productName: string;
   productId: string;
+  slug?: string;
 }) => {
   // S'assurer que les valeurs sont valides
   const safeProductName = productName || "l'activité";
   const safeProductId = productId || "";
+  // Utiliser le slug s'il est disponible, sinon utiliser l'ID
+  const urlPath = slug || safeProductId;
 
   return (
     <EmailLayout preview={`Demande acceptée pour ${safeProductName}`}>
@@ -41,9 +45,7 @@ export const MembershipAcceptedEmail = ({
       </Text>
 
       <Section className="my-8 text-center">
-        <Button href={`${baseUrl}/products/${safeProductId}`}>
-          Voir l'activité
-        </Button>
+        <Button href={`${baseUrl}/products/${urlPath}`}>Voir l'activité</Button>
       </Section>
 
       <Text className="text-sm text-slate-600">

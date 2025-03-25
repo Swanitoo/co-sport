@@ -88,7 +88,8 @@ export const sendJoinRequestEmail = async (
   productName: string,
   productId: string,
   userName: string,
-  userId?: string
+  userId?: string,
+  slug?: string
 ) => {
   // Vérifier les préférences pour les demandes d'adhésion
   if (userId) {
@@ -99,7 +100,7 @@ export const sendJoinRequestEmail = async (
   return sendEmail({
     email,
     subject: "Nouvelle demande d'adhésion !",
-    react: JoinRequestEmail({ productName, productId, userName }),
+    react: JoinRequestEmail({ productName, productId, userName, slug }),
   });
 };
 
@@ -110,7 +111,8 @@ export const sendNewMessageEmail = async (
   senderName: string,
   messagePreview: string,
   messageCount: number = 1,
-  userId?: string
+  userId?: string,
+  slug?: string
 ) => {
   // Vérifier les préférences pour les nouveaux messages
   if (userId) {
@@ -132,6 +134,7 @@ export const sendNewMessageEmail = async (
       senderName,
       messagePreview,
       messageCount,
+      slug,
     }),
   });
 };
@@ -140,7 +143,8 @@ export const sendMembershipAcceptedEmail = async (
   email: string,
   productName: string,
   productId: string,
-  userId?: string
+  userId?: string,
+  slug?: string
 ) => {
   // Vérifier les préférences pour les adhésions acceptées
   if (userId) {
@@ -154,6 +158,7 @@ export const sendMembershipAcceptedEmail = async (
     react: MembershipAcceptedEmail({
       productName,
       productId,
+      slug,
     }),
   });
 };
@@ -166,6 +171,7 @@ export const sendReviewReceivedEmail = async ({
   rating,
   reviewText,
   userId,
+  slug,
 }: {
   email: string;
   productName: string;
@@ -174,6 +180,7 @@ export const sendReviewReceivedEmail = async ({
   rating: number;
   reviewText: string;
   userId?: string;
+  slug?: string;
 }) => {
   // Vérifier les préférences pour les avis
   if (userId) {
@@ -190,6 +197,7 @@ export const sendReviewReceivedEmail = async ({
       reviewerName,
       rating,
       reviewText,
+      slug,
     }),
   });
 };

@@ -12,12 +12,14 @@ export const ReviewReceivedEmail = ({
   reviewerName,
   rating,
   reviewText,
+  slug,
 }: {
   productName: string;
   productId: string;
   reviewerName: string;
   rating: number;
   reviewText: string;
+  slug?: string;
 }) => {
   // S'assurer que les valeurs sont valides
   const safeProductName = productName || "votre activité";
@@ -25,6 +27,8 @@ export const ReviewReceivedEmail = ({
   const safeRating =
     typeof rating === "number" && rating >= 0 && rating <= 5 ? rating : 0;
   const safeReviewText = reviewText || "Aucun commentaire laissé.";
+  // Utiliser le slug s'il est disponible, sinon utiliser l'ID
+  const urlPath = slug || productId;
 
   // Générer les étoiles selon la note
   const stars = "★".repeat(safeRating) + "☆".repeat(5 - safeRating);
@@ -63,7 +67,7 @@ export const ReviewReceivedEmail = ({
       </Text>
 
       <Section className="my-8 text-center">
-        <Button href={`${baseUrl}/products/${productId}/reviews`}>
+        <Button href={`${baseUrl}/products/${urlPath}/reviews`}>
           Voir tous les avis
         </Button>
       </Section>

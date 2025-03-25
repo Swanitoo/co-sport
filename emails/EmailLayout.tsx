@@ -18,6 +18,11 @@ const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "https://co-sport.com";
 
+// URL absolue pour l'icône
+const iconUrl = process.env.NEXT_PUBLIC_APP_URL
+  ? `${process.env.NEXT_PUBLIC_APP_URL}/icon.png`
+  : "https://co-sport.com/icon.png";
+
 export const EmailLayout = ({
   children,
   preview,
@@ -40,7 +45,7 @@ export const EmailLayout = ({
               <Link href={baseUrl} style={{ textDecoration: "none" }}>
                 <div className="flex flex-col items-center">
                   <Img
-                    src={`${baseUrl}/icon.png`}
+                    src={iconUrl}
                     width="80"
                     height="80"
                     alt="Co-Sport"

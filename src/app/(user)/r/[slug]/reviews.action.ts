@@ -117,6 +117,12 @@ export const updateReviewAction = action(ReviewSchema, async (input) => {
               },
             },
           },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            userId: true,
+          },
         },
       },
     });
@@ -131,6 +137,7 @@ export const updateReviewAction = action(ReviewSchema, async (input) => {
         rating: review.rating,
         reviewText: review.text || "",
         userId: review.product.user.id,
+        slug: review.product.slug,
       });
     }
   }

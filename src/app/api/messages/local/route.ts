@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
       // Récupérer les détails du produit
       const productDetails = await prisma.product.findUnique({
         where: { id: productId },
-        select: { name: true },
+        select: { name: true, slug: true },
       });
 
       // Récupérer les informations de l'expéditeur
@@ -177,7 +177,8 @@ export async function POST(req: NextRequest) {
             sender?.name || "Un utilisateur",
             text,
             1,
-            recipient.id
+            recipient.id,
+            productDetails?.slug
           );
         }
       }

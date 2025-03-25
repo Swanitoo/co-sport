@@ -10,15 +10,19 @@ export const JoinRequestEmail = ({
   productName,
   productId,
   userName,
+  slug,
 }: {
   productName: string;
   productId: string;
   userName: string;
+  slug?: string;
 }) => {
   // S'assurer que les valeurs sont valides
   const safeProductName = productName || "votre activité";
   const safeUserName = userName || "Un utilisateur";
   const safeProductId = productId || "";
+  // Utiliser le slug s'il est disponible, sinon utiliser l'ID
+  const urlPath = slug || safeProductId;
 
   return (
     <EmailLayout preview={`Nouvelle demande d'adhésion de ${safeUserName}`}>
@@ -43,7 +47,7 @@ export const JoinRequestEmail = ({
       </Text>
 
       <Section className="my-8 text-center">
-        <Button href={`${baseUrl}/products/${safeProductId}`}>
+        <Button href={`${baseUrl}/products/${urlPath}`}>
           Gérer la demande
         </Button>
       </Section>

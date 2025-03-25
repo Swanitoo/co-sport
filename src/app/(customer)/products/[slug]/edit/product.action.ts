@@ -5,6 +5,7 @@ import {
   sendJoinRequestEmail,
   sendMembershipAcceptedEmail,
   sendNewMessageEmail,
+  sendProductCreatedEmail,
 } from "@/lib/emails";
 import { prisma } from "@/prisma";
 import { userAction } from "@/safe-actions";
@@ -86,6 +87,28 @@ export async function createProductAction(data: ProductType) {
     });
 
     console.log("Création de groupe : Succès", product);
+
+    // Envoyer un email de confirmation
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: {
+        _count: {
+          select: { products: true },
+        },
+      },
+    });
+
+    if (user?.email) {
+      const isFirstProduct = user._count.products <= 1;
+      await sendProductCreatedEmail({
+        email: user.email,
+        productName: name,
+        productId: product.id,
+        isFirstProduct,
+        slug: product.slug,
+        userId: session.user.id,
+      });
+    }
 
     // Revalider les chemins pour toutes les locales
     revalidatePath("/products");
@@ -318,7 +341,8 @@ export async function createMembershipAction({
         product.name,
         productId,
         requestingUser.name,
-        product.user.id
+        product.user.id,
+        product.slug
       );
     }
 
@@ -390,7 +414,8 @@ export const acceptMembershipAction = userAction(
             updatedMembership.user.email,
             product.name,
             productId,
-            userId
+            userId,
+            product.slug
           );
         }
       }
@@ -629,7 +654,7 @@ export const sendMessageAction = userAction(
         // Récupérer les détails du produit
         const productDetails = await prisma.product.findUnique({
           where: { id: productId },
-          select: { name: true },
+          select: { name: true, slug: true },
         });
 
         // Récupérer les informations de l'expéditeur
@@ -648,7 +673,8 @@ export const sendMessageAction = userAction(
               sender?.name || "Un utilisateur",
               text,
               1,
-              recipient.id
+              recipient.id,
+              productDetails?.slug
             );
           }
         }
