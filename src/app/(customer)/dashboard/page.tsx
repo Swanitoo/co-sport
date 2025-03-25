@@ -135,6 +135,7 @@ export default async function RoutePage(props: PageParams<{}>) {
         acc[productId] = {
           productId,
           productName: unread.message.product.name,
+          productSlug: unread.message.product.slug,
           messages: [],
           latestMessageDate: new Date(0),
         };
@@ -160,6 +161,7 @@ export default async function RoutePage(props: PageParams<{}>) {
       {
         productId: string;
         productName: string;
+        productSlug: string;
         messages: {
           id: string;
           messageId: string;
@@ -179,6 +181,7 @@ export default async function RoutePage(props: PageParams<{}>) {
       messageIds: group.messages.map((m) => m.id), // Liste de tous les IDs de messages non lus
       productId: group.productId,
       productName: group.productName,
+      productSlug: group.productSlug,
       messageCount: group.messages.length,
       userName:
         group.messages.length > 1
@@ -226,6 +229,7 @@ export default async function RoutePage(props: PageParams<{}>) {
     id: request.id,
     productId: request.productId,
     productName: request.product.name,
+    productSlug: request.product.slug,
     userName: request.user.name || "Utilisateur inconnu",
     createdAt: request.createdAt,
   }));
@@ -248,6 +252,7 @@ export default async function RoutePage(props: PageParams<{}>) {
     id: request.id,
     productId: request.productId,
     productName: request.product.name,
+    productSlug: request.product.slug,
     userName: request.user.name || "Utilisateur inconnu",
     createdAt: request.createdAt,
   }));
@@ -276,6 +281,7 @@ export default async function RoutePage(props: PageParams<{}>) {
     id: review.id,
     productId: review.productId,
     productName: review.product.name,
+    productSlug: review.product.slug,
     userName: review.user.name || "Utilisateur inconnu",
     createdAt: review.createdAt,
     rating: review.rating,
@@ -667,7 +673,7 @@ export default async function RoutePage(props: PageParams<{}>) {
                 {productsWithPendingCount.map((product) => (
                   <Link
                     key={product.id}
-                    href={`/products/${product.id}`}
+                    href={`/products/${product.slug}`}
                     className="block rounded-lg border p-4 transition-colors hover:bg-accent/50"
                   >
                     <div className="mb-2 flex items-center justify-between">
@@ -709,7 +715,7 @@ export default async function RoutePage(props: PageParams<{}>) {
                 {joinedProducts.map((product) => (
                   <Link
                     key={product.id}
-                    href={`/products/${product.id}`}
+                    href={`/products/${product.slug}`}
                     className="block rounded-lg border p-4 transition-colors hover:bg-accent/50"
                   >
                     <div className="mb-2">

@@ -19,6 +19,7 @@ interface NotificationsCardProps {
     productName: string;
     userName: string;
     createdAt: Date;
+    productSlug?: string;
   }[];
   approvedRequests: {
     id: string;
@@ -26,6 +27,7 @@ interface NotificationsCardProps {
     productName: string;
     userName: string;
     createdAt: Date;
+    productSlug?: string;
   }[];
   unreadMessages: {
     id: string;
@@ -36,6 +38,7 @@ interface NotificationsCardProps {
     messageCount: number;
     createdAt: Date;
     messageText: string;
+    productSlug?: string;
   }[];
   unreadReviews: {
     id: string;
@@ -46,6 +49,7 @@ interface NotificationsCardProps {
     rating: number;
     text: string;
     level: string;
+    productSlug?: string;
   }[];
 }
 
@@ -62,22 +66,27 @@ export function NotificationsCard({
     unreadMessages.length +
     unreadReviews.length;
 
-  const handleNotificationClick = async (id: string, productId: string) => {
+  const handleNotificationClick = async (
+    id: string,
+    productId: string,
+    productSlug?: string
+  ) => {
     await markNotificationAsRead(id);
-    router.push(`/products/${productId}`);
+    router.push(`/products/${productSlug || productId}`);
     router.refresh();
   };
 
   const handleMessageClick = async (
     messageIds: string[],
-    productId: string
+    productId: string,
+    productSlug?: string
   ) => {
     if (messageIds.length > 1) {
       await markMessagesAsRead(messageIds);
     } else if (messageIds.length === 1) {
       await markMessageAsRead(messageIds[0]);
     }
-    router.push(`/products/${productId}`);
+    router.push(`/products/${productSlug || productId}`);
     router.refresh();
   };
 
@@ -134,9 +143,13 @@ export function NotificationsCard({
         {pendingRequests.map((request) => (
           <Link
             key={request.id}
-            href={`/products/${request.productId}`}
+            href={`/products/${request.productSlug || request.productId}`}
             onClick={() =>
-              handleNotificationClick(request.id, request.productId)
+              handleNotificationClick(
+                request.id,
+                request.productId,
+                request.productSlug
+              )
             }
             className="block"
           >
@@ -183,9 +196,13 @@ export function NotificationsCard({
         {approvedRequests.map((request) => (
           <Link
             key={request.id}
-            href={`/products/${request.productId}`}
+            href={`/products/${request.productSlug || request.productId}`}
             onClick={() =>
-              handleNotificationClick(request.id, request.productId)
+              handleNotificationClick(
+                request.id,
+                request.productId,
+                request.productSlug
+              )
             }
             className="block"
           >
@@ -229,9 +246,13 @@ export function NotificationsCard({
         {unreadMessages.map((message) => (
           <Link
             key={message.id}
-            href={`/products/${message.productId}`}
+            href={`/products/${message.productSlug || message.productId}`}
             onClick={() =>
-              handleMessageClick(message.messageIds, message.productId)
+              handleMessageClick(
+                message.messageIds,
+                message.productId,
+                message.productSlug
+              )
             }
             className="block w-full"
           >

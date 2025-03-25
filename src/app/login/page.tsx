@@ -151,10 +151,6 @@ export default function LoginPage() {
                 ? "Se connecter avec Strava"
                 : "Continuer avec Strava"}
             </Button>
-            <p className="mt-2 max-w-full break-words text-center text-xs italic text-muted-foreground ">
-              (Connexion Strava en attente d'acceptation du site par Strava,
-              possible que cela ne fonctionne pas)
-            </p>
           </div>
         </CardContent>
       </Card>
