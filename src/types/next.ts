@@ -5,5 +5,5 @@ export interface PageParams<T = {}> {
 
 export type LayoutParams<T extends Record<string, string | string[]>> = {
   children: React.ReactNode;
-  params: T;
+  params: Promise<T>;
 };

@@ -34,10 +34,16 @@ async function getMessages(locale: Locale) {
 }
 
 type Props = {
-  params: { locale: Locale };
+  params: Promise<{ locale: Locale }>;
 };
 
-export default async function LocalizedHomePage({ params: { locale } }: Props) {
+export default async function LocalizedHomePage(props: Props) {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
   // Active la locale pour cette requête
   unstable_setRequestLocale(locale);
 
@@ -83,6 +89,7 @@ export default async function LocalizedHomePage({ params: { locale } }: Props) {
     take: 9,
     select: {
       id: true,
+      slug: true,
       name: true,
       sport: true,
       level: true,

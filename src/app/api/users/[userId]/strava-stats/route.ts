@@ -6,10 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
  * Cette route est publique et peut être utilisée pour afficher les statistiques
  * sur les pages de profil ou dans les filtres
  */
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { userId: string } }
-) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ userId: string }> }) {
+  const params = await props.params;
   try {
     const targetUserId = params.userId;
 

@@ -2,22 +2,22 @@ import { requiredCurrentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { getServerTranslations } from "@/components/server-translation";
 import { prisma } from "@/prisma";
-import type { PageParams } from "@/types/next";
 import { ChevronRight, Home } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductForm } from "./ProductForm";
 
 export default async function RoutePage(
-  props: PageParams<{
-    slug: string;
-  }>
+  props: {
+    params: Promise<{ slug: string }>;
+  }
 ) {
+  const params = await props.params;
   const { t, locale } = await getServerTranslations();
   const user = await requiredCurrentUser();
 
   // Si le slug est undefined, rediriger vers 404
-  if (!props.params.slug) {
+  if (!params.slug) {
     console.error("Slug est undefined dans la page d'édition");
     notFound();
   }
@@ -25,7 +25,7 @@ export default async function RoutePage(
   // Rechercher le produit par slug
   const product = await prisma.product.findUnique({
     where: {
-      slug: props.params.slug,
+      slug: params.slug,
     },
   });
 

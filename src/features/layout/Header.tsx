@@ -26,7 +26,7 @@ export async function Header() {
   const user = await currentUser();
 
   // Obtenir le pathname depuis les headers de la requête
-  const headersList = headers();
+  const headersList = await headers();
   const pathname = headersList.get("x-pathname") || "/";
 
   // Déterminer la locale et charger les traductions

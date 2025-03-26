@@ -2,10 +2,8 @@ import { auth } from "@/auth/auth";
 import { prisma } from "@/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { productId: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ productId: string }> }) {
+  const params = await props.params;
   try {
     // Récupérer la session de l'utilisateur
     const session = await auth();

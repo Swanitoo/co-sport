@@ -71,11 +71,12 @@ function FormSkeleton() {
   );
 }
 
-export default async function SupportPage({
-  params,
-}: {
-  params: { locale?: string };
-}) {
+export default async function SupportPage(
+  props: {
+    params: Promise<{ locale?: string }>;
+  }
+) {
+  const params = await props.params;
   const user = await requiredCurrentUser();
   const isAdmin = user.isAdmin || false;
 
@@ -160,11 +161,12 @@ export default async function SupportPage({
   );
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale?: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ locale?: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const locale = params.locale || "fr";
   const t =
     translations[locale as keyof typeof translations] || translations.fr;

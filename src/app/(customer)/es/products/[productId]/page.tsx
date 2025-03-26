@@ -1,17 +1,14 @@
 // Versión española de la página de una actividad específica (para internacionalización)
 // Esta página es simplemente un punto de entrada que redirige a la página principal
 
-import { PageParams } from "@/types/next";
-import ProductPage from "../../../products/[slug]/page";
+import { redirect } from "next/navigation";
 
-// Fonction de wrapper pour transformer productId en slug
-export default function SpanishProductPage({
-  params,
-  searchParams,
-}: PageParams<{ productId: string }>) {
-  // Transformer le productId en slug et passer les searchParams
-  return ProductPage({
-    params: { slug: params.productId },
-    searchParams,
-  });
+export default async function SpanishProductPage(
+  props: {
+    params: Promise<{ productId: string }>;
+  }
+) {
+  const params = await props.params;
+  // Rediriger vers la page principale
+  redirect(`/products/${params.productId}`);
 }

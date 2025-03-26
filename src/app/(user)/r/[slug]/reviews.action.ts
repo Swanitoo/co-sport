@@ -46,7 +46,7 @@ export const updateReviewAction = action(ReviewSchema, async (input) => {
     throw new ActionError("Vous devez être connecté pour laisser un avis");
   }
 
-  const headerList = headers();
+  const headerList = await headers();
   const userIp =
     headerList.get("x-real-ip") ||
     headerList.get("x-forwarded-for") ||

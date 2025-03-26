@@ -42,7 +42,6 @@ import {
 import { ProfileImageUpload } from "@/features/upload/components/ProfileImageUpload";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
-import type { PageParams } from "@/types/next";
 import { ExternalLink, Globe, MapPin, Pencil } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -59,7 +58,7 @@ import { EmailPreferencesDialog } from "./EmailPreferencesDialog";
 import { NotificationsCard } from "./NotificationsCard";
 import { ProfileCompletionButton } from "./ProfileCompletionButton";
 
-export default async function RoutePage(props: PageParams<{}>) {
+export default async function RoutePage() {
   const user = await requiredCurrentUser();
 
   // Récupérer showBadges directement depuis la base de données

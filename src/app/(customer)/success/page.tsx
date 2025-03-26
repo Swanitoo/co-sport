@@ -1,9 +1,8 @@
 import { Layout, LayoutTitle } from "@/components/layout";
 import { buttonVariants } from "@/components/ui/button";
-import type { PageParams } from "@/types/next";
 import Link from "next/link";
 
-export default async function RoutePage(props: PageParams<{}>) {
+export default function RoutePage() {
   return (
     <Layout>
       <LayoutTitle>Tu es maintenant un utilisateur premium</LayoutTitle>

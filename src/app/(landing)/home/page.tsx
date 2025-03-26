@@ -56,6 +56,7 @@ async function getLatestProducts() {
     take: 9,
     select: {
       id: true,
+      slug: true,
       name: true,
       sport: true,
       level: true,

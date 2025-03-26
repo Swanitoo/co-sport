@@ -15,10 +15,8 @@ function getUserLastActive(userId: string): Date | undefined {
   return userLastActiveMap.get(userId);
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { productId: string } }
-) {
+export async function GET(req: NextRequest, props: { params: Promise<{ productId: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
 

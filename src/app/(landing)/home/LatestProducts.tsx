@@ -12,6 +12,7 @@ import {
 
 type Product = {
   id: string;
+  slug: string;
   name: string;
   sport: string;
   level: string;
@@ -113,9 +114,9 @@ export function LatestProducts({
                 <Link
                   href={
                     isAuthenticated
-                      ? `/products/${product.id}`
+                      ? `/products/${product.slug}`
                       : `/api/auth/signin?callbackUrl=${encodeURIComponent(
-                          `/products/${product.id}`
+                          `/products/${product.slug}`
                         )}`
                   }
                   className="group block"

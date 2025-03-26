@@ -52,13 +52,14 @@ export function generateStaticParams() {
 }
 
 interface PageProps {
-  params: {
+  params: Promise<{
     locale: Locale;
     userId: string;
-  };
+  }>;
 }
 
-export default async function ProfilePage({ params }: PageProps) {
+export default async function ProfilePage(props: PageProps) {
+  const params = await props.params;
   // Activer la locale pour cette requête
   unstable_setRequestLocale(params.locale);
 
@@ -80,6 +81,15 @@ export default async function ProfilePage({ params }: PageProps) {
                 },
               },
             },
+          },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+            sport: true,
+            level: true,
+            reviews: true,
           },
         },
       },
@@ -245,7 +255,7 @@ export default async function ProfilePage({ params }: PageProps) {
                         >
                           <div className="mb-2">
                             <Link
-                              href={`/${params.locale}/products/${product.id}`}
+                              href={`/${params.locale}/products/${product.slug}`}
                               className="text-sm font-medium hover:underline"
                             >
                               {product.name}
@@ -285,7 +295,7 @@ export default async function ProfilePage({ params }: PageProps) {
                     {user.products.map((product) => (
                       <Link
                         key={product.id}
-                        href={`/${params.locale}/products/${product.id}`}
+                        href={`/${params.locale}/products/${product.slug}`}
                         className="block transition-transform hover:scale-105"
                       >
                         <Card className="transition-shadow hover:shadow-lg">
@@ -320,11 +330,12 @@ export default async function ProfilePage({ params }: PageProps) {
 }
 
 // Génération de métadonnées SEO pour la page de profil
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: Locale; userId: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ locale: Locale; userId: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   try {
     const user = await prisma.user.findUnique({
       where: { id: params.userId },

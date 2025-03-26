@@ -2,10 +2,8 @@ import { requiredCurrentUser } from "@/auth/current-user";
 import { prisma } from "@/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { ticketId: string } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ ticketId: string }> }) {
+  const params = await props.params;
   try {
     const user = await requiredCurrentUser();
 

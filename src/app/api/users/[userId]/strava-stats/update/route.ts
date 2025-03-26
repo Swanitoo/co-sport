@@ -6,10 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
  * Mettre à jour les statistiques sportives d'un utilisateur
  * Cette route est protégée et ne peut être utilisée que par l'utilisateur lui-même ou un administrateur
  */
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { userId: string } }
-) {
+export async function PUT(req: NextRequest, props: { params: Promise<{ userId: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     const targetUserId = params.userId;

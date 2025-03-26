@@ -1,6 +1,15 @@
-// Version anglaise de la page produits (pour l'internationalisation)
-// Cette page est simplement un point d'entrée qui redirige vers la page principale
+// English version of the products page (for internationalization)
+// This page is simply an entry point that redirects to the main page
 
-import ProductsPage from "../../products/page";
+import { redirect } from "next/navigation";
 
-export default ProductsPage;
+interface SearchParams {
+  [key: string]: string | string[] | undefined;
+}
+
+export default async function EnglishProductsPage(props: {
+  searchParams: Promise<SearchParams>;
+}): Promise<null> {
+  redirect(`/products`);
+  return null;
+}

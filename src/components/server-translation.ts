@@ -7,7 +7,7 @@ import { headers } from "next/headers";
  */
 export async function getServerTranslations() {
   // Récupérer le pathname depuis les headers de la requête
-  const headersList = headers();
+  const headersList = await headers();
   const pathname = headersList.get("x-pathname") || "/";
 
   // Déterminer la locale en utilisant la fonction existante

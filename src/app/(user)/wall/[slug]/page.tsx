@@ -3,7 +3,6 @@ import { Layout } from "@/components/layout";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Header } from "@/features/layout/Header";
 import { prisma } from "@/prisma";
-import type { PageParams } from "@/types/next";
 import { ArrowLeft, Pencil } from "lucide-react";
 import Link from "next/link";
 import { DeleteReviewButton } from "./DeleteReviewButton";
@@ -14,10 +13,15 @@ export const maxDuration = 10;
 export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
-export default async function RoutePage(props: PageParams<{ slug: string }>) {
+export default async function RoutePage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const user = await currentUser();
 
-  const decodedSlug = decodeURIComponent(props.params.slug);
+  const decodedSlug = decodeURIComponent(params.slug);
   // 🔍 Slug décodé
 
   const product = await prisma.product.findUnique({
@@ -90,7 +94,7 @@ export default async function RoutePage(props: PageParams<{ slug: string }>) {
           <div className="mb-8 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link
-                href={`/products/${product.id}`}
+                href={`/products/${product.slug}`}
                 className={buttonVariants({
                   variant: "ghost",
                   size: "sm",

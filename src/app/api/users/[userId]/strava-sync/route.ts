@@ -9,10 +9,8 @@ export const revalidate = 0;
  * Point d'entrée pour synchroniser les activités Strava d'un utilisateur
  * et mettre à jour ses statistiques sportives
  */
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { userId: string } }
-) {
+export async function POST(req: NextRequest, props: { params: Promise<{ userId: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
     const targetUserId = params.userId;

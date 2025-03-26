@@ -24,13 +24,14 @@ export const viewport: Viewport = {
 };
 
 interface PageProps {
-  params: {
+  params: Promise<{
     locale: Locale;
     slug: string;
-  };
+  }>;
 }
 
-export default async function ReviewPage({ params }: PageProps) {
+export default async function ReviewPage(props: PageProps) {
+  const params = await props.params;
   // Activer la locale pour cette requête
   unstable_setRequestLocale(params.locale);
 
@@ -139,7 +140,7 @@ export default async function ReviewPage({ params }: PageProps) {
                 </Link>
                 <ChevronRight className="size-4" />
                 <Link
-                  href={`/${params.locale}/products/${product.id}`}
+                  href={`/${params.locale}/products/${product.slug}`}
                   className="hover:text-foreground"
                 >
                   {product.name}
@@ -155,7 +156,7 @@ export default async function ReviewPage({ params }: PageProps) {
                     Vous devez être un membre approuvé pour laisser un avis.
                   </p>
                   <Button className="mt-4" asChild>
-                    <Link href={`/${params.locale}/products/${product.id}`}>
+                    <Link href={`/${params.locale}/products/${product.slug}`}>
                       Voir l'annonce
                     </Link>
                   </Button>
@@ -191,7 +192,7 @@ export default async function ReviewPage({ params }: PageProps) {
               </Link>
               <ChevronRight className="size-4" />
               <Link
-                href={`/${params.locale}/products/${product.id}`}
+                href={`/${params.locale}/products/${product.slug}`}
                 className="hover:text-foreground"
               >
                 {product.name}
@@ -221,11 +222,12 @@ export default async function ReviewPage({ params }: PageProps) {
 }
 
 // Génération de métadonnées SEO pour la page d'avis
-export async function generateMetadata({
-  params,
-}: {
-  params: { locale: Locale; slug: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ locale: Locale; slug: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   try {
     const product = await prisma.product.findUnique({
       where: { slug: params.slug },

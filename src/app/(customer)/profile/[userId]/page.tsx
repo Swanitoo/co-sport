@@ -26,11 +26,17 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default async function ProfilePage({
-  params: { userId },
-}: {
-  params: { userId: string };
-}) {
+export default async function ProfilePage(
+  props: {
+    params: Promise<{ userId: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    userId
+  } = params;
+
   // Obtenir les traductions
   const { t, locale } = await getServerTranslations();
 
@@ -53,6 +59,15 @@ export default async function ProfilePage({
                 },
               },
             },
+          },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            description: true,
+            sport: true,
+            level: true,
+            reviews: true,
           },
         },
       },
@@ -206,7 +221,7 @@ export default async function ProfilePage({
                       >
                         <div className="mb-2">
                           <Link
-                            href={`/products/${product.id}`}
+                            href={`/products/${product.slug}`}
                             className="text-sm font-medium hover:underline"
                           >
                             {product.name}
@@ -235,7 +250,7 @@ export default async function ProfilePage({
                   {user.products.map((product) => (
                     <Link
                       key={product.id}
-                      href={`/products/${product.id}`}
+                      href={`/products/${product.slug}`}
                       className="block transition-transform hover:scale-105"
                     >
                       <Card className="transition-shadow hover:shadow-lg">
@@ -269,11 +284,12 @@ export default async function ProfilePage({
 }
 
 // Génération de métadonnées SEO pour la page de profil
-export async function generateMetadata({
-  params,
-}: {
-  params: { userId: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ userId: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   try {
     const user = await prisma.user.findUnique({
       where: { id: params.userId },

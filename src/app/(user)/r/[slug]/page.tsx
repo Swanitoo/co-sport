@@ -3,18 +3,22 @@ import { Layout } from "@/components/layout";
 import { Header } from "@/features/layout/Header";
 import { cn } from "@/lib/utils";
 import { prisma } from "@/prisma";
-import { PageParams } from "@/types/next";
 import { redirect } from "next/navigation";
 import { ProcessReviewStep } from "./ProcessReviewStep";
 
-export default async function RoutePage(props: PageParams<{ slug: string }>) {
+export default async function RoutePage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const user = await currentUser();
 
   if (!user) {
     redirect("/auth/signin");
   }
 
-  const decodedSlug = decodeURIComponent(props.params.slug);
+  const decodedSlug = decodeURIComponent(params.slug);
 
   const product = await prisma.product.findFirst({
     where: {

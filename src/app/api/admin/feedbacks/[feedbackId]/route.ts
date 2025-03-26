@@ -9,10 +9,8 @@ export const dynamic = "force-dynamic";
  * Endpoint pour supprimer un avis
  * Accessible uniquement aux administrateurs
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { feedbackId: string } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ feedbackId: string }> }) {
+  const params = await props.params;
   try {
     const user = await requiredCurrentUser();
 

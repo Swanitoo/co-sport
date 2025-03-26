@@ -16,7 +16,6 @@ import {
 import { getCountryFlag } from "@/data/country";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
-import type { PageParams } from "@/types/next";
 import { CheckCircle, Crown, Link2, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -70,9 +69,17 @@ function MapSkeleton() {
   );
 }
 
-export default async function RoutePage({
-  params: { slug },
-}: PageParams<{ slug: string }>) {
+export default async function RoutePage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    slug
+  } = params;
+
   // Obtenir les traductions
   const { t, locale } = await getServerTranslations();
 
@@ -525,11 +532,12 @@ export default async function RoutePage({
 }
 
 // Génération de métadonnées SEO pour la page de détail d'un produit
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const product = await prisma.product.findUnique({
     where: { slug: params.slug },
     select: {

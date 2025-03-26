@@ -4,11 +4,18 @@ import { prisma } from "@/prisma";
 import { notFound } from "next/navigation";
 import { EditReviewForm } from "./EditReviewForm";
 
-export default async function EditReviewPage({
-  params: { slug, reviewId },
-}: {
-  params: { slug: string; reviewId: string };
-}) {
+export default async function EditReviewPage(
+  props: {
+    params: Promise<{ slug: string; reviewId: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    slug,
+    reviewId
+  } = params;
+
   const user = await currentUser();
 
   if (!user?.isAdmin) {

@@ -1,11 +1,12 @@
 import { redirect } from "next/navigation";
 
 // Version simplifiée avec redirection
-export default async function LocalizedEditProductPage({
-  params,
-}: {
-  params: { locale: string; slug: string };
-}) {
+export default async function LocalizedEditProductPage(
+  props: {
+    params: Promise<{ locale: string; slug: string }>;
+  }
+) {
+  const params = await props.params;
   // Vérifier que les paramètres sont valides
   if (!params || !params.slug || typeof params.slug !== "string") {
     console.error(
