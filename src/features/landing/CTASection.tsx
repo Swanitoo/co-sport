@@ -3,8 +3,10 @@
 import { useAppTranslations } from "@/components/i18n-provider";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Section } from "./Section";
 
 type CTASectionProps = {
@@ -17,13 +19,22 @@ export const CTASection = ({ translations }: CTASectionProps) => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { t } = useAppTranslations();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleButtonClick = () => {
+    setIsLoading(true);
+
     if (status === "authenticated") {
       router.push("/products");
     } else {
       signIn();
     }
+
+    // Ajouter un délai minimal pour assurer la visibilité du loader
+    // Ne sera visible que si la navigation/signin est plus rapide que ce délai
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   };
 
   return (
@@ -32,8 +43,16 @@ export const CTASection = ({ translations }: CTASectionProps) => {
         <button
           className={buttonVariants({ size: "lg" })}
           onClick={handleButtonClick}
+          disabled={isLoading}
         >
-          {t("Home.cta_button")}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              {t("Common.Loading", "Chargement...")}
+            </>
+          ) : (
+            t("Home.cta_button")
+          )}
         </button>
       </Card>
     </Section>

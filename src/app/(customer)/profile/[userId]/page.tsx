@@ -1,6 +1,7 @@
 import { Layout, LayoutTitle } from "@/components/layout";
 import { getServerTranslations } from "@/components/server-translation";
 import { ProfileBadges } from "@/components/ui/badges/profile-badges";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCountryFlag } from "@/data/country";
 import { getUserStravaActivities } from "@/features/strava/services/strava-activity.service";
@@ -26,16 +27,12 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default async function ProfilePage(
-  props: {
-    params: Promise<{ userId: string }>;
-  }
-) {
+export default async function ProfilePage(props: {
+  params: Promise<{ userId: string }>;
+}) {
   const params = await props.params;
 
-  const {
-    userId
-  } = params;
+  const { userId } = params;
 
   // Obtenir les traductions
   const { t, locale } = await getServerTranslations();
@@ -59,15 +56,6 @@ export default async function ProfilePage(
                 },
               },
             },
-          },
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            description: true,
-            sport: true,
-            level: true,
-            reviews: true,
           },
         },
       },
@@ -126,6 +114,14 @@ export default async function ProfilePage(
     return (
       <Layout>
         <div className="space-y-6">
+          {/* Fil d'Ariane */}
+          <Breadcrumb
+            items={[
+              { href: "/products", label: "Annonces" },
+              { label: "Profil" },
+            ]}
+          />
+
           <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="order-2 text-center sm:order-1 sm:text-left">
               <LayoutTitle>{getFirstName(user.name)}</LayoutTitle>
@@ -284,11 +280,9 @@ export default async function ProfilePage(
 }
 
 // Génération de métadonnées SEO pour la page de profil
-export async function generateMetadata(
-  props: {
-    params: Promise<{ userId: string }>;
-  }
-): Promise<Metadata> {
+export async function generateMetadata(props: {
+  params: Promise<{ userId: string }>;
+}): Promise<Metadata> {
   const params = await props.params;
   try {
     const user = await prisma.user.findUnique({

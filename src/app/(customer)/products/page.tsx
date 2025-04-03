@@ -1,13 +1,11 @@
 import { currentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { getServerTranslations } from "@/components/server-translation";
-import { buttonVariants } from "@/components/ui/button";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
-import { Plus } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { CreateProductButton } from "./CreateProductButton";
 import {
   FilteredProductList,
   ProductListFallback,
@@ -76,13 +74,7 @@ export default async function RoutePage(props: {
                 )}
               </p>
 
-              <Link
-                href="/products/new"
-                className={buttonVariants({ variant: "default" })}
-              >
-                <Plus className="mr-2 size-4" />
-                {t("Products.Create", "Créer une annonce")}
-              </Link>
+              <CreateProductButton />
             </div>
 
             <div className="mt-4 sm:mt-0">

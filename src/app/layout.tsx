@@ -1,5 +1,4 @@
 import { currentUser } from "@/auth/current-user";
-import { ParallaxIcons } from "@/components/parallax/ParallaxIcons";
 import { ThemeScript } from "@/components/theme-script";
 import { getServerUrl } from "@/get-server-url";
 import { cn } from "@/lib/utils";
@@ -8,7 +7,14 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const inter = Inter({ subsets: ["latin"] });
+// Optimisation: précharger la police Inter pour une meilleure performance
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap", // Utiliser 'swap' pour éviter un texte invisible pendant le chargement
+  preload: true,
+  // Optimisation: réduire le nombre de variantes chargées si possible
+  weight: ["400", "500", "600", "700"],
+});
 
 // Configuration du viewport séparée selon les recommandations Next.js
 export const viewport: Viewport = {
@@ -24,7 +30,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "co-sport.com",
-  description: "Trouve ton partenaire de sport et progressez enssemble !",
+  description: "Trouve ton partenaire de sport et progressez ensemble !",
   metadataBase: new URL(getServerUrl()),
   applicationName: "co-sport.com",
   authors: [{ name: "co-sport.com", url: "https://co-sport.com" }],
@@ -68,6 +74,19 @@ export const metadata: Metadata = {
     email: true,
     url: true,
   },
+  // Optimisation SEO: ajouter les balises OpenGraph pour améliorer le partage
+  openGraph: {
+    type: "website",
+    url: getServerUrl(),
+    title: "co-sport.com",
+    description: "Trouve ton partenaire de sport et progressez ensemble !",
+    siteName: "co-sport.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "co-sport.com",
+    description: "Trouve ton partenaire de sport et progressez ensemble !",
+  },
 };
 
 export default async function RootLayout(
@@ -78,9 +97,7 @@ export default async function RootLayout(
 ) {
   const params = await props.params;
 
-  const {
-    children
-  } = props;
+  const { children } = props;
 
   const user = await currentUser();
   // Utiliser 'fr' par défaut si la locale n'est pas disponible
@@ -95,15 +112,24 @@ export default async function RootLayout(
           name="google-site-verification"
           content="wEjtYUJjXsMQInNKer1vqCSrvuA2FRYrbApEyLYNLfQ"
         />
-        {/* Google AdSense */}
+        {/* Optimisation: précharger les ressources critiques */}
+        <link
+          rel="preload"
+          href="/fonts/inter.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        {/* Google AdSense - chargé de manière asynchrone pour ne pas bloquer le rendu */}
         <script
           async
+          defer
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9578850534114306"
           crossOrigin="anonymous"
         />
       </head>
       <body className={cn(inter.className, "h-full")}>
-        <ParallaxIcons />
+        {/* ParallaxIcons est inclus dans chaque layout spécifique où il est nécessaire */}
         <Providers userId={user?.id}>{children}</Providers>
       </body>
     </html>
