@@ -1,9 +1,8 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
+import { ProductCardLink } from "@/components/ui/product-card-link";
 import { Globe } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   LEVEL_CLASSES,
@@ -111,7 +110,7 @@ export function LatestProducts({
                 }}
                 data-card-index={index}
               >
-                <Link
+                <ProductCardLink
                   href={
                     isAuthenticated
                       ? `/products/${product.slug}`
@@ -119,74 +118,71 @@ export function LatestProducts({
                           `/products/${product.slug}`
                         )}`
                   }
-                  className="group block"
+                  className="block h-full"
+                  cardClassName={`h-full p-4 ${
+                    isHovered ? "bg-accent/50" : ""
+                  }`}
                 >
-                  <Card
-                    className={`h-full cursor-pointer p-4 transition-all duration-300 hover:bg-accent/50 ${
-                      isHovered ? "bg-accent/50" : ""
-                    }`}
-                  >
-                    <div className="mb-4 flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={product.user.image || undefined} />
-                        <AvatarFallback>
-                          {product.user.name?.charAt(0).toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="line-clamp-1 truncate font-medium">
-                          {product.name}
-                        </h3>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span>
-                            {product.user.name}
-                            {getReviewsText(product._count.reviews)}
-                          </span>
-                          {product.user.country && (
-                            <span>{product.user.country}</span>
-                          )}
-                        </div>
+                  <div className="mb-4 flex items-center gap-3">
+                    <Avatar>
+                      <AvatarImage src={product.user.image || undefined} />
+                      <AvatarFallback>
+                        {product.user.name?.charAt(0).toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="line-clamp-1 truncate font-medium">
+                        {product.name}
+                      </h3>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span>
+                          {product.user.name}
+                          {getReviewsText(product._count.reviews)}
+                        </span>
+                        {product.user.country && (
+                          <span>{product.user.country}</span>
+                        )}
                       </div>
                     </div>
-                    {(product.venueName || product.venueAddress) && (
-                      <div className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">
-                        <Globe className="size-4" />
-                        <span className="truncate">
-                          {product.venueName || product.venueAddress}
-                        </span>
-                      </div>
-                    )}
-                    <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
-                      {product.description}
-                    </p>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <span className="text-lg">
-                          {
-                            SPORTS.find(
-                              (s) =>
-                                s.name ===
-                                (product.originalSportName || product.sport)
-                            )?.icon
-                          }
-                        </span>
-                        <span className="truncate">{product.sport}</span>
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="text-lg">
-                          {
-                            LEVEL_CLASSES.find(
-                              (l) =>
-                                l.name ===
-                                (product.originalLevelName || product.level)
-                            )?.icon
-                          }
-                        </span>
-                        <span>{product.level}</span>
+                  </div>
+                  {(product.venueName || product.venueAddress) && (
+                    <div className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">
+                      <Globe className="size-4" />
+                      <span className="truncate">
+                        {product.venueName || product.venueAddress}
                       </span>
                     </div>
-                  </Card>
-                </Link>
+                  )}
+                  <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
+                    {product.description}
+                  </p>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <span className="text-lg">
+                        {
+                          SPORTS.find(
+                            (s) =>
+                              s.name ===
+                              (product.originalSportName || product.sport)
+                          )?.icon
+                        }
+                      </span>
+                      <span className="truncate">{product.sport}</span>
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="text-lg">
+                        {
+                          LEVEL_CLASSES.find(
+                            (l) =>
+                              l.name ===
+                              (product.originalLevelName || product.level)
+                          )?.icon
+                        }
+                      </span>
+                      <span>{product.level}</span>
+                    </span>
+                  </div>
+                </ProductCardLink>
               </div>
             );
           })}

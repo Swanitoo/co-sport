@@ -52,11 +52,13 @@ export function FilteredProductList({
   const [hasMore, setHasMore] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const loadMoreRef = useRef(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const topRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState(initialProducts);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filterChangeCount, setFilterChangeCount] = useState(0);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Extraire les valeurs des paramètres d'URL pour les filtres de performance
   const getNumberParam = (param: string): number | undefined => {
@@ -160,6 +162,15 @@ export function FilteredProductList({
       }
     };
   }, [hasMore, loading, loadMoreProducts]);
+
+  // Effet pour simuler un chargement progressif initial
+  useEffect(() => {
+    if (isInitialLoad) {
+      // Petit délai pour simuler un chargement progressif, améliore l'UX
+      const timer = setTimeout(() => setIsInitialLoad(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isInitialLoad]);
 
   // Fonction de mise à jour des filtres y compris les filtres de performance
   const handleFilterChange = (newFilters: FilterType) => {
@@ -323,7 +334,22 @@ export function FilteredProductList({
         </div>
 
         <div className="flex-1">
-          <ProductList products={products} userId={userId} />
+          <div ref={topRef}>
+            <h2 className="mb-4 text-lg font-medium">
+              {t("Products.Results", "Résultats")}:{" "}
+              <span className="font-normal text-muted-foreground">
+                {products.length}{" "}
+                {products.length === 1
+                  ? t("Products.ResultsSingular", "annonce")
+                  : t("Products.ResultsPlural", "annonces")}
+              </span>
+            </h2>
+            <ProductList
+              products={products}
+              userId={userId}
+              isLoading={isPending || isInitialLoad}
+            />
+          </div>
           {loading && (
             <div className="mt-4 text-center text-muted-foreground">
               {t("Common.Loading", "Chargement...")}

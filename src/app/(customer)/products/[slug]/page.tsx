@@ -2,6 +2,7 @@ import { currentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { getServerTranslations } from "@/components/server-translation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SocialShareButtons } from "@/components/ui/social-share-buttons";
@@ -69,16 +70,12 @@ function MapSkeleton() {
   );
 }
 
-export default async function RoutePage(
-  props: {
-    params: Promise<{ slug: string }>;
-  }
-) {
+export default async function RoutePage(props: {
+  params: Promise<{ slug: string }>;
+}) {
   const params = await props.params;
 
-  const {
-    slug
-  } = params;
+  const { slug } = params;
 
   // Obtenir les traductions
   const { t, locale } = await getServerTranslations();
@@ -199,13 +196,16 @@ export default async function RoutePage(
   return (
     <Layout>
       <div className="space-y-6">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Link href={`/${locale}/products`} className="hover:text-foreground">
-            {t("Products.Title", "Annonces")}
-          </Link>
-          <span>/</span>
-          <span>{product.name}</span>
-        </div>
+        {/* Fil d'Ariane */}
+        <Breadcrumb
+          items={[
+            {
+              href: `/${locale}/products`,
+              label: t("Products.Title", "Annonces"),
+            },
+            { label: product.name },
+          ]}
+        />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
           <Suspense
@@ -530,13 +530,10 @@ export default async function RoutePage(
     </Layout>
   );
 }
-
 // Génération de métadonnées SEO pour la page de détail d'un produit
-export async function generateMetadata(
-  props: {
-    params: Promise<{ slug: string }>;
-  }
-): Promise<Metadata> {
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const params = await props.params;
   const product = await prisma.product.findUnique({
     where: { slug: params.slug },

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppTranslations } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ export const ProcessReviewStep = ({ product }: { product: Product }) => {
     null | string
   >(`review-id-${product.id}`, null);
   const router = useRouter();
+  const { locale } = useAppTranslations();
 
   const queryClient = useQueryClient();
   const reviewData = useQuery({
@@ -74,7 +76,7 @@ export const ProcessReviewStep = ({ product }: { product: Product }) => {
   const step = getCurrentStep(reviewData.data);
 
   const handleBackToProduct = () => {
-    router.push(`/products/${product.id}`);
+    router.push(`/${locale}/products/${product.slug}`);
   };
 
   return (

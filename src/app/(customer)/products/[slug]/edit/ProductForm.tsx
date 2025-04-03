@@ -2,7 +2,13 @@
 
 import { useAppTranslations } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -24,8 +30,9 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, SaveIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { LocationPreviewMap } from "../LocationPreviewMap";
 import { SportVenueSearch } from "../SportVenueSearch";
@@ -43,10 +50,17 @@ export type ProductFormProps = {
   userSex?: string | null;
 };
 
-export const ProductForm = (props: ProductFormProps) => {
+export const ProductForm: React.FC<ProductFormProps> = (props) => {
   const { t, locale } = useAppTranslations();
   const router = useRouter();
   const isCreate = !props.defaultValues;
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [formReady, setFormReady] = useState(false);
+
+  // S'assurer que le formulaire est considéré comme prêt seulement après le premier rendu
+  useEffect(() => {
+    setFormReady(true);
+  }, []);
 
   const form = useZodForm({
     schema: ProductSchema,
@@ -76,37 +90,78 @@ export const ProductForm = (props: ProductFormProps) => {
     onError: (error) => {
       console.error("Erreur lors de la mutation", error);
       toast.error("Une erreur est survenue lors de la création du groupe");
+      setSubmitClicked(false);
     },
     onSuccess: ({ data, serverError }) => {
       if (serverError) {
         console.error("Erreur serveur", serverError);
         toast.error(serverError);
+        setSubmitClicked(false);
         return;
       }
 
       if (data) {
+        // Afficher le toast de succès
         toast.success(
           isCreate
             ? t("Products.CreateSuccess", "Annonce créée avec succès")
             : t("Products.UpdateSuccess", "Annonce modifiée avec succès")
         );
+
+        // Rediriger immédiatement, la page de destination affichera un skeleton
         router.push(`/${locale}/products/${data.slug}`);
         router.refresh();
       } else {
         console.error("Pas de données reçues du serveur");
         toast.error(t("Products.Error", "Une erreur est survenue"));
+        setSubmitClicked(false);
       }
     },
   });
 
   const onSubmit = async (values: ProductType) => {
     try {
-      await mutation.mutateAsync(values);
+      // Seulement quand l'utilisateur clique sur soumettre
+      setSubmitClicked(true);
+
+      // Commencer la mutation
+      mutation.mutateAsync(values);
     } catch (error) {
       console.error("Erreur lors de la soumission", error);
       toast.error("Une erreur est survenue lors de la création du groupe");
+      setSubmitClicked(false);
     }
   };
+
+  // Afficher le formulaire seulement quand il est prêt
+  if (!formReady) {
+    return null; // Ou un loader minimal pendant le chargement du formulaire
+  }
+
+  // Si l'utilisateur a cliqué sur soumettre, afficher l'écran de redirection
+  if (submitClicked) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-center gap-2">
+            <Loader2 className="size-5 animate-spin" />
+            {isCreate
+              ? "Création de l'annonce en cours..."
+              : "Mise à jour de l'annonce en cours..."}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center py-12">
+          <div className="mb-4 text-center text-muted-foreground">
+            <p>Nous préparons votre annonce...</p>
+            <p className="mt-2 text-sm">
+              Vous allez être redirigé vers la page de votre annonce.
+            </p>
+          </div>
+          <Loader2 className="size-10 animate-spin text-primary" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -252,9 +307,9 @@ export const ProductForm = (props: ProductFormProps) => {
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
-                        <FormLabel className="text-base">Only Girls</FormLabel>
+                        <FormLabel>Pour femmes uniquement</FormLabel>
                         <FormDescription>
-                          Réserver cette annonce uniquement aux femmes
+                          Autorise uniquement les femmes à rejoindre ce groupe
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -270,22 +325,33 @@ export const ProductForm = (props: ProductFormProps) => {
             </TabsContent>
           </Tabs>
 
-          <Button disabled={mutation.isPending} type="submit">
-            {mutation.isPending ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="size-4 animate-spin" />
-                <span>
-                  {isCreate
-                    ? "Création en cours..."
-                    : "Modification en cours..."}
-                </span>
-              </div>
-            ) : isCreate ? (
-              "Créer ton annonce"
-            ) : (
-              "Enregistrer les modifications"
-            )}
-          </Button>
+          <CardFooter className="flex justify-end gap-2 px-0 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+              disabled={mutation.isPending}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              disabled={!form.formState.isValid || mutation.isPending}
+              className="relative min-w-32"
+            >
+              {mutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  {isCreate ? "Création..." : "Mise à jour..."}
+                </>
+              ) : (
+                <>
+                  <SaveIcon className="mr-2 size-4" />
+                  {isCreate ? "Créer l'annonce" : "Mettre à jour"}
+                </>
+              )}
+            </Button>
+          </CardFooter>
         </Form>
       </CardContent>
     </Card>

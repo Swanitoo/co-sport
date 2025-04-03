@@ -23,11 +23,9 @@ import { MiniMap } from "./MiniMap";
 export const dynamic = "force-dynamic"; // Valeur possible: 'auto' | 'force-dynamic' | 'error' | 'force-static'
 export const revalidate = 60; // Revalider toutes les 60 secondes
 
-export default async function RoutePage(
-  props: {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-  }
-) {
+export default async function RoutePage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const searchParams = await props.searchParams;
   const user = await currentUser();
   const { t } = await getServerTranslations();

@@ -82,15 +82,6 @@ export default async function ProfilePage(props: PageProps) {
               },
             },
           },
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-            description: true,
-            sport: true,
-            level: true,
-            reviews: true,
-          },
         },
       },
     });
@@ -330,11 +321,9 @@ export default async function ProfilePage(props: PageProps) {
 }
 
 // Génération de métadonnées SEO pour la page de profil
-export async function generateMetadata(
-  props: {
-    params: Promise<{ locale: Locale; userId: string }>;
-  }
-): Promise<Metadata> {
+export async function generateMetadata(props: {
+  params: Promise<{ locale: Locale; userId: string }>;
+}): Promise<Metadata> {
   const params = await props.params;
   try {
     const user = await prisma.user.findUnique({

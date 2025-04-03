@@ -1,8 +1,9 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { Loader2, MapPin, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface Venue {
@@ -55,6 +56,7 @@ export function SportVenueSearch({
   const [query, setQuery] = useState(defaultValue || "");
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(!!defaultValue);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [isInvalid, setIsInvalid] = useState(false);
   const [isSelectionComplete, setIsSelectionComplete] = useState(
@@ -62,7 +64,7 @@ export function SportVenueSearch({
   );
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const debouncedQuery = useDebounce(query, 500);
+  const debouncedQuery = useDebounce(query, 300); // Réduit à 300ms pour un retour plus rapide
   const wrapperRef = useOutsideClick(() => {
     setShowSuggestions(false);
   });
@@ -73,6 +75,7 @@ export function SportVenueSearch({
     if (defaultValue && !selectedVenue && !isSelectionComplete) {
       const fetchVenueDetails = async () => {
         try {
+          setInitialLoading(true);
           const response = await fetch(
             `/api/webhooks/places?q=${encodeURIComponent(defaultValue)}&limit=1`
           );
@@ -92,6 +95,8 @@ export function SportVenueSearch({
           }
         } catch (error) {
           console.error("Error fetching venue details:", error);
+        } finally {
+          setInitialLoading(false);
         }
       };
 
@@ -107,6 +112,7 @@ export function SportVenueSearch({
       }
 
       setLoading(true);
+
       try {
         const response = await fetch(
           `/api/webhooks/places?q=${encodeURIComponent(debouncedQuery)}`
@@ -151,6 +157,9 @@ export function SportVenueSearch({
   return (
     <div ref={wrapperRef} className="relative space-y-2">
       <div className="relative">
+        <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+          <Search className="size-4" />
+        </div>
         <Input
           value={query}
           onChange={(e) => {
@@ -160,7 +169,7 @@ export function SportVenueSearch({
             // Si l'utilisateur modifie la valeur, on considère que la sélection n'est plus valide
             if (selectedVenue?.name !== newValue) {
               setIsSelectionComplete(false);
-              setIsInvalid(true);
+              setIsInvalid(newValue.length > 0);
 
               // Afficher les suggestions uniquement si la requête est > 2 caractères
               if (newValue.length > 2) {
@@ -179,8 +188,10 @@ export function SportVenueSearch({
           }}
           placeholder="Rechercher un lieu (salle de sport, montagne, stade...)"
           className={cn(
-            "w-full",
-            isInvalid && "border-red-500 focus-visible:ring-red-500"
+            "w-full pl-10 pr-10",
+            isInvalid && "border-red-500 focus-visible:ring-red-500",
+            isSelectionComplete &&
+              "border-green-500 focus-visible:ring-green-500"
           )}
           // Empêcher la réinitialisation lors de la perte de focus
           onBlur={() => {
@@ -223,12 +234,20 @@ export function SportVenueSearch({
           </button>
         )}
 
-        {loading && (
+        {(loading || initialLoading) && (
           <div className="absolute right-2 top-1/2 -translate-y-1/2">
-            <Loader2 className="size-5 animate-spin text-muted-foreground" />
+            <Loader2 className="size-5 animate-spin text-primary" />
           </div>
         )}
       </div>
+
+      {/* Indicateur visuel simple de statut */}
+      {isSelectionComplete && (
+        <div className="flex items-center gap-1 text-xs text-green-600">
+          <MapPin className="size-3.5" />
+          <span>Emplacement sélectionné</span>
+        </div>
+      )}
 
       {venues.length > 0 && showSuggestions && !isSelectionComplete && (
         <ul className="absolute z-50 mt-1 max-h-60 w-full divide-y divide-gray-200 overflow-auto rounded-md border bg-white shadow-lg dark:divide-gray-700 dark:bg-gray-900">
@@ -242,17 +261,39 @@ export function SportVenueSearch({
                 setVenues([]);
                 setIsInvalid(false);
                 setIsSelectionComplete(true);
-                setShowSuggestions(false); // Fermer explicitement les suggestions
+                setShowSuggestions(false);
               }}
-              className="relative cursor-pointer select-none px-3 py-2 hover:bg-red-200 hover:text-blue-700 dark:hover:bg-primary/20"
+              className="relative cursor-pointer select-none px-3 py-2 hover:bg-accent/50"
             >
-              <div className="font-medium text-gray-900 dark:text-gray-100">
-                {venue.name}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {venue.address}
+              <div className="flex items-center gap-2">
+                <MapPin className="size-4 text-muted-foreground" />
+                <div>
+                  <div className="font-medium text-gray-900 dark:text-gray-100">
+                    {venue.name}
+                  </div>
+                  {venue.address && (
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      {venue.address}
+                    </div>
+                  )}
+                </div>
               </div>
             </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Squeletton de chargement simple pour la recherche */}
+      {loading && venues.length === 0 && debouncedQuery.length >= 3 && (
+        <ul className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-white p-2 shadow-lg dark:bg-gray-900">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-2 py-2">
+              <Skeleton className="size-4 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-3 w-4/5" />
+              </div>
+            </div>
           ))}
         </ul>
       )}
