@@ -1,6 +1,7 @@
 "use client";
 
 import { useAppTranslations } from "@/components/i18n-provider";
+import { SupportModal } from "@/components/support/SupportModal";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,6 +33,8 @@ export const JoinRequestButton = (props: JoinRequestButtonProps) => {
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [hasValidatedForm, setHasValidatedForm] = useState(false);
 
   const handleJoinRequest = async () => {
     setIsLoading(true);
@@ -62,49 +65,69 @@ export const JoinRequestButton = (props: JoinRequestButtonProps) => {
     }
   };
 
+  const handleFormSubmit = () => {
+    setHasValidatedForm(true);
+    setIsSupportModalOpen(true);
+  };
+
+  const handleSupportContinue = () => {
+    setIsSupportModalOpen(false);
+    // Procéder avec l'envoi de la demande
+    handleJoinRequest();
+  };
+
   return (
-    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-      <DialogTrigger asChild>
-        <Button variant="default" size="sm">
-          <UserPlus className="mr-2 size-4" />
-          {t("Products.Actions.Join", "Rejoindre")}
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            {t("Products.JoinRequest.Title", "Demande d'adhésion")}
-          </DialogTitle>
-          <DialogDescription>
-            {t(
-              "Products.JoinRequest.Description",
-              "Envoyez une demande. Vous pouvez ajouter un message pour vous présenter."
+    <>
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogTrigger asChild>
+          <Button variant="default" size="sm">
+            <UserPlus className="mr-2 size-4" />
+            {t("Products.Actions.Join", "Rejoindre")}
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {t("Products.JoinRequest.Title", "Demande d'adhésion")}
+            </DialogTitle>
+            <DialogDescription>
+              {t(
+                "Products.JoinRequest.Description",
+                "Envoyez une demande. Vous pouvez ajouter un message pour vous présenter."
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            placeholder={t(
+              "Products.JoinRequest.MessagePlaceholder",
+              "Message (optionnel)"
             )}
-          </DialogDescription>
-        </DialogHeader>
-        <Textarea
-          placeholder={t(
-            "Products.JoinRequest.MessagePlaceholder",
-            "Message (optionnel)"
-          )}
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          className="min-h-[100px]"
-        />
-        <DialogFooter className="flex gap-2 sm:justify-end">
-          <Button
-            variant="outline"
-            onClick={() => setIsModalOpen(false)}
-            disabled={isLoading}
-          >
-            {t("Common.Cancel", "Annuler")}
-          </Button>
-          <Button onClick={handleJoinRequest} disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-            {t("Products.JoinRequest.Submit", "Envoyer la demande")}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            className="min-h-[100px]"
+          />
+          <DialogFooter className="flex gap-2 sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setIsModalOpen(false)}
+              disabled={isLoading}
+            >
+              {t("Common.Cancel", "Annuler")}
+            </Button>
+            <Button onClick={handleFormSubmit} disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {t("Products.JoinRequest.Submit", "Envoyer la demande")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de soutien */}
+      <SupportModal
+        isOpen={isSupportModalOpen}
+        onClose={() => setIsSupportModalOpen(false)}
+        onContinue={handleSupportContinue}
+      />
+    </>
   );
 };

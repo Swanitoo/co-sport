@@ -7,6 +7,7 @@ import { LoginDialog } from "@/features/auth/LoginDialog";
 import { ModeToggle } from "@/features/theme/ModeToggle";
 import { getLocaleFromPathname, loadTranslations } from "@/lib/locale-utils";
 import { prisma } from "@/prisma";
+import { Coffee } from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -110,6 +111,20 @@ export async function Header() {
         </div>
 
         <div className="flex items-center justify-end gap-3">
+          <a
+            href="https://www.buymeacoffee.com/swanmarin"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant="outline" size="sm" className="gap-1">
+              <Coffee className="size-3.5" />
+              <span className="hidden sm:inline-block">Soutenir</span>
+            </Button>
+          </a>
+
+          {/* Séparateur vertical */}
+          <div className="mx-1 h-6 w-px bg-border"></div>
+
           {/* Sélecteur de thème */}
           <ModeToggle />
 

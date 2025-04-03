@@ -1,7 +1,9 @@
 "use client";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Button } from "@/components/ui/button";
 import { motion, useMotionValue, useScroll, useTransform } from "framer-motion";
+import { Coffee } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -77,6 +79,16 @@ export function LandingHeader() {
           }}
           className="flex items-center gap-4 text-sm font-medium text-muted-foreground"
         >
+          <a
+            href="https://www.buymeacoffee.com/swanmarin"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant="outline" size="sm" className="gap-1">
+              <Coffee className="size-3.5" />
+              <span className="hidden sm:inline-block">Soutenir</span>
+            </Button>
+          </a>
           <AppButton />
           <LanguageSwitcher />
           <ModeToggle />

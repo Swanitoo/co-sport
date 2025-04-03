@@ -27,10 +27,12 @@ import { ChatComponent } from "./Chat";
 import { DeleteButton } from "./DeleteButton";
 import { DeleteReviewButton } from "./DeleteReviewButton";
 import { LEVEL_CLASSES, SPORTS } from "./edit/product.schema";
+import { EditButton } from "./EditButton";
 import { JoinRequestButton } from "./JoinRequestButton";
 import { LeaveButton } from "./LeaveButton";
 import { ProductLocationMap } from "./ProductLocationMap";
 import { RemoveMemberButton } from "./RemoveMemberButton";
+import { SeeAllReviewsButton } from "./SeeAllReviewsButton";
 
 // Activation de l'ISR pour cette page
 export const dynamic = "force-dynamic"; // Permettre les mises à jour dynamiques des données
@@ -274,16 +276,7 @@ export default async function RoutePage(props: {
               {canManageProduct && (
                 <>
                   {isOwner && <Crown size={16} className="text-yellow-500" />}
-                  <Link
-                    href={`/products/${encodeURIComponent(product.slug)}/edit`}
-                    className={buttonVariants({
-                      size: "sm",
-                      variant: "secondary",
-                    })}
-                    prefetch={true}
-                  >
-                    {t("Products.Actions.Edit", "Modifier")}
-                  </Link>
+                  <EditButton slug={product.slug} />
                   <DeleteButton productId={product.id} />
                 </>
               )}
@@ -461,17 +454,7 @@ export default async function RoutePage(props: {
                   </div>
                 )}
                 <div className="mt-2">
-                  <Link
-                    href={`/${locale}/wall/${encodeURIComponent(product.slug)}`}
-                    className={buttonVariants({
-                      size: "sm",
-                      variant: "outline",
-                    })}
-                    prefetch={true}
-                  >
-                    <Link2 size={16} className="mr-2" />
-                    {t("Products.SeeAllReviews", "Voir tous les avis")}
-                  </Link>
+                  <SeeAllReviewsButton slug={product.slug} />
                 </div>
               </CardContent>
             </Card>
