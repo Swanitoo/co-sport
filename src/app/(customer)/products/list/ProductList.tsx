@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { ProductCardLink } from "@/components/ui/product-card-link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { COUNTRIES } from "@/data/country";
+import { getFirstName } from "@/lib/string-utils";
 import { CheckCircle, Crown, Globe, Hourglass } from "lucide-react";
 import { LEVEL_CLASSES, SPORTS } from "../[slug]/edit/product.schema";
 import { ProductListProps } from "./productList.schema";
@@ -99,7 +100,7 @@ export function ProductList({
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <span className="truncate">
-                    {product.user.name}
+                    {getFirstName(product.user.name)}
                     {product.user.sex && (
                       <span className="ml-1">({product.user.sex})</span>
                     )}

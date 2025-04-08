@@ -356,12 +356,6 @@ export function StravaDashboard({
             </div>
           </div>
         </CardContent>
-        <CardFooter className="justify-center">
-          <p className="text-xs italic text-muted-foreground">
-            (En attente d'acceptation du site par Strava, possible que cela ne
-            fonctionne pas)
-          </p>
-        </CardFooter>
       </>
     );
   }

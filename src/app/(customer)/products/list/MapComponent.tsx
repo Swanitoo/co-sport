@@ -4,6 +4,7 @@ import { useAppTranslations } from "@/components/i18n-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getFirstName } from "@/lib/string-utils";
 import { ChevronLeft, ChevronRight, Map as MapIcon, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -359,7 +360,7 @@ export const MapComponent = ({
                       isDarkTheme ? "text-white" : "text-black"
                     }`}
                   >
-                    {selectedProduct.user.name}
+                    {getFirstName(selectedProduct.user.name)}
                     {selectedProduct.user.sex && (
                       <span className="ml-1">({selectedProduct.user.sex})</span>
                     )}

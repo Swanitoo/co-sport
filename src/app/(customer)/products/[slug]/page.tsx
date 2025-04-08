@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/table";
 import { getCountryFlag } from "@/data/country";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
+import { getFirstName } from "@/lib/string-utils";
 import { prisma } from "@/prisma";
 import { CheckCircle, Crown, Link2, MapPin } from "lucide-react";
 import type { Metadata } from "next";
@@ -233,14 +234,14 @@ export default async function RoutePage(props: {
                       rel="noopener noreferrer"
                       className="cursor-pointer text-sm hover:underline"
                     >
-                      {product.user.name}
+                      {getFirstName(product.user.name)}
                     </Link>
                   ) : (
                     <Link
                       href={`/${locale}/profile/${product.userId}`}
                       className="cursor-pointer text-sm hover:underline"
                     >
-                      {product.user.name}
+                      {getFirstName(product.user.name)}
                     </Link>
                   )}
                   {product.user.sex && (
@@ -473,7 +474,7 @@ export default async function RoutePage(props: {
                     {activeMemberships.map((membership) => (
                       <TableRow key={membership.id}>
                         <TableCell>
-                          <p>{membership.user.name}</p>
+                          <p>{getFirstName(membership.user.name)}</p>
                           {membership.user.socialLink && (
                             <Link
                               href={membership.user.socialLink}

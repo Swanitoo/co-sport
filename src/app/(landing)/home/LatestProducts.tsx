@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProductCardLink } from "@/components/ui/product-card-link";
+import { getFirstName } from "@/lib/string-utils";
 import { Globe } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -136,7 +137,7 @@ export function LatestProducts({
                       </h3>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span>
-                          {product.user.name}
+                          {getFirstName(product.user.name)}
                           {getReviewsText(product._count.reviews)}
                         </span>
                         {product.user.country && (
