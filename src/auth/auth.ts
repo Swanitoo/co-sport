@@ -4,7 +4,10 @@ import { prisma } from "@/prisma";
 import { AdapterUser } from "@auth/core/adapters";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import StravaProvider, { StravaProfile } from "next-auth/providers/strava";
+// Supprimer l'import de StravaProvider et importer uniquement le type
+import type { StravaProfile } from "next-auth/providers/strava";
+// Importer les types et fonctions OAuth génériques
+import type { OAuthConfig } from "next-auth/providers";
 
 // Déterminer l'environnement
 const useSecureCookies = process.env.NODE_ENV === "production";
@@ -79,58 +82,27 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         },
       },
     }),
-    StravaProvider({
+    // Remplacer l'utilisation de StravaProvider par un fournisseur OAuth2 personnalisé
+    {
+      id: "strava",
+      name: "Strava",
+      type: "oauth",
       clientId: process.env.STRAVA_CLIENT_ID!,
       clientSecret: process.env.STRAVA_CLIENT_SECRET!,
-      // Autoriser la liaison des comptes par email
-      allowDangerousEmailAccountLinking: true,
-      checks: securityChecks,
+      // Authorisation
       authorization: {
+        url: "https://www.strava.com/api/v3/oauth/authorize",
         params: {
           scope: "read,activity:read",
           approval_prompt: "auto",
+          response_type: "code",
         },
       },
-      // Gérer explicitement la réponse du token pour éviter l'erreur d'id_token
+      // Point de terminaison pour obtenir un token
       token: {
-        async request({
-          client,
-          params,
-          checks,
-          provider,
-        }: {
-          client: any;
-          params: { code: string; [key: string]: string };
-          checks: any;
-          provider: { callbackUrl?: string };
-        }) {
-          const response = await client.oauthCallback(
-            provider.callbackUrl,
-            params,
-            checks
-          );
-
-          // Extraire uniquement les informations de token nécessaires
-          const {
-            token_type,
-            expires_at,
-            refresh_token,
-            access_token,
-            athlete,
-          } = response;
-
-          return {
-            tokens: {
-              token_type,
-              expires_at,
-              refresh_token,
-              access_token,
-              athlete,
-            },
-          };
-        },
+        url: "https://www.strava.com/api/v3/oauth/token",
       },
-      // Spécifier userinfo comme URL plutôt que comme gestionnaire pour éviter les problèmes OIDC
+      // Endpoint pour obtenir les infos utilisateur
       userinfo: {
         url: "https://www.strava.com/api/v3/athlete",
         async request({
@@ -140,13 +112,13 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           tokens: { access_token: string; [key: string]: any };
           provider: { userinfo?: string | URL };
         }) {
-          return await fetch(provider.userinfo!.toString(), {
+          const response = await fetch(provider.userinfo!.toString(), {
             headers: { Authorization: `Bearer ${tokens.access_token}` },
-          }).then((res) => res.json());
+          });
+          return await response.json();
         },
       },
-      profile(profile) {
-        // Extraction correcte de toutes les données du profil Strava
+      profile(profile: any) {
         return {
           id: profile.id.toString(),
           name:
@@ -171,15 +143,14 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
               : undefined,
         };
       },
-      account(account) {
-        return {
-          ...account,
-          providerAccountId: account.providerAccountId
-            ? account.providerAccountId.toString()
-            : "",
-        };
+      // Configuration client
+      client: {
+        token_endpoint_auth_method: "client_secret_post",
       },
-    }),
+      // Méthode de liaison des comptes
+      allowDangerousEmailAccountLinking: true,
+      checks: securityChecks,
+    } as OAuthConfig<any>,
   ],
   callbacks: {
     async session({ session, user }) {
