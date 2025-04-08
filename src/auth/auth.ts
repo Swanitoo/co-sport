@@ -101,6 +101,47 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       // Point de terminaison pour obtenir un token
       token: {
         url: "https://www.strava.com/api/v3/oauth/token",
+        async request({ params, provider }: any) {
+          // Implémenter manuellement l'échange du code d'autorisation contre un token
+          const response = await fetch(
+            "https://www.strava.com/api/v3/oauth/token",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: new URLSearchParams({
+                client_id: provider.clientId,
+                client_secret: provider.clientSecret,
+                code: params.code,
+                grant_type: "authorization_code",
+              }),
+            }
+          );
+
+          const responseData = await response.json();
+
+          // Extraire et structurer exactement les données dont nous avons besoin
+          const {
+            token_type,
+            expires_at,
+            refresh_token,
+            access_token,
+            athlete,
+          } = responseData;
+
+          // Renvoyer un objet formaté qui n'attend pas de id_token
+          return {
+            tokens: {
+              token_type,
+              expires_at: expires_at ? String(expires_at) : undefined,
+              refresh_token,
+              access_token,
+              // Stocker athlete comme JSON stringifié pour éviter les problèmes de sérialisation dans la base de données
+              athlete_data: JSON.stringify(athlete || {}),
+            },
+          };
+        },
       },
       // Endpoint pour obtenir les infos utilisateur
       userinfo: {
@@ -112,6 +153,16 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           tokens: { access_token: string; [key: string]: any };
           provider: { userinfo?: string | URL };
         }) {
+          // Si nous avons déjà les données athlete dans le token, les utiliser
+          if (tokens.athlete_data) {
+            try {
+              return JSON.parse(tokens.athlete_data);
+            } catch (e) {
+              console.error("Erreur lors du parsing des données athlete:", e);
+            }
+          }
+
+          // Sinon, faire une requête
           const response = await fetch(provider.userinfo!.toString(), {
             headers: { Authorization: `Bearer ${tokens.access_token}` },
           });
@@ -120,14 +171,14 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       },
       profile(profile: any) {
         return {
-          id: profile.id.toString(),
+          id: profile.id ? profile.id.toString() : "",
           name:
             profile.firstname && profile.lastname
               ? `${profile.firstname} ${profile.lastname}`
               : undefined,
           email: null, // Strava ne fournit pas d'email
           image: profile.profile,
-          stravaId: profile.id.toString(),
+          stravaId: profile.id ? profile.id.toString() : "",
           stravaConnected: true,
           stravaCreatedAt: profile.created_at
             ? new Date(profile.created_at)
