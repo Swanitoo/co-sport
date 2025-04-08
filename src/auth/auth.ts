@@ -130,6 +130,21 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           };
         },
       },
+      // Spécifier userinfo comme URL plutôt que comme gestionnaire pour éviter les problèmes OIDC
+      userinfo: {
+        url: "https://www.strava.com/api/v3/athlete",
+        async request({
+          tokens,
+          provider,
+        }: {
+          tokens: { access_token: string; [key: string]: any };
+          provider: { userinfo?: string | URL };
+        }) {
+          return await fetch(provider.userinfo!.toString(), {
+            headers: { Authorization: `Bearer ${tokens.access_token}` },
+          }).then((res) => res.json());
+        },
+      },
       profile(profile) {
         // Extraction correcte de toutes les données du profil Strava
         return {
