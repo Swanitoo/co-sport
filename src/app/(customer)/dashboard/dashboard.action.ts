@@ -2,6 +2,7 @@
 "use server";
 
 import { requiredCurrentUser } from "@/auth/current-user";
+import { COUNTRIES } from "@/data/country";
 import { prisma } from "@/prisma";
 import { revalidatePath } from "next/cache";
 import { UpdateProfileSchema } from "./dashboard.schemas";
@@ -23,10 +24,14 @@ export async function updateName(formData: FormData) {
 export async function updateBio(formData: FormData) {
   const bio = formData.get("bio") as string;
   const user = await requiredCurrentUser();
+
   await prisma.user.update({
     where: { id: user.id },
-    data: { bio: UpdateProfileSchema.shape.bio.parse(bio) },
+    data: {
+      bio: UpdateProfileSchema.shape.bio.parse(bio),
+    },
   });
+
   revalidatePath("/dashboard");
 }
 
@@ -45,6 +50,7 @@ export async function updateSocialLink(formData: FormData) {
 
   revalidatePath("/dashboard");
 }
+
 export async function updateLocation(formData: FormData) {
   const city = formData.get("city") as string;
   const user = await requiredCurrentUser();
@@ -63,10 +69,15 @@ export async function updateCountry(formData: FormData) {
   const country = formData.get("country") as string;
   const user = await requiredCurrentUser();
 
+  // Trouver l'objet pays correspondant pour obtenir le nom du pays
+  const countryObject = COUNTRIES.find((c) => c.code === country);
+  const nationality = countryObject?.name;
+
   await prisma.user.update({
     where: { id: user.id },
     data: {
       country: UpdateProfileSchema.shape.country.parse(country),
+      nationality,
     },
   });
 
@@ -74,8 +85,8 @@ export async function updateCountry(formData: FormData) {
 }
 
 export async function updateBirthDate(formData: FormData) {
-  const user = await requiredCurrentUser();
   const birthDate = formData.get("birthDate") as string;
+  const user = await requiredCurrentUser();
 
   await prisma.user.update({
     where: { id: user.id },
