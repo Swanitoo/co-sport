@@ -197,6 +197,7 @@ export default async function RoutePage() {
     where: {
       userId: user.id,
     },
+    orderBy: [{ createdAt: "desc" }],
     include: {
       memberships: {
         where: { status: "PENDING" },
@@ -298,6 +299,7 @@ export default async function RoutePage() {
         },
       },
     },
+    orderBy: [{ createdAt: "desc" }],
     include: {
       user: {
         select: {

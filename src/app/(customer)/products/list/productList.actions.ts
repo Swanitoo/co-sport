@@ -106,6 +106,7 @@ export async function getFilteredProducts(
 
   return await prisma.product.findMany({
     where,
+    orderBy: [{ createdAt: "desc" }],
     include: {
       memberships: true,
       user: {
