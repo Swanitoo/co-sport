@@ -91,6 +91,45 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           approval_prompt: "auto",
         },
       },
+      // Gérer explicitement la réponse du token pour éviter l'erreur d'id_token
+      token: {
+        async request({
+          client,
+          params,
+          checks,
+          provider,
+        }: {
+          client: any;
+          params: { code: string; [key: string]: string };
+          checks: any;
+          provider: { callbackUrl?: string };
+        }) {
+          const response = await client.oauthCallback(
+            provider.callbackUrl,
+            params,
+            checks
+          );
+
+          // Extraire uniquement les informations de token nécessaires
+          const {
+            token_type,
+            expires_at,
+            refresh_token,
+            access_token,
+            athlete,
+          } = response;
+
+          return {
+            tokens: {
+              token_type,
+              expires_at,
+              refresh_token,
+              access_token,
+              athlete,
+            },
+          };
+        },
+      },
       profile(profile) {
         // Extraction correcte de toutes les données du profil Strava
         return {

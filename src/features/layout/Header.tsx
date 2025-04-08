@@ -122,16 +122,8 @@ export async function Header() {
             </Button>
           </a>
 
-          {/* Séparateur vertical */}
-          <div className="mx-1 h-6 w-px bg-border"></div>
-
-          {/* Sélecteur de thème */}
           <ModeToggle />
 
-          {/* Séparateur vertical */}
-          <div className="mx-1 h-6 w-px bg-border"></div>
-
-          {/* Sélecteur de langue */}
           <div className="flex items-center justify-center">
             <LanguageSwitcher />
           </div>

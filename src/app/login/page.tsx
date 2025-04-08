@@ -135,21 +135,25 @@ export default function LoginPage() {
 
             <Button
               onClick={handleStravaLogin}
-              className="flex w-full items-center justify-center gap-2 bg-[#FC4C02] text-white hover:bg-[#E34000]"
+              className="flex w-full items-center justify-center gap-3 bg-[#FC4C02] text-white hover:bg-[#E34000]"
               size="lg"
             >
-              <svg
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="currentColor"
-                className="text-white"
-              >
-                <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" />
-              </svg>
-              {fromProfileDataCheck
-                ? "Se connecter avec Strava"
-                : "Continuer avec Strava"}
+              <div className="flex size-5 items-center justify-center">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="20"
+                  height="20"
+                  fill="currentColor"
+                  className="min-w-[20px] text-white"
+                >
+                  <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" />
+                </svg>
+              </div>
+              <span>
+                {fromProfileDataCheck
+                  ? "Se connecter avec Strava"
+                  : "Continuer avec Strava"}
+              </span>
             </Button>
           </div>
         </CardContent>
