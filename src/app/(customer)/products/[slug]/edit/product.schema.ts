@@ -8,7 +8,7 @@ export const SPORTS = [
   },
   {
     name: "Athlétisme",
-    icon: "🏃",
+    icon: "🏃‍♀️",
     translations: { en: "Athletics", es: "Atletismo" },
   },
   {
