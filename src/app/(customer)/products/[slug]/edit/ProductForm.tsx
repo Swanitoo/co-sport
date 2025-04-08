@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Confetti } from "@/components/ui/confetti";
 import {
   Form,
   FormControl,
@@ -158,6 +159,10 @@ export const ProductForm: React.FC<ProductFormProps> = (props) => {
             </p>
           </div>
           <Loader2 className="size-10 animate-spin text-primary" />
+          {/* Ajout de l'animation de confettis lors de la création */}
+          {isCreate && <Confetti trigger={true} type="celebration" />}
+          {/* Animation plus discrète pour la mise à jour */}
+          {!isCreate && <Confetti trigger={true} type="success" />}
         </CardContent>
       </Card>
     );

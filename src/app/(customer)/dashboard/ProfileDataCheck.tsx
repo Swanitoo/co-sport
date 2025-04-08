@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Confetti } from "@/components/ui/confetti";
 import {
   Dialog,
   DialogContent,
@@ -77,6 +78,7 @@ export function ProfileDataCheck({
     sex: existingData.sex || "",
     country: existingData.country || "",
     email: existingData.email || "",
+    stravaLinkRefused: false,
   });
 
   // S'assurer que formData est toujours à jour avec les données existantes
@@ -85,6 +87,7 @@ export function ProfileDataCheck({
       sex: existingData.sex || "",
       country: existingData.country || "",
       email: existingData.email || "",
+      stravaLinkRefused: false,
     });
     // Calcul initial de la progression
     setProgress(calculateProgress());
@@ -93,34 +96,32 @@ export function ProfileDataCheck({
   // Fonction pour calculer la progression basée sur les données existantes et formData
   const calculateProgress = () => {
     // Calculer le nombre total d'étapes nécessaires
-    const totalSteps =
-      (needsSex ? 1 : 0) +
-      (needsCountry ? 1 : 0) +
-      (needsEmail ? 1 : 0) +
-      (shouldAskLinkStrava ? 1 : 0);
-
-    // Si aucune étape n'est nécessaire, retourner 100%
-    if (totalSteps === 0) return 100;
+    const totalSteps = 4; // Toujours 4 champs requis: sex, country, email, strava (comme dans dashboard/page.tsx)
 
     // Calculer le nombre d'étapes complétées
     let completedSteps = 0;
 
-    // Vérifier chaque étape nécessaire et compter si elle est complétée
-    if (needsSex && (formData.sex || existingData.sex)) {
+    // Vérifier les données dans le même ordre que dashboard/page.tsx
+    if (formData.sex || existingData.sex) {
       completedSteps++;
     }
-    if (needsCountry && (formData.country || existingData.country)) {
+    if (formData.country || existingData.country) {
       completedSteps++;
     }
-    if (needsEmail && (formData.email || existingData.email)) {
+    if (formData.email || existingData.email) {
       completedSteps++;
     }
-    if (shouldAskLinkStrava && existingData.stravaConnected) {
+    // Pour Strava, on considère comme complété si connecté OU si refusé explicitement
+    // Le refus est indiqué par l'action "Non merci" dans la modale
+    if (
+      existingData.stravaConnected ||
+      (formData as any).stravaLinkRefused === true
+    ) {
       completedSteps++;
     }
 
-    // Calculer le pourcentage de progression
-    return Math.min((completedSteps / totalSteps) * 100, 100);
+    // Calculer le pourcentage de progression, arrondi comme dans dashboard/page.tsx
+    return Math.round((completedSteps / totalSteps) * 100);
   };
 
   const [progress, setProgress] = useState(() => calculateProgress());
@@ -244,6 +245,9 @@ export function ProfileDataCheck({
       });
     } else {
       try {
+        // Mettre à jour formData immédiatement pour une meilleure UX
+        setFormData((prev) => ({ ...prev, stravaLinkRefused: true }));
+
         await updateUserProfile({ stravaLinkRefused: true });
         setProgress(calculateProgress());
         setShowSuccess(true);
@@ -273,16 +277,19 @@ export function ProfileDataCheck({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         {showSuccess ? (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="flex flex-col items-center justify-center space-y-2 p-4"
-          >
-            <div className="flex size-12 items-center justify-center rounded-full bg-green-100">
-              <Check className="size-6 text-green-600" />
-            </div>
-            <p className="text-lg font-medium">Profil complété !</p>
-          </motion.div>
+          <>
+            <Confetti trigger={showSuccess} type="success" />
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="flex flex-col items-center justify-center space-y-2 p-4"
+            >
+              <div className="flex size-12 items-center justify-center rounded-full bg-green-100">
+                <Check className="size-6 text-green-600" />
+              </div>
+              <p className="text-lg font-medium">Profil complété !</p>
+            </motion.div>
+          </>
         ) : (
           <div className="mb-6 space-y-4">
             <DialogHeader>

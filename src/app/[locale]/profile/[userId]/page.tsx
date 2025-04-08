@@ -203,6 +203,7 @@ export default async function ProfilePage(props: PageProps) {
                     <div>
                       <h3 className="mb-1 font-semibold">Nationalité</h3>
                       <p className="text-sm text-muted-foreground">
+                        {user.country && getCountryFlag(user.country)}{" "}
                         {user.nationality}
                       </p>
                     </div>

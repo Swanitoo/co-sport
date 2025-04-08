@@ -298,6 +298,27 @@ export function SportVenueSearch({
         </ul>
       )}
 
+      {/* Message d'aide quand aucun résultat n'est trouvé */}
+      {!loading &&
+        debouncedQuery.length >= 3 &&
+        venues.length === 0 &&
+        !isSelectionComplete && (
+          <div className="absolute z-50 mt-1 w-full rounded-md border bg-white p-3 shadow-lg dark:bg-gray-900">
+            <p className="text-sm text-muted-foreground">
+              Aucun résultat trouvé. Veuillez être plus précis dans votre
+              recherche :
+            </p>
+            <ul className="mt-1 list-disc pl-5 text-xs text-muted-foreground">
+              <li>
+                Recherchez un lieu sportif spécifique (stade, gymnase,
+                piscine...)
+              </li>
+              <li>Précisez un quartier ou un arrondissement</li>
+              <li>Incluez le nom de la ville avec votre recherche</li>
+            </ul>
+          </div>
+        )}
+
       {isInvalid && (
         <p className="text-sm text-red-500">
           Veuillez sélectionner un lieu dans la liste.
