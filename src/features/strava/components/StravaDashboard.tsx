@@ -536,7 +536,10 @@ export function StravaDashboard({
                         className="flex flex-col space-y-2 rounded-md border p-3"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="truncate text-sm font-medium">
+                          <span
+                            className="inline-block max-w-[180px] truncate text-sm font-medium md:max-w-[300px]"
+                            title={activity.name}
+                          >
                             {activity.name}
                           </span>
                           <Badge variant="outline">

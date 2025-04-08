@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { LogIn } from "lucide-react";
+import { User } from "lucide-react";
 import { signInAction } from "./auth.action";
 
 export const SignInButton = () => {
@@ -13,7 +13,7 @@ export const SignInButton = () => {
         signInAction();
       }}
     >
-      <LogIn size={16} className="sm:mr-2" />
+      <User size={16} className="sm:mr-2" />
       <span className="hidden sm:inline">Connexion</span>
     </Button>
   );
