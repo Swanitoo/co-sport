@@ -10,14 +10,20 @@ import { LandingHeader } from "@/features/landing/LandingHeader";
 import { SupportSection } from "@/features/landing/SupportSection";
 import { prisma } from "@/prisma";
 import type { Metadata } from "next";
+import { unstable_noStore as noStore } from "next/cache";
 import { Suspense } from "react";
 import { LatestProducts } from "./LatestProducts";
 
-// Configuration ISR
-export const dynamic = "force-static"; // Utiliser le rendu statique pour la page d'accueil
-export const revalidate = 300; // Revalider toutes les 5 minutes (300 secondes)
+// Configuration optimisée pour Next.js 15
+export const runtime = "edge";
+export const preferredRegion = "auto";
+export const dynamic = "force-static"; // Utilise le rendu statique pour les parties non dynamiques
+export const revalidate = 300; // Revalider toutes les 5 minutes
 
-// Squelette pour le chargement des derniers produits
+// Pour les parties dynamiques qui ne doivent pas être mises en cache
+export const unstable_partialPrerendering = true; // Activer PPR (Next.js 15)
+
+// Squelette pour le chargement des derniers produits - optimisé pour réduire le CLS
 function LatestProductsSkeleton() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
@@ -32,6 +38,7 @@ function LatestProductsSkeleton() {
             <div
               key={i}
               className="animate-pulse space-y-3 rounded-xl border p-6"
+              style={{ height: "280px" }} // Hauteur fixe pour réduire le CLS
             >
               <div className="h-4 w-2/3 rounded bg-muted"></div>
               <div className="h-20 w-full rounded bg-muted"></div>
@@ -44,8 +51,11 @@ function LatestProductsSkeleton() {
   );
 }
 
-// Charge les produits de manière asynchrone
+// Charge les produits de manière asynchrone avec mise en cache optimisée pour Next.js 15
 async function getLatestProducts() {
+  // En utilisant noStore() pour les parties dynamiques dans PPR
+  noStore();
+
   return prisma.product.findMany({
     where: {
       enabled: true,
@@ -53,7 +63,7 @@ async function getLatestProducts() {
     orderBy: {
       createdAt: "desc",
     },
-    take: 9,
+    take: 9, // Limiter pour améliorer les performances
     select: {
       id: true,
       slug: true,
@@ -79,9 +89,12 @@ async function getLatestProducts() {
   });
 }
 
-// Charger les messages
+// Charger les messages avec mise en cache
 async function getMessages() {
-  return (await import("../../../../messages/fr.json")).default;
+  // Utiliser la nouvelle syntaxe de Next.js 15 pour l'importation avec type
+  return (
+    await import("../../../../messages/fr.json", { with: { type: "json" } })
+  ).default;
 }
 
 // Génération des métadonnées SEO pour la page d'accueil
@@ -100,6 +113,14 @@ export function generateMetadata(): Metadata {
         "co-sport.com est la plateforme idéale pour trouver des partenaires de sport près de chez toi. Pratique des sports ensemble, rejoins des groupes et améliore ta performance !",
       images: ["/opengraph-image.png"],
     },
+    alternates: {
+      canonical: "https://co-sport.com",
+      languages: {
+        fr: "https://co-sport.com/fr",
+        en: "https://co-sport.com/en",
+        es: "https://co-sport.com/es",
+      },
+    },
   };
 }
 
@@ -109,6 +130,7 @@ async function FeatureBoxesSection() {
   return <FeatureBoxes isAuthenticated={!!user} />;
 }
 
+// Utilisation de boundary pour isoler les requêtes DB
 async function LatestProductsWrapper() {
   const products = await getLatestProducts();
   const user = await currentUser();
@@ -137,28 +159,63 @@ export default async function Home() {
       <div className="h-16" />
       <LandingHeader />
       <HeroSection translations={heroTranslations} />
-      <Suspense>
+
+      {/* Utiliser Suspense avec des clés pour Next.js 15 afin d'améliorer le streaming */}
+      <Suspense
+        key="feature-boxes"
+        fallback={
+          <div
+            className="mx-auto max-w-7xl animate-pulse rounded-lg bg-muted/30 px-6 py-12"
+            style={{ height: "300px" }}
+          />
+        }
+      >
         <FeatureBoxesSection />
       </Suspense>
-      <Suspense fallback={<LatestProductsSkeleton />}>
+
+      <Suspense key="latest-products" fallback={<LatestProductsSkeleton />}>
         <LatestProductsWrapper />
       </Suspense>
-      <Suspense>
+
+      <Suspense
+        key="badges"
+        fallback={<div className="h-[200px] animate-pulse bg-muted/20" />}
+      >
         <BadgesExplanationSection />
       </Suspense>
-      <Suspense>
+
+      <Suspense
+        key="features"
+        fallback={<div className="h-[300px] animate-pulse bg-muted/20" />}
+      >
         <FeatureSection />
       </Suspense>
-      <Suspense>
+
+      <Suspense
+        key="support"
+        fallback={<div className="h-[200px] animate-pulse bg-muted/20" />}
+      >
         <SupportSection />
       </Suspense>
-      <Suspense>
+
+      <Suspense
+        key="faq"
+        fallback={<div className="h-[300px] animate-pulse bg-muted/20" />}
+      >
         <FAQSection />
       </Suspense>
-      <Suspense>
+
+      <Suspense
+        key="cta"
+        fallback={<div className="h-[150px] animate-pulse bg-muted/20" />}
+      >
         <CTASection translations={ctaTranslations} />
       </Suspense>
-      <Suspense>
+
+      <Suspense
+        key="footer"
+        fallback={<div className="h-[200px] animate-pulse bg-muted/20" />}
+      >
         <FooterSection />
       </Suspense>
     </div>

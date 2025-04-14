@@ -126,7 +126,7 @@ export const LEVEL_CLASSES = [
   },
   { name: "Expert", icon: "💫", translations: { en: "Expert", es: "Experto" } },
   {
-    name: "Pro (Coatch, Entraîneur, Guide..)",
+    name: "Pro (Coach, Entraîneur, Guide..)",
     icon: "👑",
     translations: {
       en: "Pro (Coach, Trainer, Guide..)",

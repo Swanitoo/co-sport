@@ -1,93 +1,88 @@
 import { currentUser } from "@/auth/current-user";
 import { ThemeScript } from "@/components/theme-script";
-import { getServerUrl } from "@/get-server-url";
 import { cn } from "@/lib/utils";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
-// Optimisation: précharger la police Inter pour une meilleure performance
+// Définition de la police optimisée pour les performances
 const inter = Inter({
   subsets: ["latin"],
-  display: "swap", // Utiliser 'swap' pour éviter un texte invisible pendant le chargement
-  preload: true,
-  // Optimisation: réduire le nombre de variantes chargées si possible
-  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-sans",
+  preload: true, // Préchargement pour améliorer LCP
 });
 
-// Configuration du viewport séparée selon les recommandations Next.js
+// Configuration de viewport pour Next.js 15
 export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-  colorScheme: "dark light",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f1f5f9" },
     { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
   ],
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export const metadata: Metadata = {
-  title: "co-sport.com",
-  description: "Trouve ton partenaire de sport et progressez ensemble !",
-  metadataBase: new URL(getServerUrl()),
-  applicationName: "co-sport.com",
-  authors: [{ name: "co-sport.com", url: "https://co-sport.com" }],
-  creator: "co-sport.com",
-  publisher: "co-sport.com",
-  keywords: [
-    "sport",
-    "partenaire",
-    "rencontre sportive",
-    "alpinisme",
-    "boxe",
-    "tennis",
-    "football",
-    "musculation",
-    "running",
-    "natation",
-    "match",
-    "entrainement",
-    "sportif",
-    "coach",
-    "fitness",
-    "yoga",
-    "escalade",
-    "randonnée",
-    "ski",
+  title: {
+    template: "%s | co-sport.com",
+    default:
+      "co-sport.com - Trouvez votre partenaire de sport et progressez ensemble !",
+  },
+  description:
+    "co-sport.com est la plateforme idéale pour trouver des partenaires de sport. Trouvez des sportifs de votre niveau, rejoignez des groupes et améliorez votre performance !",
+  keywords: ["sport", "partenaires", "communauté sportive", "match sportif"],
+  authors: [
+    {
+      name: "co-sport.com",
+      url: "https://co-sport.com",
+    },
   ],
-  category: "sports",
-  manifest: "/manifest.json",
-  verification: {
-    google: "wEjtYUJjXsMQInNKer1vqCSrvuA2FRYrbApEyLYNLfQ",
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "co-sport.com",
-  },
-  formatDetection: {
-    telephone: true,
-    date: true,
-    address: true,
-    email: true,
-    url: true,
-  },
-  // Optimisation SEO: ajouter les balises OpenGraph pour améliorer le partage
+  creator: "Equipe co-sport",
   openGraph: {
     type: "website",
-    url: getServerUrl(),
-    title: "co-sport.com",
-    description: "Trouve ton partenaire de sport et progressez ensemble !",
+    locale: "fr_FR",
+    url: "https://co-sport.com",
+    title: "co-sport.com - Trouvez votre partenaire de sport",
+    description: "Trouvez des partenaires de sport qui vous correspondent",
     siteName: "co-sport.com",
   },
   twitter: {
     card: "summary_large_image",
-    title: "co-sport.com",
-    description: "Trouve ton partenaire de sport et progressez ensemble !",
+    title: "co-sport.com - Trouvez votre partenaire de sport",
+    description: "Trouvez des partenaires de sport qui vous correspondent",
+    creator: "@cosportcom",
+  },
+  metadataBase: new URL("https://co-sport.com"),
+  alternates: {
+    canonical: "/",
+    languages: {
+      fr: "/fr",
+      en: "/en",
+      es: "/es",
+    },
+  },
+  // Optimisations modernes pour SEO et partage
+  manifest: "/manifest.json",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  // Optimiser les requêtes DNS pour les connexions externes
+  other: {
+    "dns-prefetch": [
+      "https://fonts.googleapis.com",
+      "https://fonts.gstatic.com",
+      "https://maps.googleapis.com",
+    ],
   },
 };
+
+// Configuration pour optimiser le cache des pages statiques
+export const dynamic = "force-static";
+export const revalidate = 600; // 10 minutes
 
 export default async function RootLayout(
   props: Readonly<{
@@ -127,8 +122,20 @@ export default async function RootLayout(
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9578850534114306"
           crossOrigin="anonymous"
         />
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        {/* Préchargement de polices et ressources critiques */}
+        <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
       </head>
-      <body className={cn(inter.className, "h-full")}>
+      <body className={cn(inter.variable, "h-full")}>
         {/* ParallaxIcons est inclus dans chaque layout spécifique où il est nécessaire */}
         <Providers userId={user?.id}>{children}</Providers>
       </body>

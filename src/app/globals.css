@@ -173,3 +173,46 @@
   font-size: 0.875rem;
   color: hsl(var(--muted-foreground));
 }
+
+/* Optimisations de performance pour les animations */
+.feature-icon-auxiliary {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  transform: translate(var(--init-x, 0), var(--init-y, 0));
+  opacity: 0.4;
+}
+
+.feature-card:hover .feature-icon-auxiliary {
+  transform: translate(var(--final-x, 0), var(--final-y, 0));
+  opacity: 1;
+}
+
+/* Optimisations générales d'animation */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Optimisations pour réduire les recalculs de layout */
+.will-change-only-opacity {
+  will-change: opacity;
+}
+
+.will-change-only-transform {
+  will-change: transform;
+}
+
+/* Transition optimisée pour les cartes de produits */
+.product-card {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  perspective: 1000;
+}
+
+/* Optimisations pour le rendu texte */
+.optimize-text {
+  text-rendering: optimizeSpeed;
+}
