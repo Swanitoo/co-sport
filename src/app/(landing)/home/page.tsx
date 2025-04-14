@@ -21,7 +21,7 @@ export const dynamic = "force-static"; // Utilise le rendu statique pour les par
 export const revalidate = 300; // Revalider toutes les 5 minutes
 
 // Pour les parties dynamiques qui ne doivent pas être mises en cache
-export const unstable_partialPrerendering = true; // Activer PPR (Next.js 15)
+export const partialPrerendering = true; // Activer PPR (Next.js 15)
 
 // Squelette pour le chargement des derniers produits - optimisé pour réduire le CLS
 function LatestProductsSkeleton() {
