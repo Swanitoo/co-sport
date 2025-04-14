@@ -84,16 +84,13 @@ export const metadata: Metadata = {
 export const dynamic = "force-static";
 export const revalidate = 600; // 10 minutes
 
-export default async function RootLayout(
-  props: Readonly<{
-    children: React.ReactNode;
-    params?: { locale?: string };
-  }>
-) {
-  const params = await props.params;
-
-  const { children } = props;
-
+export default async function RootLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: { locale?: string };
+}) {
   const user = await currentUser();
   // Utiliser 'fr' par défaut si la locale n'est pas disponible
   const locale = params?.locale || "fr";
