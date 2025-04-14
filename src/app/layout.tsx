@@ -89,11 +89,12 @@ export default async function RootLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { locale?: string };
+  params: Promise<{ locale?: string }>;
 }) {
+  const resolvedParams = await params;
   const user = await currentUser();
   // Utiliser 'fr' par défaut si la locale n'est pas disponible
-  const locale = params?.locale || "fr";
+  const locale = resolvedParams?.locale || "fr";
 
   return (
     <html lang={locale} className="h-full" suppressHydrationWarning>
