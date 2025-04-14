@@ -35,6 +35,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     select: {
       id: true,
+      slug: true,
+      name: true,
       updatedAt: true,
     },
     orderBy: {
@@ -62,7 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Transformer les produits en entrées de sitemap
   const productPages = products.map((product) => ({
-    url: `${baseUrl}/products/${product.id}`,
+    url: `${baseUrl}/products/${product.slug}`,
     lastModified: product.updatedAt,
     changeFrequency: "weekly" as const,
     priority: 0.8,
