@@ -1,35 +1,39 @@
 import { createSafeActionClient } from "next-safe-action";
 import { currentUser } from "./auth/current-user";
 
+// Définir le type approprié pour createSafeActionClient avec middleware
+type ActionClientOpts = {
+  handleServerError: (error: Error) => string;
+  middleware?: () => Promise<any>;
+};
+
 export class ActionError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "ActionError";
-    }
+  constructor(message: string) {
+    super(message);
+    this.name = "ActionError";
+  }
 }
 
-const handleReturnedServerError = (error: Error) => {
-    if (error instanceof ActionError) {
-        return error.message
-    }
-    return "An unexpected error occurred"
-}
+const handleServerError = (error: Error) => {
+  if (error instanceof ActionError) {
+    return error.message;
+  }
+  return "An unexpected error occurred";
+};
 
-export const action = createSafeActionClient(
-    {
-        handleReturnedServerError: handleReturnedServerError,
-    }
-);
+export const action = createSafeActionClient({
+  handleServerError,
+} as ActionClientOpts);
 
 export const userAction = createSafeActionClient({
-    handleReturnedServerError: handleReturnedServerError,
-    middleware: async () => {
-        const user = await currentUser();
+  handleServerError,
+  middleware: async () => {
+    const user = await currentUser();
 
-        if (!user) {
-            throw new ActionError("You must be logged in");
-        }
+    if (!user) {
+      throw new ActionError("You must be logged in");
+    }
 
-        return { user };
-    },
-});
+    return { user };
+  },
+} as ActionClientOpts);

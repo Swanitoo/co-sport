@@ -3,7 +3,7 @@
 import { useAppTranslations } from "@/components/i18n-provider";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, Rocket } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -51,7 +51,11 @@ export const CTASection = ({ translations }: CTASectionProps) => {
               {t("Common.Loading", "Chargement...")}
             </>
           ) : (
-            t("Home.cta_button")
+            <>
+              <Rocket className="mr-2 size-5" />
+              {t("Home.cta_button")}
+              <ArrowRight className="ml-2 size-5" />
+            </>
           )}
         </button>
       </Card>

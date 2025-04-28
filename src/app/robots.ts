@@ -6,20 +6,24 @@ export default function robots(): MetadataRoute.Robots {
   const baseUrl = getServerUrl();
 
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      // Ne pas indexer les pages spécifiées
-      disallow: [
-        "/api/",
-        "/dashboard/",
-        "/login/",
-        "/admin/",
-        "/success/",
-        "/cancel/",
-        "/r/",
-      ],
-    },
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+      },
+      {
+        userAgent: "*",
+        disallow: [
+          "/api/",
+          "/dashboard/",
+          "/login/",
+          "/admin/",
+          "/success/",
+          "/cancel/",
+          "/r/",
+        ],
+      },
+    ],
     sitemap: `${baseUrl}/sitemap.xml`,
   };
 }
