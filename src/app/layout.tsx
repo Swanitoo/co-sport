@@ -120,13 +120,6 @@ export default async function RootLayout(
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        {/* Google AdSense - chargé de manière asynchrone pour ne pas bloquer le rendu */}
-        <script
-          async
-          defer
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9578850534114306"
-          crossOrigin="anonymous"
-        />
       </head>
       <body className={cn(inter.className, "h-full")}>
         {/* ParallaxIcons est inclus dans chaque layout spécifique où il est nécessaire */}
