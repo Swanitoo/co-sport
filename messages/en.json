@@ -267,5 +267,30 @@
     "A5": "We use a simple system with three levels: Beginner, Intermediate and Advanced. Choose the level that best matches your practice in each sport.",
     "Q6": "How can I contact support?",
     "A6": "You can contact us via the contact form in the 'Support' section or directly by email at support@co-sport.com"
+  },
+
+  "featurebox": {
+    "featurebox_main_title": "Our Key Features",
+
+    "featurebox_femmes_title": "Women Only Sports",
+    "featurebox_femmes_description": "Are you a woman and want to practice sports with other women? Thanks to our exclusive system, only women have access to this feature. Find female sports partners near you, according to your level and preferences, in a safe and friendly environment.",
+    "featurebox_femmes_short_description": "Are you a woman and want to practice sports with other women? Thanks to our exclusive system, find female sports partners near you in complete safety.",
+    "featurebox_femmes_cta": "Join the women's community",
+    "featurebox_femmes_keywords": "women only sports, female sports partners, women's sports community, safe sports, find a sports partner",
+    "featurebox_femmes_meta_description": "Join a 100% female community to practice sports with trusted partners.",
+
+    "featurebox_find_ad_title": "Find the ad that suits you",
+    "featurebox_find_ad_description": "Are you looking for a sports partner who matches you? Thanks to our advanced filters and Strava data, you can find athletes by: your favorite sport (running, climbing, fitness, etc.), your level (beginner, intermediate, expert), your location and availability, your culture, nationality and language for maximum affinity. Whether you are looking for a running partner at your pace or a tennis player at your level, our algorithm finds the perfect match!",
+    "featurebox_find_ad_short_description": "Are you looking for a sports partner who matches you? Thanks to our advanced filters and Strava data, find athletes by sport, level, location and cultural affinities.",
+    "featurebox_find_ad_cta": "Find an ad",
+    "featurebox_find_ad_keywords": "find a sports partner, perfect sports match, sports by level and location, advanced sports filter, sports affinities",
+    "featurebox_find_ad_meta_description": "Use our smart filters to find a sports partner that matches your level, sport and culture.",
+
+    "featurebox_coach_title": "Find a sports coach or professional guide in a few clicks!",
+    "featurebox_coach_description": "Are you looking for a personal coach, a mountain guide or another sports professional? On our platform, you can directly book qualified experts according to your needs: Sports coaches (weight training, fitness, running, yoga…), mountain guides and specialized instructors, physical trainers and nutrition experts, sports teachers and professional supervisors. Compare profiles, read reviews and book the right professional easily.",
+    "featurebox_coach_short_description": "Are you looking for a personal coach or a professional guide? Book qualified experts directly: sports coaches, mountain guides, physical trainers and more.",
+    "featurebox_coach_cta": "Find your sports expert",
+    "featurebox_coach_keywords": "online sports coach, book a coach, mountain guide, sports professional, personal trainer",
+    "featurebox_coach_meta_description": "Find a coach or sports professional suited to your needs: fitness, mountain, nutrition and more."
   }
 }

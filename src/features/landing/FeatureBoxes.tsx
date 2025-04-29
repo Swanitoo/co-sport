@@ -95,20 +95,19 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
 
   const features = [
     {
-      title: t("sport_femmes_title", "Sport entre femmes"),
-      seoTitle: t(
-        "sport_femmes_seo_title",
-        "Sport entre femmes : trouvez votre partenaire en toute confiance !"
-      ),
+      title: t("featurebox.featurebox_femmes_title", "Sport entre femmes"),
       description: t(
-        "sport_femmes_description",
+        "featurebox.featurebox_femmes_description",
         "Vous êtes une femme et vous souhaitez pratiquer du sport avec d'autres femmes ? Grâce à notre système exclusif, seules les femmes ont accès à cette fonctionnalité. Trouvez des partenaires sportives près de chez vous, selon votre niveau et vos préférences, en toute sécurité et convivialité."
       ),
       shortDescription: t(
-        "sport_femmes_short_description",
+        "featurebox.featurebox_femmes_short_description",
         "Vous êtes une femme et vous souhaitez pratiquer du sport avec d'autres femmes ? Grâce à notre système exclusif, trouvez des partenaires sportives près de chez vous en toute sécurité."
       ),
-      cta: t("sport_femmes_cta", "Rejoignez la communauté féminine"),
+      cta: t(
+        "featurebox.featurebox_femmes_cta",
+        "Rejoignez la communauté féminine"
+      ),
       icon: <PersonStanding className="size-12 text-pink-500" />,
       bgColor: "from-pink-50 via-pink-100 to-rose-50",
       iconBgColor: "bg-pink-100",
@@ -118,33 +117,29 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
         <Users key="users" className="size-8 text-rose-400" />,
       ],
       keywords: t(
-        "sport_femmes_keywords",
+        "featurebox.featurebox_femmes_keywords",
         "sport entre femmes, partenaires sportives, communauté sportive féminine, sport en toute sécurité, trouver une partenaire de sport"
       ),
       metaDescription: t(
-        "sport_femmes_meta_description",
+        "featurebox.featurebox_femmes_meta_description",
         "Rejoignez une communauté 100% féminine pour pratiquer du sport avec des partenaires de confiance."
       ),
       path: "/products",
     },
     {
       title: t(
-        "partenaires_sportifs_title",
-        "Trouvez des partenaires sportifs qui vous correspondent !"
-      ),
-      seoTitle: t(
-        "partenaires_sportifs_seo_title",
-        "Trouvez des partenaires sportifs qui vous correspondent !"
+        "featurebox.featurebox_find_ad_title",
+        "Trouve l'annonce qui te correspond"
       ),
       description: t(
-        "partenaires_sportifs_description",
+        "featurebox.featurebox_find_ad_description",
         "Vous cherchez un partenaire de sport qui vous ressemble ? Grâce à nos filtres avancés et aux données Strava, vous pouvez trouver des sportifs selon : Votre sport préféré (course, escalade, fitness, etc.), votre niveau (débutant, intermédiaire, expert), votre localisation et vos disponibilités, votre culture, nationalité et langue pour un maximum d'affinité. Que vous soyez à la recherche d'un partenaire de running au même rythme que vous ou d'un joueur de tennis de votre niveau, notre algorithme vous trouve le match parfait !"
       ),
       shortDescription: t(
-        "partenaires_sportifs_short_description",
+        "featurebox.featurebox_find_ad_short_description",
         "Vous cherchez un partenaire de sport qui vous ressemble ? Grâce à nos filtres avancés et aux données Strava, trouvez des sportifs selon votre sport, niveau, localisation et affinités culturelles."
       ),
-      cta: t("partenaires_sportifs_cta", "Trouvez votre partenaire idéal"),
+      cta: t("featurebox.featurebox_find_ad_cta", "Trouver une annonce"),
       icon: <Target className="size-12 text-blue-500" />,
       bgColor: "from-blue-50 via-indigo-50 to-cyan-50",
       iconBgColor: "bg-blue-100",
@@ -156,33 +151,29 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
         <StravaLogo key="strava" className="size-10 text-orange-500" />,
       ],
       keywords: t(
-        "partenaires_sportifs_keywords",
+        "featurebox.featurebox_find_ad_keywords",
         "trouver un partenaire sportif, match sportif parfait, sport selon niveau et localisation, filtre sportif avancé, affinités sportives"
       ),
       metaDescription: t(
-        "partenaires_sportifs_meta_description",
+        "featurebox.featurebox_find_ad_meta_description",
         "Utilisez nos filtres intelligents pour trouver un partenaire sportif qui correspond à votre niveau, sport et culture."
       ),
       path: "/products",
     },
     {
       title: t(
-        "coach_sportif_title",
-        "Trouvez un coach sportif ou un guide professionnel en quelques clics !"
-      ),
-      seoTitle: t(
-        "coach_sportif_seo_title",
+        "featurebox.featurebox_coach_title",
         "Trouvez un coach sportif ou un guide professionnel en quelques clics !"
       ),
       description: t(
-        "coach_sportif_description",
+        "featurebox.featurebox_coach_description",
         "Vous cherchez un coach personnel, un guide de haute montagne ou un autre professionnel du sport ? Sur notre plateforme, vous pouvez réserver directement des experts qualifiés selon vos besoins : Coachs sportifs (musculation, fitness, running, yoga…), Guides de haute montagne et moniteurs spécialisés, Préparateurs physiques et experts en nutrition, Professeurs de sport et encadrants professionnels. Comparez les profils, lisez les avis et réservez le bon professionnel en toute simplicité."
       ),
       shortDescription: t(
-        "coach_sportif_short_description",
+        "featurebox.featurebox_coach_short_description",
         "Vous cherchez un coach personnel ou un guide professionnel ? Réservez directement des experts qualifiés : coachs sportifs, guides de montagne, préparateurs physiques et plus encore."
       ),
-      cta: t("coach_sportif_cta", "Trouvez votre expert sportif"),
+      cta: t("featurebox.featurebox_coach_cta", "Trouvez votre expert sportif"),
       icon: <Crown className="size-12 text-yellow-500" />,
       bgColor: "from-yellow-50 via-amber-50 to-orange-50",
       iconBgColor: "bg-yellow-100",
@@ -194,11 +185,11 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
         <BookOpen key="learn" className="size-8 text-orange-300" />,
       ],
       keywords: t(
-        "coach_sportif_keywords",
+        "featurebox.featurebox_coach_keywords",
         "coach sportif en ligne, réserver un coach, guide de haute montagne, professionnel du sport, entraîneur personnel"
       ),
       metaDescription: t(
-        "coach_sportif_meta_description",
+        "featurebox.featurebox_coach_meta_description",
         "Trouvez un coach ou un professionnel du sport adapté à vos besoins : fitness, montagne, nutrition et plus encore."
       ),
       path: "/products",
@@ -279,7 +270,7 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
     <>
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <h3 className="mb-8 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-          {t("features_title", "Nos fonctionnalités phares")}
+          {t("featurebox.featurebox_main_title", "Nos fonctionnalités phares")}
         </h3>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => {

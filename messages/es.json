@@ -267,5 +267,27 @@
     "A5": "Utilizamos un sistema simple con tres niveles: Principiante, Intermedio y Avanzado. Elige el nivel que mejor se adapte a tu práctica en cada deporte.",
     "Q6": "¿Cómo puedo contactar con el soporte?",
     "A6": "Puedes contactarnos a través del formulario de contacto en la sección 'Soporte' o directamente por correo electrónico a support@co-sport.com"
-  }
+  },
+  "featurebox_main_title": "Nuestras funciones clave",
+
+  "featurebox_femmes_title": "Deporte entre mujeres",
+  "featurebox_femmes_description": "¿Eres mujer y quieres practicar deporte con otras mujeres? Gracias a nuestro sistema exclusivo, solo las mujeres tienen acceso a esta función. Encuentra compañeras deportivas cerca de ti, según tu nivel y preferencias, en un entorno seguro y amigable.",
+  "featurebox_femmes_short_description": "¿Eres mujer y quieres practicar deporte con otras mujeres? Gracias a nuestro sistema exclusivo, encuentra compañeras deportivas cerca de ti con total seguridad.",
+  "featurebox_femmes_cta": "Únete a la comunidad femenina",
+  "featurebox_femmes_keywords": "deporte entre mujeres, compañeras deportivas, comunidad deportiva femenina, deporte seguro, encontrar compañera de deporte",
+  "featurebox_femmes_meta_description": "Únete a una comunidad 100% femenina para practicar deporte con compañeras de confianza.",
+
+  "featurebox_find_ad_title": "Encuentra el anuncio que te corresponde",
+  "featurebox_find_ad_description": "¿Buscas un compañero deportivo que se parezca a ti? Gracias a nuestros filtros avanzados y a los datos de Strava, puedes encontrar deportistas según: tu deporte favorito (carrera, escalada, fitness, etc.), tu nivel (principiante, intermedio, experto), tu ubicación y disponibilidad, tu cultura, nacionalidad e idioma para la máxima afinidad. Ya sea que busques un compañero de running a tu ritmo o un jugador de tenis de tu nivel, ¡nuestro algoritmo encuentra el match perfecto!",
+  "featurebox_find_ad_short_description": "¿Buscas un compañero deportivo que se parezca a ti? Gracias a nuestros filtros avanzados y a los datos de Strava, encuentra deportistas según tu deporte, nivel, ubicación y afinidades culturales.",
+  "featurebox_find_ad_cta": "Buscar un anuncio",
+  "featurebox_find_ad_keywords": "encontrar compañero deportivo, match deportivo perfecto, deporte por nivel y ubicación, filtro deportivo avanzado, afinidades deportivas",
+  "featurebox_find_ad_meta_description": "Utiliza nuestros filtros inteligentes para encontrar un compañero deportivo que se adapte a tu nivel, deporte y cultura.",
+
+  "featurebox_coach_title": "¡Encuentra un entrenador deportivo o guía profesional en pocos clics!",
+  "featurebox_coach_description": "¿Buscas un entrenador personal, un guía de montaña u otro profesional del deporte? En nuestra plataforma, puedes reservar directamente expertos calificados según tus necesidades: entrenadores deportivos (musculación, fitness, running, yoga…), guías de montaña e instructores especializados, preparadores físicos y expertos en nutrición, profesores de deporte y supervisores profesionales. Compara perfiles, lee opiniones y reserva fácilmente al profesional adecuado.",
+  "featurebox_coach_short_description": "¿Buscas un entrenador personal o un guía profesional? Reserva directamente expertos calificados: entrenadores deportivos, guías de montaña, preparadores físicos y más.",
+  "featurebox_coach_cta": "Encuentra tu experto deportivo",
+  "featurebox_coach_keywords": "entrenador deportivo online, reservar entrenador, guía de montaña, profesional del deporte, entrenador personal",
+  "featurebox_coach_meta_description": "Encuentra un entrenador o profesional del deporte adaptado a tus necesidades: fitness, montaña, nutrición y más."
 }
