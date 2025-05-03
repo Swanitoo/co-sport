@@ -29,8 +29,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "co-sport.com",
-  description: "Trouve ton partenaire de sport et progressez ensemble !",
+  title:
+    "Co-Sport | Trouve ton partenaire sportif idéal en France | Entraînements, Matches & Progression",
+  description:
+    "Rejoins Co-Sport pour trouver facilement ton partenaire sportif près de chez toi. Running, musculation, alpinisme, boxe, escalade, randonnée... Progresse plus vite et rends tes sessions plus motivantes avec des sportifs de ton niveau !",
   metadataBase: new URL(getServerUrl()),
   applicationName: "co-sport.com",
   authors: [{ name: "co-sport.com", url: "https://co-sport.com" }],
@@ -56,6 +58,12 @@ export const metadata: Metadata = {
     "escalade",
     "randonnée",
     "ski",
+    "partenaire sportif",
+    "trouver sportif",
+    "France",
+    "sport ensemble",
+    "progresser sport",
+    "motivation sportive",
   ],
   category: "sports",
   manifest: "/manifest.json",
@@ -65,7 +73,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "co-sport.com",
+    title: "Co-Sport | Trouve ton partenaire sportif idéal",
   },
   formatDetection: {
     telephone: true,
@@ -78,14 +86,33 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: getServerUrl(),
-    title: "co-sport.com",
-    description: "Trouve ton partenaire de sport et progressez ensemble !",
-    siteName: "co-sport.com",
+    title: "Co-Sport | Trouve ton partenaire sportif idéal en France",
+    description:
+      "Rejoins Co-Sport pour trouver facilement ton partenaire sportif près de chez toi. Running, musculation, alpinisme, boxe, escalade, randonnée... Progresse plus vite et rends tes sessions plus motivantes avec des sportifs de ton niveau !",
+    siteName: "Co-Sport",
+    locale: "fr_FR",
+    images: [
+      {
+        url: `${getServerUrl()}/opengraph-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Co-Sport - Plateforme de rencontre sportive",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "co-sport.com",
-    description: "Trouve ton partenaire de sport et progressez ensemble !",
+    title: "Co-Sport | Trouve ton partenaire sportif idéal en France",
+    description:
+      "Rejoins Co-Sport pour trouver facilement ton partenaire sportif près de chez toi. Running, musculation, alpinisme, boxe, escalade, randonnée... Progresse plus vite et rends tes sessions plus motivantes avec des sportifs de ton niveau !",
+    images: [`${getServerUrl()}/opengraph-image.png`],
+    creator: "@cosport",
+  },
+  alternates: {
+    canonical: getServerUrl(),
+    languages: {
+      fr: `${getServerUrl()}/fr`,
+    },
   },
 };
 
@@ -112,6 +139,10 @@ export default async function RootLayout(
           name="google-site-verification"
           content="wEjtYUJjXsMQInNKer1vqCSrvuA2FRYrbApEyLYNLfQ"
         />
+        {/* Favicon optimisé pour Google Search */}
+        <link rel="icon" type="image/png" href="/icon.png" sizes="96x96" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/icon.png" />
         {/* Optimisation: précharger les ressources critiques */}
         <link
           rel="preload"
