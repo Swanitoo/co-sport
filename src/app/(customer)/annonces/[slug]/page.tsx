@@ -18,7 +18,14 @@ import { getCountryFlag } from "@/data/country";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { getFirstName } from "@/lib/string-utils";
 import { prisma } from "@/prisma";
-import { CheckCircle, Crown, Link2, MapPin } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle,
+  Crown,
+  Link2,
+  MapPin,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -145,6 +152,147 @@ export default async function RoutePage(props: {
       console.warn(`Produit non trouvé pour le slug: "${slug}"`);
       notFound();
       return null;
+    }
+
+    // Vérifier si l'annonce est "onlyGirls" et si l'utilisateur peut y accéder
+    const isOnlyGirls = product.onlyGirls;
+    const userSex = user?.sex;
+    const isMale = userSex === "M";
+    const isNoSexSpecified = userSex === null || userSex === undefined;
+    const canAccessGirlsOnlyProduct =
+      !isOnlyGirls ||
+      (isOnlyGirls && userSex === "F") ||
+      (user?.isAdmin ?? false);
+
+    // Si l'annonce est réservée aux femmes et que l'utilisateur n'est pas connecté, est un homme ou n'a pas précisé son sexe
+    if (
+      isOnlyGirls &&
+      (!user || isMale || isNoSexSpecified) &&
+      !user?.isAdmin
+    ) {
+      return (
+        <Layout>
+          <div className="space-y-6">
+            <Breadcrumb
+              items={[
+                {
+                  href: `/${locale}/annonces`,
+                  label: t("Products.Title", "Annonces"),
+                },
+                { label: product.name },
+              ]}
+            />
+
+            <div className="flex flex-col items-center justify-center space-y-6 py-10 text-center">
+              <div className="flex size-20 items-center justify-center rounded-full bg-pink-100">
+                <AlertCircle className="size-10 text-pink-500" />
+              </div>
+
+              {!user ? (
+                <>
+                  <div className="max-w-md space-y-2">
+                    <h2 className="text-2xl font-bold">
+                      {t(
+                        "Products.OnlyGirls.AuthRequired",
+                        "Connexion requise"
+                      )}
+                    </h2>
+                    <p className="text-muted-foreground">
+                      {t(
+                        "Products.OnlyGirls.PleaseLoginToView",
+                        "Veuillez vous connecter pour voir cette annonce réservée aux femmes."
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex gap-4">
+                    <Link
+                      href={`/${locale}/annonces`}
+                      className={buttonVariants({
+                        variant: "outline",
+                        size: "lg",
+                      })}
+                    >
+                      <ArrowLeft className="mr-2 size-4" />
+                      {t(
+                        "Products.OnlyGirls.BackToList",
+                        "Retour aux annonces"
+                      )}
+                    </Link>
+                    <Link
+                      href="/login"
+                      className={buttonVariants({ size: "lg" })}
+                    >
+                      {t("Auth.SignIn", "Se connecter")}
+                    </Link>
+                  </div>
+                </>
+              ) : isNoSexSpecified ? (
+                <>
+                  <div className="max-w-md space-y-2">
+                    <h2 className="text-2xl font-bold">
+                      {t("Products.OnlyGirls.SexRequired", "Profil incomplet")}
+                    </h2>
+                    <p className="text-muted-foreground">
+                      {t(
+                        "Products.OnlyGirls.SexNotSpecified",
+                        "Cette annonce est réservée aux femmes. Veuillez compléter votre profil en indiquant votre sexe pour y accéder."
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex gap-4">
+                    <Link
+                      href={`/${locale}/annonces`}
+                      className={buttonVariants({
+                        variant: "outline",
+                        size: "lg",
+                      })}
+                    >
+                      <ArrowLeft className="mr-2 size-4" />
+                      {t(
+                        "Products.OnlyGirls.BackToList",
+                        "Retour aux annonces"
+                      )}
+                    </Link>
+                    <Link
+                      href="/dashboard?fromOnlyGirls=true"
+                      className={buttonVariants({ size: "lg" })}
+                    >
+                      {t(
+                        "Products.OnlyGirls.CompleteProfile",
+                        "Compléter mon profil"
+                      )}
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="max-w-md space-y-2">
+                    <h2 className="text-2xl font-bold">
+                      {t(
+                        "Products.OnlyGirls.Title",
+                        "Annonce réservée aux femmes"
+                      )}
+                    </h2>
+                    <p className="text-muted-foreground">
+                      {t(
+                        "Products.OnlyGirls.Description",
+                        "Cette annonce est réservée exclusivement aux femmes."
+                      )}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/${locale}/annonces`}
+                    className={buttonVariants({ size: "lg" })}
+                  >
+                    <ArrowLeft className="mr-2 size-4" />
+                    {t("Products.OnlyGirls.BackToList", "Retour aux annonces")}
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        </Layout>
+      );
     }
 
     // Définir les variables avant de les utiliser

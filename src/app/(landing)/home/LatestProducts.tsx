@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProductCardLink } from "@/components/ui/product-card-link";
+import { getCountryFlag } from "@/data/country";
 import { getFirstName } from "@/lib/string-utils";
 import { Globe } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -141,7 +142,9 @@ export function LatestProducts({
                           {getReviewsText(product._count.reviews)}
                         </span>
                         {product.user.country && (
-                          <span>{product.user.country}</span>
+                          <span className="text-base">
+                            {getCountryFlag(product.user.country)}
+                          </span>
                         )}
                       </div>
                     </div>
