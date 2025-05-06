@@ -1,5 +1,6 @@
 import { getServerUrl } from "@/get-server-url";
 import { Metadata } from "next";
+import { locales } from "../../locales";
 
 // Configuration de base pour le SEO
 const baseConfig = {
@@ -11,6 +12,11 @@ const baseConfig = {
   metadataBase: new URL(getServerUrl()),
   alternates: {
     canonical: "/",
+    languages: {
+      "fr-FR": "/fr",
+      "en-US": "/en",
+      "es-ES": "/es",
+    },
   },
   robots: {
     index: true,
@@ -27,7 +33,7 @@ const baseConfig = {
     description: "Trouve ton partenaire de sport et progressez ensemble !",
     images: [
       {
-        url: "/opengraph-image.png",
+        url: `${getServerUrl()}/opengraph-image.png`,
         width: 1200,
         height: 630,
         alt: "co-sport.com - Trouve ton partenaire de sport",
@@ -39,9 +45,16 @@ const baseConfig = {
     card: "summary_large_image",
     title: "co-sport.com",
     description: "Trouve ton partenaire de sport et progressez ensemble !",
-    images: ["/opengraph-image.png"],
+    images: [`${getServerUrl()}/opengraph-image.png`],
     site: "@co_sport",
   },
+};
+
+// Mapping ISO pour les hreflang
+const localeMapping: Record<string, string> = {
+  fr: "fr-FR",
+  en: "en-US",
+  es: "es-ES",
 };
 
 // Fonction pour générer des métadonnées personnalisées par page
@@ -58,13 +71,31 @@ export function generateMetadata({
   ogImage?: string;
   noindex?: boolean;
 }): Metadata {
+  // Créer une URL canonique absolue
+  const canonicalUrl = path
+    ? new URL(path, getServerUrl()).toString()
+    : getServerUrl();
+
+  // Générer les URLs alternatives pour chaque langue
+  const languageAlternates: Record<string, string> = {};
+  if (path) {
+    locales.forEach((locale) => {
+      // Construction de l'URL alternative pour chaque langue
+      const langPath = locale === "fr" ? path : `/${locale}${path}`;
+      const fullUrl = new URL(langPath, getServerUrl()).toString();
+      // Utiliser le mapping ISO pour les codes hreflang
+      languageAlternates[localeMapping[locale]] = fullUrl;
+    });
+  }
+
   return {
     ...baseConfig,
     title: title ? title : baseConfig.title,
     description: description || baseConfig.description,
-    // Mettre à jour l'URL canonique en fonction du chemin
+    // Utiliser l'URL canonique absolue
     alternates: {
-      canonical: path ? path : "/",
+      canonical: canonicalUrl,
+      languages: path ? languageAlternates : baseConfig.alternates.languages,
     },
     // Configurer les robots si noindex est spécifié
     robots: noindex
@@ -82,7 +113,7 @@ export function generateMetadata({
       ...baseConfig.openGraph,
       title: title || baseConfig.openGraph.title,
       description: description || baseConfig.openGraph.description,
-      url: path ? path : "/",
+      url: canonicalUrl,
       images: ogImage
         ? [
             {

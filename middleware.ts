@@ -14,6 +14,30 @@ const intlMiddleware = createIntlMiddleware({
 
 // Middleware combiné
 export default function middleware(request: NextRequest) {
+  // Gestion des anciennes routes de localisation
+  if (
+    request.nextUrl.pathname.startsWith("/fr/") ||
+    request.nextUrl.pathname.startsWith("/en/") ||
+    request.nextUrl.pathname.startsWith("/es/")
+  ) {
+    // Extraire la langue et le reste du chemin
+    const parts = request.nextUrl.pathname.split("/");
+    const locale = parts[1];
+    const restOfPath = "/" + parts.slice(2).join("/");
+
+    // Créer la nouvelle URL avec la structure correcte
+    const newUrl = new URL(restOfPath, request.url);
+
+    // Ajouter le paramètre de locale si ce n'est pas la langue par défaut
+    if (locale !== defaultLocale) {
+      newUrl.searchParams.set("locale", locale);
+    }
+
+    return NextResponse.redirect(newUrl, {
+      status: 308, // Redirection permanente
+    });
+  }
+
   // Logging pour les routes d'authentification
   if (
     request.nextUrl.pathname.startsWith("/api/auth") ||
@@ -29,6 +53,22 @@ export default function middleware(request: NextRequest) {
         Object.fromEntries(request.nextUrl.searchParams.entries())
       );
     }
+  }
+
+  // Normalisation WWW
+  // Rediriger de co-sport.com vers www.co-sport.com
+  const host = request.headers.get("host");
+  if (
+    host &&
+    !host.startsWith("www.") &&
+    !host.includes("localhost") &&
+    !host.includes("127.0.0.1")
+  ) {
+    const newUrl = new URL(request.url);
+    newUrl.host = "www." + host;
+    return NextResponse.redirect(newUrl, {
+      status: 308, // Permanent redirect
+    });
   }
 
   // Appliquer le middleware d'internationalisation pour les routes concernées
@@ -80,22 +120,6 @@ export default function middleware(request: NextRequest) {
     "Permissions-Policy",
     "camera=(), microphone=(), geolocation=(), interest-cohort=()"
   );
-
-  // Normalisation WWW
-  // Rediriger de co-sport.com vers www.co-sport.com
-  const host = request.headers.get("host");
-  if (
-    host &&
-    !host.startsWith("www.") &&
-    !host.includes("localhost") &&
-    !host.includes("127.0.0.1")
-  ) {
-    const newUrl = new URL(request.url);
-    newUrl.host = "www." + host;
-    return NextResponse.redirect(newUrl, {
-      status: 308, // Permanent redirect
-    });
-  }
 
   return response;
 }
