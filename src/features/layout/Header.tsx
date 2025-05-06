@@ -3,7 +3,6 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LoggedInDropdown } from "@/features/auth/LoggedInDropdown";
-import { LoginDialog } from "@/features/auth/LoginDialog";
 import { ModeToggle } from "@/features/theme/ModeToggle";
 import { getLocaleFromPathname, loadTranslations } from "@/lib/locale-utils";
 import { prisma } from "@/prisma";
@@ -152,13 +151,9 @@ export async function Header() {
               </Button>
             </LoggedInDropdown>
           ) : (
-            <LoginDialog
-              trigger={
-                <span className="inline-block cursor-pointer">
-                  <Button>{translate("SignIn", "Connexion")}</Button>
-                </span>
-              }
-            />
+            <Link href="/login">
+              <Button>{translate("SignIn", "Connexion")}</Button>
+            </Link>
           )}
         </div>
       </div>

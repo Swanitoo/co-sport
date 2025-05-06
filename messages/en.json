@@ -15,7 +15,34 @@
   "Auth": {
     "SignIn": "Sign In",
     "ConnectToContinue": "Connect to your account to continue",
-    "ContinueWithGoogle": "Continue with Google"
+    "ContinueWithGoogle": "Continue with Google",
+    "login": "Sign In",
+    "stravaLogin": "Strava Login",
+    "loginWithStrava": "Sign in with Strava",
+    "continueWithStrava": "Continue with Strava",
+    "continueWithGoogle": "Continue with Google",
+    "linkStravaProfile": "Link your Strava account to complete your profile",
+    "loginToContinue": "Sign in to your account to continue",
+    "errors": {
+      "accessDenied": "Access denied. Check your credentials.",
+      "verification": "A verification link has been sent to your email.",
+      "configuration": "Server configuration issue. Contact the administrator.",
+      "oauthSignin": "Error during authentication provider connection.",
+      "oauthCallback": "Error in authentication provider response.",
+      "oauthCreateAccount": "Unable to create a user account.",
+      "emailCreateAccount": "Unable to create a user account with this email.",
+      "callback": "Redirection error after login.",
+      "oauthAccountNotLinked": "This account is already linked to another profile.",
+      "emailSignin": "Check your email for the login link.",
+      "credentialsSignin": "Incorrect credentials.",
+      "sessionRequired": "You must be logged in to access this page.",
+      "default": "Login error. Please try again.",
+      "missingCSRF": "Session expired. Please refresh the page and try again.",
+      "adapterError": "Database issue. Contact the administrator.",
+      "unknown": "Unidentified error",
+      "googleLogin": "Error connecting to Google. Please try again.",
+      "stravaLogin": "Error connecting to Strava. Please try again."
+    }
   },
   "Examples": {
     "Title": "Translated Component Example",

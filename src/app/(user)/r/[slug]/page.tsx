@@ -6,16 +6,14 @@ import { prisma } from "@/prisma";
 import { redirect } from "next/navigation";
 import { ProcessReviewStep } from "./ProcessReviewStep";
 
-export default async function RoutePage(
-  props: {
-    params: Promise<{ slug: string }>;
-  }
-) {
+export default async function RoutePage(props: {
+  params: Promise<{ slug: string }>;
+}) {
   const params = await props.params;
   const user = await currentUser();
 
   if (!user) {
-    redirect("/auth/signin");
+    redirect("/login");
   }
 
   const decodedSlug = decodeURIComponent(params.slug);

@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { LanguageSwitcher } from "./language-switcher";
@@ -29,6 +29,7 @@ export function SiteHeader({
   unreadReviewsCount,
 }: SiteHeaderProps) {
   const t = useTranslations("Navigation");
+  const locale = useLocale();
 
   return (
     <header className="w-full border-b border-border py-1">
@@ -71,7 +72,7 @@ export function SiteHeader({
               </Button>
             </div>
           ) : (
-            <Link href="/auth/signin" className="ml-2">
+            <Link href={`/${locale}/login`} className="ml-2">
               <Button>{t("SignIn")}</Button>
             </Link>
           )}

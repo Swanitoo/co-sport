@@ -23,7 +23,7 @@ export default async function EmailPreferencesPage() {
   const user = await currentUser();
 
   if (!user) {
-    redirect("/auth/signin");
+    redirect("/login");
   }
 
   // Récupérer ou créer les préférences email de l'utilisateur

@@ -38,7 +38,7 @@ export default async function ReviewPage(props: PageProps) {
   const user = await currentUser();
 
   if (!user) {
-    redirect("/auth/signin");
+    redirect("/login");
   }
 
   try {
@@ -222,11 +222,9 @@ export default async function ReviewPage(props: PageProps) {
 }
 
 // Génération de métadonnées SEO pour la page d'avis
-export async function generateMetadata(
-  props: {
-    params: Promise<{ locale: Locale; slug: string }>;
-  }
-): Promise<Metadata> {
+export async function generateMetadata(props: {
+  params: Promise<{ locale: Locale; slug: string }>;
+}): Promise<Metadata> {
   const params = await props.params;
   try {
     const product = await prisma.product.findUnique({

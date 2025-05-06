@@ -1,8 +1,10 @@
 import { currentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { getServerTranslations } from "@/components/server-translation";
+import { Button } from "@/components/ui/button";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { CreateProductButton } from "./CreateProductButton";
 import {
@@ -15,9 +17,6 @@ import {
 } from "./list/productList.actions";
 import { FilterType } from "./list/productList.schema";
 import { MiniMap } from "./MiniMap";
-import { LoginDialog } from "@/features/auth/LoginDialog";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 // Activation de l'ISR pour cette page
 export const dynamic = "force-dynamic"; // Valeur possible: 'auto' | 'force-dynamic' | 'error' | 'force-static'
@@ -80,7 +79,9 @@ export default async function RoutePage(props: {
                 <CreateProductButton />
               ) : (
                 <Link href="/login">
-                  <Button>Connectez-vous pour créer une annonce</Button>
+                  <Button>
+                    {t("Auth.SignIn", "Connectez-vous pour créer une annonce")}
+                  </Button>
                 </Link>
               )}
             </div>

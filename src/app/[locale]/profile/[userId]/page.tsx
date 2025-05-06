@@ -65,7 +65,7 @@ export default async function ProfilePage(props: PageProps) {
 
   // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
   if (!loggedInUser) {
-    redirect("/auth/signin");
+    redirect("/login");
   }
 
   const params = await props.params;

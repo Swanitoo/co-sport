@@ -81,6 +81,22 @@ export default function middleware(request: NextRequest) {
     "camera=(), microphone=(), geolocation=(), interest-cohort=()"
   );
 
+  // Normalisation WWW
+  // Rediriger de co-sport.com vers www.co-sport.com
+  const host = request.headers.get("host");
+  if (
+    host &&
+    !host.startsWith("www.") &&
+    !host.includes("localhost") &&
+    !host.includes("127.0.0.1")
+  ) {
+    const newUrl = new URL(request.url);
+    newUrl.host = "www." + host;
+    return NextResponse.redirect(newUrl, {
+      status: 308, // Permanent redirect
+    });
+  }
+
   return response;
 }
 

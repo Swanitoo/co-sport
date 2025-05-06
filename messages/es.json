@@ -15,7 +15,34 @@
   "Auth": {
     "SignIn": "Iniciar sesión",
     "ConnectToContinue": "Conecta a tu cuenta para continuar",
-    "ContinueWithGoogle": "Continuar con Google"
+    "ContinueWithGoogle": "Continuar con Google",
+    "login": "Iniciar sesión",
+    "stravaLogin": "Iniciar sesión con Strava",
+    "loginWithStrava": "Conectar con Strava",
+    "continueWithStrava": "Continuar con Strava",
+    "continueWithGoogle": "Continuar con Google",
+    "linkStravaProfile": "Vincula tu cuenta Strava para completar tu perfil",
+    "loginToContinue": "Inicia sesión en tu cuenta para continuar",
+    "errors": {
+      "accessDenied": "Acceso denegado. Verifica tus credenciales.",
+      "verification": "Se ha enviado un enlace de verificación a tu correo electrónico.",
+      "configuration": "Problema de configuración del servidor. Contacta con el administrador.",
+      "oauthSignin": "Error durante la conexión con el proveedor de autenticación.",
+      "oauthCallback": "Error en la respuesta del proveedor de autenticación.",
+      "oauthCreateAccount": "No se pudo crear una cuenta de usuario.",
+      "emailCreateAccount": "No se pudo crear una cuenta de usuario con este email.",
+      "callback": "Error de redirección después del inicio de sesión.",
+      "oauthAccountNotLinked": "Esta cuenta ya está vinculada a otro perfil.",
+      "emailSignin": "Revisa tu correo electrónico para el enlace de inicio de sesión.",
+      "credentialsSignin": "Credenciales incorrectas.",
+      "sessionRequired": "Debes iniciar sesión para acceder a esta página.",
+      "default": "Error de inicio de sesión. Por favor, inténtalo de nuevo.",
+      "missingCSRF": "Sesión expirada. Por favor, actualiza la página e inténtalo de nuevo.",
+      "adapterError": "Problema con la base de datos. Contacta con el administrador.",
+      "unknown": "Error no identificado",
+      "googleLogin": "Error al conectar con Google. Por favor, inténtalo de nuevo.",
+      "stravaLogin": "Error al conectar con Strava. Por favor, inténtalo de nuevo."
+    }
   },
   "Examples": {
     "Title": "Ejemplo de componente traducido",

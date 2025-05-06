@@ -15,7 +15,34 @@
   "Auth": {
     "SignIn": "Se connecter",
     "ConnectToContinue": "Connectez-vous à votre compte pour continuer",
-    "ContinueWithGoogle": "Continuer avec Google"
+    "ContinueWithGoogle": "Continuer avec Google",
+    "login": "Se connecter",
+    "stravaLogin": "Connexion à Strava",
+    "loginWithStrava": "Se connecter avec Strava",
+    "continueWithStrava": "Continuer avec Strava",
+    "continueWithGoogle": "Continuer avec Google",
+    "linkStravaProfile": "Liez votre compte Strava pour compléter votre profil",
+    "loginToContinue": "Connectez-vous à votre compte pour continuer",
+    "errors": {
+      "accessDenied": "Accès refusé. Vérifiez vos identifiants.",
+      "verification": "Un lien de vérification a été envoyé à votre email.",
+      "configuration": "Problème de configuration du serveur. Contactez l'administrateur.",
+      "oauthSignin": "Erreur lors de la connexion avec le fournisseur d'authentification.",
+      "oauthCallback": "Erreur lors de la réponse du fournisseur d'authentification.",
+      "oauthCreateAccount": "Impossible de créer un compte utilisateur.",
+      "emailCreateAccount": "Impossible de créer un compte utilisateur avec cet email.",
+      "callback": "Erreur de redirection après connexion.",
+      "oauthAccountNotLinked": "Ce compte est déjà lié à un autre profil.",
+      "emailSignin": "Vérifiez votre email pour le lien de connexion.",
+      "credentialsSignin": "Identifiants incorrects.",
+      "sessionRequired": "Vous devez être connecté pour accéder à cette page.",
+      "default": "Erreur de connexion. Veuillez réessayer.",
+      "missingCSRF": "Session expirée. Veuillez rafraîchir la page et réessayer.",
+      "adapterError": "Problème avec la base de données. Contactez l'administrateur.",
+      "unknown": "Erreur non identifiée",
+      "googleLogin": "Erreur lors de la connexion à Google. Veuillez réessayer.",
+      "stravaLogin": "Erreur lors de la connexion à Strava. Veuillez réessayer."
+    }
   },
   "Examples": {
     "Title": "Exemple de composant traduit",

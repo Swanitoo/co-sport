@@ -13,7 +13,7 @@ import { redirect } from "next/navigation";
 export default async function BadgesPage() {
   // Utilisation de la fonction auth() du système d'authentification
   const session = await auth();
-  if (!session?.user?.id) redirect("/auth/signin");
+  if (!session?.user?.id) redirect("/login");
 
   const userId = session.user.id;
   const completedBadgeIds = await calculateUserBadges(userId);
