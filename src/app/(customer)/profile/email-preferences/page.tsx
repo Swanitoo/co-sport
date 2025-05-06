@@ -4,9 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Header } from "@/features/layout/Header";
+import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { prisma } from "@/prisma";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { saveEmailPreferences } from "./actions";
+
+// Ajouter des métadonnées pour empêcher l'indexation
+export const metadata: Metadata = createSeoMetadata({
+  title: "Préférences d'emails | co-sport.com",
+  description:
+    "Gérez vos préférences de notifications par email sur co-sport.com",
+  path: "/profile/email-preferences",
+  noindex: true,
+});
 
 export default async function EmailPreferencesPage() {
   const user = await currentUser();

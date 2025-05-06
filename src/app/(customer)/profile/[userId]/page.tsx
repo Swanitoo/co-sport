@@ -1,3 +1,4 @@
+import { currentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { getServerTranslations } from "@/components/server-translation";
 import { ProfileBadges } from "@/components/ui/badges/profile-badges";
@@ -12,7 +13,7 @@ import { formatDistance } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ReviewItem } from "../../../(user)/wall/[slug]/ReviewCard";
 import { ProfileAvatar } from "./ProfileAvatar";
 
@@ -30,6 +31,14 @@ export const viewport: Viewport = {
 export default async function ProfilePage(props: {
   params: Promise<{ userId: string }>;
 }) {
+  // Vérifier si l'utilisateur est connecté
+  const loggedInUser = await currentUser();
+
+  // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+  if (!loggedInUser) {
+    redirect("/auth/signin");
+  }
+
   const params = await props.params;
 
   const { userId } = params;
@@ -306,6 +315,7 @@ export async function generateMetadata(props: {
         user.name || "cet utilisateur"
       } sur co-sport.com. Consultez ses activités et ses préférences sportives.`,
       path: `/profile/${params.userId}`,
+      noindex: true,
     });
   } catch (error) {
     console.error("Erreur lors de la génération des métadonnées:", error);

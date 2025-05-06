@@ -21,7 +21,7 @@ import { prisma } from "@/prisma";
 import { CheckCircle, Crown, Link2, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AcceptRequestButton } from "./AcceptButton";
 import { ChatComponent } from "./Chat";
@@ -85,17 +85,13 @@ export default async function RoutePage(props: {
 
   const user = await currentUser();
 
-  if (!user) {
-    redirect("/auth/signin");
-  }
-
   // Vérification améliorée du slug
   if (!slug || typeof slug !== "string") {
     console.error(
       `Erreur critique: Slug invalide. Valeur reçue: "${slug}", type: ${typeof slug}`
     );
     // On pourrait rediriger vers la page liste des produits comme fallback
-    redirect(`/${locale}/products`);
+    notFound();
   }
 
   const getSportIcon = (sportName: string) => {
@@ -150,18 +146,24 @@ export default async function RoutePage(props: {
   }
 
   // Définir les variables avant de les utiliser
-  const isOwner = product.userId === user.id;
-  const isClient = product.userId !== user.id;
-  const isMember = product.memberships.some(
-    (m) => m.userId === user.id && m.status === "APPROVED"
-  );
-  const canManageProduct = isOwner || user.isAdmin;
-  const canViewMessages = isOwner || isMember || user.isAdmin;
+  const isOwner = user ? product.userId === user.id : false;
+  const isClient = user ? product.userId !== user.id : false;
+  const isMember = user
+    ? product.memberships.some(
+        (m) => m.userId === user.id && m.status === "APPROVED"
+      )
+    : false;
+  const canManageProduct = user ? isOwner || user.isAdmin : false;
+  const canViewMessages = user
+    ? isOwner || isMember || (user.isAdmin ?? false)
+    : false;
 
   const activeMemberships = product.memberships.filter(
     (m) => m.status === "APPROVED"
   );
-  const membership = product.memberships.find((m) => m.userId === user.id);
+  const membership = user
+    ? product.memberships.find((m) => m.userId === user.id)
+    : undefined;
 
   const pendingMemberships = product.memberships.filter(
     (m) => m.status === "PENDING"
@@ -267,64 +269,94 @@ export default async function RoutePage(props: {
             }
           >
             <div className="flex items-center gap-2">
-              {canManageProduct && pendingMemberships.length > 0 && (
-                <AcceptRequestButton
-                  membership={pendingMemberships[0]}
-                  count={pendingCount}
-                />
-              )}
-
-              {canManageProduct && (
+              {user ? (
                 <>
-                  {isOwner && <Crown size={16} className="text-yellow-500" />}
-                  <EditButton slug={product.slug} />
-                  <DeleteButton productId={product.id} />
-                </>
-              )}
+                  {canManageProduct && pendingMemberships.length > 0 && (
+                    <AcceptRequestButton
+                      membership={pendingMemberships[0]}
+                      count={pendingCount}
+                    />
+                  )}
 
-              {isClient && !membership && (
-                <JoinRequestButton productId={product.id} userId={user.id} />
-              )}
+                  {canManageProduct && (
+                    <>
+                      {isOwner && (
+                        <Crown size={16} className="text-yellow-500" />
+                      )}
+                      <EditButton productSlug={product.slug} />
+                      <DeleteButton productId={product.id} />
+                    </>
+                  )}
 
-              {isClient && membership && membership.status === "PENDING" && (
-                <div className="flex items-center gap-2">
-                  <button
-                    className={buttonVariants({
-                      size: "sm",
-                      variant: "secondary",
-                    })}
-                    disabled
-                  >
-                    {t(
-                      "Products.Actions.PendingRequest",
-                      "En attente d'acceptation..."
+                  {isClient && !membership && (
+                    <JoinRequestButton
+                      productId={product.id}
+                      userId={user.id}
+                    />
+                  )}
+
+                  {isClient &&
+                    membership &&
+                    membership.status === "PENDING" && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          className={buttonVariants({
+                            size: "sm",
+                            variant: "secondary",
+                          })}
+                          disabled
+                        >
+                          {t(
+                            "Products.Actions.PendingRequest",
+                            "En attente d'acceptation..."
+                          )}
+                        </button>
+                      </div>
                     )}
-                  </button>
-                </div>
-              )}
 
-              {isClient && membership && membership.status === "APPROVED" && (
-                <div className="flex items-center gap-2">
-                  <span className="flex items-center">
-                    <CheckCircle size={16} className="mr-2 text-green-600" />
-                    {t("Products.Actions.YouAreMember", "Tu es membre")}
-                  </span>
-                  <LeaveButton productId={product.id} userId={user.id} />
-                </div>
-              )}
+                  {isClient &&
+                    membership &&
+                    membership.status === "APPROVED" && (
+                      <div className="flex items-center gap-2">
+                        <span className="flex items-center">
+                          <CheckCircle
+                            size={16}
+                            className="mr-2 text-green-600"
+                          />
+                          {t("Products.Actions.YouAreMember", "Tu es membre")}
+                        </span>
+                        <LeaveButton productId={product.id} userId={user.id} />
+                      </div>
+                    )}
 
-              {isClient && membership && membership.status === "REMOVED" && (
-                <div className="flex items-center gap-2">
-                  <button
-                    className={buttonVariants({
-                      size: "sm",
-                      variant: "destructive",
-                    })}
-                    disabled
-                  >
-                    {t("Products.Actions.RejectedRequest", "Adhésion refusée")}
-                  </button>
-                </div>
+                  {isClient &&
+                    membership &&
+                    membership.status === "REMOVED" && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          className={buttonVariants({
+                            size: "sm",
+                            variant: "destructive",
+                          })}
+                          disabled
+                        >
+                          {t(
+                            "Products.Actions.RejectedRequest",
+                            "Adhésion refusée"
+                          )}
+                        </button>
+                      </div>
+                    )}
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className={buttonVariants({
+                    size: "sm",
+                  })}
+                >
+                  {t("Auth.SignIn", "Se connecter")}
+                </Link>
               )}
             </div>
           </Suspense>
@@ -362,7 +394,20 @@ export default async function RoutePage(props: {
                 {/* Afficher la carte si des coordonnées sont disponibles */}
                 {product.venueLat && product.venueLng && (
                   <Suspense fallback={<MapSkeleton />}>
-                    <ProductLocationMap product={product} userId={user.id} />
+                    {user ? (
+                      <ProductLocationMap product={product} userId={user.id} />
+                    ) : (
+                      <div className="mb-4 mt-2 h-32 w-full overflow-hidden rounded-xl border shadow-sm sm:h-36">
+                        <div className="flex h-full items-center justify-center">
+                          <p className="text-sm text-muted-foreground">
+                            {t(
+                              "Products.ConnectToViewMap",
+                              "Connectez-vous pour voir la carte"
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </Suspense>
                 )}
 
@@ -417,7 +462,7 @@ export default async function RoutePage(props: {
                       </TableHead>
                       <TableHead>{t("Products.Reviews", "Avis")}</TableHead>
                       {/* Bouton de suppression pour les admins */}
-                      {user.isAdmin && (
+                      {user?.isAdmin && (
                         <TableHead>
                           {t("Products.Reviews.Actions", "Actions")}
                         </TableHead>
@@ -431,7 +476,7 @@ export default async function RoutePage(props: {
                         <TableCell>{review.rating}/5</TableCell>
                         <TableCell>{review.text}</TableCell>
                         {/* Bouton de suppression pour les admins */}
-                        {user.isAdmin && (
+                        {user?.isAdmin && (
                           <TableCell className="text-right">
                             <DeleteReviewButton reviewId={review.id} />
                           </TableCell>
@@ -440,20 +485,26 @@ export default async function RoutePage(props: {
                     ))}
                   </TableBody>
                 </Table>
-                {isClient && membership && membership.status === "APPROVED" && (
-                  <div className="mt-4">
-                    <Link
-                      href={`/${locale}/r/${encodeURIComponent(product.slug)}`}
-                      className={buttonVariants({
-                        size: "sm",
-                      })}
-                      prefetch={true}
-                    >
-                      <Link2 size={16} className="mr-2" />
-                      {t("Products.WriteReview", "Écrire un avis")}
-                    </Link>
-                  </div>
-                )}
+                {user
+                  ? isClient &&
+                    membership &&
+                    membership.status === "APPROVED" && (
+                      <div className="mt-4">
+                        <Link
+                          href={`/${locale}/r/${encodeURIComponent(
+                            product.slug
+                          )}`}
+                          className={buttonVariants({
+                            size: "sm",
+                          })}
+                          prefetch={true}
+                        >
+                          <Link2 size={16} className="mr-2" />
+                          {t("Products.WriteReview", "Écrire un avis")}
+                        </Link>
+                      </div>
+                    )
+                  : null}
                 <div className="mt-2">
                   <SeeAllReviewsButton slug={product.slug} />
                 </div>
@@ -462,7 +513,7 @@ export default async function RoutePage(props: {
           </Suspense>
         </div>
 
-        {isOwner && (
+        {user && isOwner && (
           <Suspense fallback={<CardSkeleton />}>
             <Card className="flex-1">
               <CardHeader>
@@ -501,7 +552,7 @@ export default async function RoutePage(props: {
           </Suspense>
         )}
 
-        {canViewMessages && (
+        {user && canViewMessages && (
           <Suspense fallback={<ChatSkeleton />}>
             <ChatComponent
               productId={product.id}
@@ -510,74 +561,74 @@ export default async function RoutePage(props: {
             />
           </Suspense>
         )}
+
+        {!user ? (
+          <div className="space-y-4">
+            <p>
+              {t(
+                "Products.UnauthenticatedMessage",
+                "Connectez-vous pour rejoindre cette activité et discuter avec les participants."
+              )}
+            </p>
+            <Link href="/login" className={buttonVariants({ size: "lg" })}>
+              {t("Auth.SignIn", "Se connecter")}
+            </Link>
+          </div>
+        ) : !canViewMessages ? (
+          <p>
+            {t(
+              "Products.JoinToAccessMessage",
+              "Rejoignez cette activité pour accéder au chat et aux détails supplémentaires."
+            )}
+          </p>
+        ) : null}
       </div>
     </Layout>
   );
 }
-// Génération de métadonnées SEO pour la page de détail d'un produit
+
+// Génération de métadonnées SEO pour la page de produits
 export async function generateMetadata(props: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const product = await prisma.product.findUnique({
-    where: { slug: params.slug },
-    select: {
-      name: true,
-      description: true,
-      sport: true,
-      level: true,
-    },
-  });
+  const { slug } = params;
 
-  if (!product) {
+  try {
+    const product = await prisma.product.findUnique({
+      where: { slug: slug },
+      select: {
+        name: true,
+        description: true,
+        sport: true,
+      },
+    });
+
+    if (!product) {
+      return createSeoMetadata({
+        title: "Annonce non trouvée | co-sport.com",
+        description: "Cette annonce n'existe pas ou a été supprimée.",
+        path: `/products/${slug}`,
+        noindex: true,
+      });
+    }
+
     return createSeoMetadata({
-      title: "Annonce non trouvée | co-sport.com",
-      description: "Cette annonce n'existe pas ou a été supprimée.",
-      path: `/products/${params.slug}`,
+      title: `${product.name} - ${product.sport} | co-sport.com`,
+      description:
+        product.description ||
+        `Participez à l'activité ${product.name} (${product.sport}) sur co-sport.com.`,
+      path: `/products/${slug}`,
+      // Autoriser l'indexation par les moteurs de recherche
+      noindex: false,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la génération des métadonnées:", error);
+    return createSeoMetadata({
+      title: "Erreur | co-sport.com",
+      description: "Une erreur s'est produite lors du chargement de l'annonce.",
+      path: `/products/${slug}`,
       noindex: true,
     });
   }
-
-  // Préparer une description optimisée pour le SEO
-  const seoDescription = `${
-    product.description?.substring(0, 160) || ""
-  }... Sport: ${product.sport}, Niveau: ${product.level}`;
-
-  // Base URL pour les URLs absolues
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://co-sport.com";
-
-  return {
-    title: `${product.name} | co-sport.com`,
-    description: seoDescription,
-    openGraph: {
-      title: product.name,
-      description: seoDescription,
-      url: `${baseUrl}/products/${params.slug}`,
-      siteName: "Co-Sport",
-      images: [
-        {
-          url: `${baseUrl}/opengraph-image.png`,
-          width: 1200,
-          height: 630,
-          alt: "Co-Sport - Trouver des partenaires d'entraînement",
-          type: "image/png",
-        },
-      ],
-      locale: "fr_FR",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: product.name,
-      description: seoDescription,
-      images: [`${baseUrl}/opengraph-image.png`],
-      site: "@co_sport",
-    },
-    // Compatibilité avec la fonction createSeoMetadata
-    ...createSeoMetadata({
-      title: `${product.name} | co-sport.com`,
-      description: seoDescription,
-      path: `/products/${params.slug}`,
-    }),
-  };
 }

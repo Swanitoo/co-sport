@@ -3,7 +3,6 @@ import { Layout, LayoutTitle } from "@/components/layout";
 import { getServerTranslations } from "@/components/server-translation";
 import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { CreateProductButton } from "./CreateProductButton";
 import {
@@ -16,6 +15,9 @@ import {
 } from "./list/productList.actions";
 import { FilterType } from "./list/productList.schema";
 import { MiniMap } from "./MiniMap";
+import { LoginDialog } from "@/features/auth/LoginDialog";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 // Activation de l'ISR pour cette page
 export const dynamic = "force-dynamic"; // Valeur possible: 'auto' | 'force-dynamic' | 'error' | 'force-static'
@@ -28,11 +30,10 @@ export default async function RoutePage(props: {
   const user = await currentUser();
   const { t } = await getServerTranslations();
 
-  if (!user) {
-    redirect("/auth/signin");
-  }
-
-  const isAdmin = user.isAdmin ?? false;
+  // Supprimer la redirection - permettre l'accès même sans être connecté
+  const isAdmin = user?.isAdmin ?? false;
+  const userSex = user?.sex ?? null;
+  const userId = user?.id ?? "";
 
   // Construire les filtres initiaux basés sur les paramètres de l'URL
   const initialFilters: FilterType = {
@@ -56,7 +57,7 @@ export default async function RoutePage(props: {
   // Utilisation de Promise.all pour paralléliser les requêtes et réduire le temps de chargement
   const [initialProducts, venues] = await Promise.all([
     // Utiliser getFilteredProducts pour appliquer tous les filtres dès le chargement initial
-    getFilteredProducts(initialFilters, user.sex),
+    getFilteredProducts(initialFilters, userSex),
     getUniqueVenues(),
   ]);
 
@@ -74,7 +75,14 @@ export default async function RoutePage(props: {
                 )}
               </p>
 
-              <CreateProductButton />
+              {/* N'afficher le bouton de création que si l'utilisateur est connecté si non afficher le bouton de connexion */}
+              {user ? (
+                <CreateProductButton />
+              ) : (
+                <Link href="/login">
+                  <Button>Connectez-vous pour créer une annonce</Button>
+                </Link>
+              )}
             </div>
 
             <div className="mt-4 sm:mt-0">
@@ -85,7 +93,7 @@ export default async function RoutePage(props: {
               >
                 <MiniMap
                   initialProducts={initialProducts}
-                  userId={user.id}
+                  userId={userId}
                   searchParams={searchParams}
                 />
               </Suspense>
@@ -96,8 +104,8 @@ export default async function RoutePage(props: {
         <Suspense fallback={<ProductListFallback />}>
           <FilteredProductList
             initialProducts={initialProducts}
-            userSex={user.sex}
-            userId={user.id}
+            userSex={userSex}
+            userId={userId}
             venues={venues}
             isAdmin={isAdmin}
             searchParams={searchParams}

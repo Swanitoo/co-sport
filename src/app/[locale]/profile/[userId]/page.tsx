@@ -1,3 +1,4 @@
+import { currentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProfileBadges } from "@/components/ui/badges/profile-badges";
@@ -13,7 +14,7 @@ import { ChevronRight, Home } from "lucide-react";
 import type { Metadata, Viewport } from "next";
 import { unstable_setRequestLocale } from "next-intl/server";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Locale, locales } from "../../../../../locales";
 
 // Activer le mode dynamique pour permettre une détection correcte de l'authentification
@@ -59,6 +60,14 @@ interface PageProps {
 }
 
 export default async function ProfilePage(props: PageProps) {
+  // Vérifier si l'utilisateur est connecté
+  const loggedInUser = await currentUser();
+
+  // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+  if (!loggedInUser) {
+    redirect("/auth/signin");
+  }
+
   const params = await props.params;
   // Activer la locale pour cette requête
   unstable_setRequestLocale(params.locale);
@@ -347,6 +356,7 @@ export async function generateMetadata(props: {
         user.name || "cet utilisateur"
       } sur co-sport.com. Consultez ses activités et ses préférences sportives.`,
       path: `/${params.locale}/profile/${params.userId}`,
+      noindex: true,
     });
   } catch (error) {
     console.error("Erreur lors de la génération des métadonnées:", error);

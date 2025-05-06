@@ -33,10 +33,55 @@ export default function middleware(request: NextRequest) {
 
   // Appliquer le middleware d'internationalisation pour les routes concernées
   if (!request.nextUrl.pathname.startsWith("/api/")) {
-    return intlMiddleware(request);
+    const response = intlMiddleware(request);
+
+    // Ajouter les en-têtes de sécurité à la réponse
+    if (response) {
+      // Content-Security-Policy pour protéger contre les attaques XSS
+      response.headers.set(
+        "Content-Security-Policy",
+        "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*;"
+      );
+
+      // X-Frame-Options pour éviter le clickjacking
+      response.headers.set("X-Frame-Options", "SAMEORIGIN");
+
+      // X-Content-Type-Options pour éviter le MIME-sniffing
+      response.headers.set("X-Content-Type-Options", "nosniff");
+
+      // Referrer-Policy pour contrôler les informations envoyées lors de la navigation
+      response.headers.set(
+        "Referrer-Policy",
+        "strict-origin-when-cross-origin"
+      );
+
+      // Permissions-Policy pour contrôler les fonctionnalités du navigateur
+      response.headers.set(
+        "Permissions-Policy",
+        "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+      );
+    }
+
+    return response;
   }
 
-  return NextResponse.next();
+  // Pour les routes API, ajouter également les en-têtes de sécurité
+  const response = NextResponse.next();
+
+  // Ajouter les en-têtes de sécurité aux routes API
+  response.headers.set(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*;"
+  );
+  response.headers.set("X-Frame-Options", "SAMEORIGIN");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+  );
+
+  return response;
 }
 
 // Configuration des routes qui déclenchent ce middleware

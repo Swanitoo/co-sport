@@ -1,1 +1,13 @@
-User-agent: *\nAllow: /\n\n# Sitemap\nSitemap: https://co-sport.com/sitemap.xml
+User-agent: *
+Allow: /
+
+# Interdire l'indexation des pages de profil
+Disallow: /profile/
+Disallow: /profiles/
+Disallow: /user/
+Disallow: /users/
+Disallow: /account/
+Disallow: /accounts/
+
+# Sitemap
+Sitemap: https://co-sport.com/sitemap.xml

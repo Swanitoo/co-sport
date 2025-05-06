@@ -8,10 +8,10 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 type EditButtonProps = {
-  slug: string;
+  productSlug: string;
 };
 
-export const EditButton = ({ slug }: EditButtonProps) => {
+export const EditButton = ({ productSlug }: EditButtonProps) => {
   const { t } = useAppTranslations();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -28,7 +28,7 @@ export const EditButton = ({ slug }: EditButtonProps) => {
 
     // Utiliser une transition pour naviguer
     startTransition(() => {
-      router.push(`/products/${encodeURIComponent(slug)}/edit`);
+      router.push(`/products/${encodeURIComponent(productSlug)}/edit`);
     });
 
     // Garder l'état de chargement pendant au moins 500ms pour assurer la visibilité du loader
@@ -39,7 +39,7 @@ export const EditButton = ({ slug }: EditButtonProps) => {
 
   return (
     <Link
-      href={`/products/${encodeURIComponent(slug)}/edit`}
+      href={`/products/${encodeURIComponent(productSlug)}/edit`}
       onClick={handleClick}
       className={buttonVariants({
         size: "sm",

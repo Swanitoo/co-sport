@@ -30,7 +30,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title:
-    "Co-Sport | Trouve ton partenaire sportif idéal en France | Entraînements, Matches & Progression",
+    "Co-Sport | Trouve ton partenaire sportif idéal | Entraînements, Matches & Progression",
   description:
     "Rejoins Co-Sport pour trouver facilement ton partenaire sportif près de chez toi. Running, musculation, alpinisme, boxe, escalade, randonnée... Progresse plus vite et rends tes sessions plus motivantes avec des sportifs de ton niveau !",
   metadataBase: new URL(getServerUrl()),
@@ -86,7 +86,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: getServerUrl(),
-    title: "Co-Sport | Trouve ton partenaire sportif idéal en France",
+    title: "Co-Sport | Trouve ton partenaire sportif idéal",
     description:
       "Rejoins Co-Sport pour trouver facilement ton partenaire sportif près de chez toi. Running, musculation, alpinisme, boxe, escalade, randonnée... Progresse plus vite et rends tes sessions plus motivantes avec des sportifs de ton niveau !",
     siteName: "Co-Sport",
@@ -102,7 +102,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Co-Sport | Trouve ton partenaire sportif idéal en France",
+    title: "Co-Sport | Trouve ton partenaire sportif idéal",
     description:
       "Rejoins Co-Sport pour trouver facilement ton partenaire sportif près de chez toi. Running, musculation, alpinisme, boxe, escalade, randonnée... Progresse plus vite et rends tes sessions plus motivantes avec des sportifs de ton niveau !",
     images: [`${getServerUrl()}/opengraph-image.png`],
