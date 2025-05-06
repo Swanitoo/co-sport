@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   LEVEL_CLASSES,
   SPORTS,
-} from "../../(customer)/products/[slug]/edit/product.schema";
+} from "../../(customer)/annonces/[slug]/edit/product.schema";
 
 type Product = {
   id: string;
@@ -114,9 +114,9 @@ export function LatestProducts({
                 <ProductCardLink
                   href={
                     isAuthenticated
-                      ? `/products/${product.slug}`
+                      ? `/annonces/${product.slug}`
                       : `/api/auth/signin?callbackUrl=${encodeURIComponent(
-                          `/products/${product.slug}`
+                          `/annonces/${product.slug}`
                         )}`
                   }
                   className="block h-full"

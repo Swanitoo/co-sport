@@ -35,7 +35,7 @@ export const WelcomeEmail = ({ name }: { name: string }) => {
       </Text>
 
       <Section className="my-8 text-center">
-        <Button href={`${baseUrl}/products`}>Découvrir les annonces</Button>
+        <Button href={`${baseUrl}/annonces`}>Découvrir les annonces</Button>
       </Section>
 
       <Hr className="my-6 border-slate-200" />

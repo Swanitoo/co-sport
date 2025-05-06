@@ -12,7 +12,7 @@ export interface LocalizedLinkProps extends Omit<NextLinkProps, "href"> {
 
 /**
  * Composant Link qui préserve automatiquement la langue actuelle
- * @param href Chemin relatif sans la langue (ex: "/products")
+ * @param href Chemin relatif sans la langue (ex: "/annonces")
  * @param preserveLocale S'il faut préserver la langue (défaut: true)
  * @param children Contenu du lien
  * @returns Composant Link avec le chemin localisé

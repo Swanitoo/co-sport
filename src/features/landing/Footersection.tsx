@@ -16,7 +16,7 @@ export const FooterSection = () => {
             </a>
           </li>
           <li>
-            <a href="/products" className="hover:underline">
+            <a href="/annonces" className="hover:underline">
               App
             </a>
           </li>

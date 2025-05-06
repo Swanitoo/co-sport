@@ -124,7 +124,7 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
         "featurebox.featurebox_femmes_meta_description",
         "Rejoignez une communauté 100% féminine pour pratiquer du sport avec des partenaires de confiance."
       ),
-      path: "/products",
+      path: "/annonces",
     },
     {
       title: t(
@@ -158,7 +158,7 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
         "featurebox.featurebox_find_ad_meta_description",
         "Utilisez nos filtres intelligents pour trouver un partenaire sportif qui correspond à votre niveau, sport et culture."
       ),
-      path: "/products",
+      path: "/annonces",
     },
     {
       title: t(
@@ -192,7 +192,7 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
         "featurebox.featurebox_coach_meta_description",
         "Trouvez un coach ou un professionnel du sport adapté à vos besoins : fitness, montagne, nutrition et plus encore."
       ),
-      path: "/products",
+      path: "/annonces",
     },
   ];
 

@@ -121,7 +121,7 @@ export const LoggedInDropdown = ({
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <LocalizedLink
-            href="/products"
+            href="/annonces"
             className="flex items-center gap-2"
             onClick={() => setOpen(false)}
           >

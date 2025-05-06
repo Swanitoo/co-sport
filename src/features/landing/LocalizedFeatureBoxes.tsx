@@ -136,7 +136,7 @@ export const LocalizedFeatureBoxes = ({
         <ShieldCheck key="shield" className="size-10 text-pink-300" />,
         <Users key="users" className="size-8 text-rose-400" />,
       ],
-      path: "/products",
+      path: "/annonces",
     },
     {
       title: t("Step2.Title"),
@@ -152,7 +152,7 @@ export const LocalizedFeatureBoxes = ({
         <Languages key="languages" className="size-9 text-indigo-300" />,
         <StravaLogo key="strava" className="size-10 text-orange-500" />,
       ],
-      path: "/products",
+      path: "/annonces",
     },
     {
       title: t("Step3.Title"),
@@ -168,7 +168,7 @@ export const LocalizedFeatureBoxes = ({
         <Award key="award" className="size-9 text-amber-500" />,
         <BookOpen key="learn" className="size-8 text-orange-300" />,
       ],
-      path: "/products",
+      path: "/annonces",
     },
   ];
 

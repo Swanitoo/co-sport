@@ -23,8 +23,8 @@ export const ProductCreatedEmail = ({
   const safeSlug = slug || "";
 
   const productLink = safeSlug
-    ? `${baseUrl}/products/${safeSlug}`
-    : `${baseUrl}/products/${safeProductId}`;
+    ? `${baseUrl}/annonces/${safeSlug}`
+    : `${baseUrl}/annonces/${safeProductId}`;
 
   return (
     <EmailLayout

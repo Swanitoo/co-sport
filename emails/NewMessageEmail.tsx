@@ -76,7 +76,7 @@ export const NewMessageEmail = ({
       </Text>
 
       <Section className="my-8 text-center">
-        <Button href={`${baseUrl}/products/${urlPath}/chat`}>
+        <Button href={`${baseUrl}/annonces/${urlPath}/chat`}>
           Voir {messageCount > 1 ? "les messages" : "le message"}
         </Button>
       </Section>

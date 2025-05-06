@@ -72,7 +72,7 @@ export function NotificationsCard({
     productSlug?: string
   ) => {
     await markNotificationAsRead(id);
-    router.push(`/products/${productSlug || productId}`);
+    router.push(`/annonces/${productSlug || productId}`);
     router.refresh();
   };
 
@@ -86,7 +86,7 @@ export function NotificationsCard({
     } else if (messageIds.length === 1) {
       await markMessageAsRead(messageIds[0]);
     }
-    router.push(`/products/${productSlug || productId}`);
+    router.push(`/annonces/${productSlug || productId}`);
     router.refresh();
   };
 
@@ -143,7 +143,7 @@ export function NotificationsCard({
         {pendingRequests.map((request) => (
           <Link
             key={request.id}
-            href={`/products/${request.productSlug || request.productId}`}
+            href={`/annonces/${request.productSlug || request.productId}`}
             onClick={() =>
               handleNotificationClick(
                 request.id,
@@ -196,7 +196,7 @@ export function NotificationsCard({
         {approvedRequests.map((request) => (
           <Link
             key={request.id}
-            href={`/products/${request.productSlug || request.productId}`}
+            href={`/annonces/${request.productSlug || request.productId}`}
             onClick={() =>
               handleNotificationClick(
                 request.id,
@@ -246,7 +246,7 @@ export function NotificationsCard({
         {unreadMessages.map((message) => (
           <Link
             key={message.id}
-            href={`/products/${message.productSlug || message.productId}`}
+            href={`/annonces/${message.productSlug || message.productId}`}
             onClick={() =>
               handleMessageClick(
                 message.messageIds,

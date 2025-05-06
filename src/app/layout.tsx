@@ -144,13 +144,7 @@ export default async function RootLayout(
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/icon.png" />
         {/* Optimisation: précharger les ressources critiques */}
-        <link
-          rel="preload"
-          href="/fonts/inter.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
+        {/* La police Inter est déjà gérée par next/font/google, pas besoin de la précharger manuellement */}
       </head>
       <body className={cn(inter.className, "h-full")}>
         {/* ParallaxIcons est inclus dans chaque layout spécifique où il est nécessaire */}

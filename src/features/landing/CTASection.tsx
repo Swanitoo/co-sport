@@ -25,7 +25,7 @@ export const CTASection = ({ translations }: CTASectionProps) => {
     setIsLoading(true);
 
     if (status === "authenticated") {
-      router.push("/products");
+      router.push("/annonces");
     } else {
       signIn();
     }

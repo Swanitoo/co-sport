@@ -67,7 +67,7 @@ export const ReviewReceivedEmail = ({
       </Text>
 
       <Section className="my-8 text-center">
-        <Button href={`${baseUrl}/products/${urlPath}/reviews`}>
+        <Button href={`${baseUrl}/annonces/${urlPath}/reviews`}>
           Voir tous les avis
         </Button>
       </Section>

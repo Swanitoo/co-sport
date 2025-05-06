@@ -47,7 +47,7 @@ export const JoinRequestEmail = ({
       </Text>
 
       <Section className="my-8 text-center">
-        <Button href={`${baseUrl}/products/${urlPath}`}>
+        <Button href={`${baseUrl}/annonces/${urlPath}`}>
           Gérer la demande
         </Button>
       </Section>

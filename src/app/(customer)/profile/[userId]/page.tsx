@@ -126,7 +126,7 @@ export default async function ProfilePage(props: {
           {/* Fil d'Ariane */}
           <Breadcrumb
             items={[
-              { href: "/products", label: "Annonces" },
+              { href: "/annonces", label: "Annonces" },
               { label: "Profil" },
             ]}
           />
@@ -227,7 +227,7 @@ export default async function ProfilePage(props: {
                       >
                         <div className="mb-2">
                           <Link
-                            href={`/products/${product.slug}`}
+                            href={`/annonces/${product.slug}`}
                             className="text-sm font-medium hover:underline"
                           >
                             {product.name}
@@ -256,7 +256,7 @@ export default async function ProfilePage(props: {
                   {user.products.map((product) => (
                     <Link
                       key={product.id}
-                      href={`/products/${product.slug}`}
+                      href={`/annonces/${product.slug}`}
                       className="block transition-transform hover:scale-105"
                     >
                       <Card className="transition-shadow hover:shadow-lg">
@@ -294,35 +294,31 @@ export async function generateMetadata(props: {
   params: Promise<{ userId: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: params.userId },
-      select: { name: true },
-    });
+  const user = await prisma.user.findUnique({
+    where: {
+      id: params.userId,
+    },
+    select: {
+      name: true,
+      image: true,
+    },
+  });
 
-    if (!user) {
-      return createSeoMetadata({
-        title: "Profil non trouvé | co-sport.com",
-        description: "Ce profil n'existe pas ou a été supprimé.",
-        path: `/profile/${params.userId}`,
-        noindex: true,
-      });
-    }
-
-    return createSeoMetadata({
-      title: `Profil de ${user.name || "Utilisateur"} | co-sport.com`,
-      description: `Découvrez le profil sportif de ${
-        user.name || "cet utilisateur"
-      } sur co-sport.com. Consultez ses activités et ses préférences sportives.`,
-      path: `/profile/${params.userId}`,
-      noindex: true,
-    });
-  } catch (error) {
-    console.error("Erreur lors de la génération des métadonnées:", error);
-    return createSeoMetadata({
-      title: "Erreur | co-sport.com",
-      description: "Une erreur s'est produite lors du chargement du profil.",
-      noindex: true,
-    });
+  if (!user) {
+    return {
+      title: "Profil non trouvé",
+      description: "Ce profil n'existe pas.",
+    };
   }
+
+  const firstName = user.name?.split(" ")[0] || "Profil";
+
+  // Utiliser noindex: true pour empêcher l'indexation
+  return createSeoMetadata({
+    title: `Profil de ${firstName} | Co-Sport`,
+    description: `Découvrez le profil de ${firstName} sur Co-Sport.`,
+    noindex: true,
+    path: `/profile/${params.userId}`,
+    ogImage: user.image || undefined,
+  });
 }

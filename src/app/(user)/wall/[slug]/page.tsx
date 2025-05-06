@@ -51,7 +51,7 @@ export default async function RoutePage(
             <h1 className="mb-4 text-2xl font-bold">Produit non trouvé</h1>
             <p>Désolé, nous n'avons pas pu trouver le produit demandé.</p>
             <Button variant="ghost" className="mt-4" asChild>
-              <Link href="/products" className="flex items-center gap-2">
+              <Link href="/annonces" className="flex items-center gap-2">
                 <ArrowLeft size={16} />
                 Retour aux annonces
               </Link>
@@ -94,7 +94,7 @@ export default async function RoutePage(
           <div className="mb-8 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link
-                href={`/products/${product.slug}`}
+                href={`/annonces/${product.slug}`}
                 className={buttonVariants({
                   variant: "ghost",
                   size: "sm",

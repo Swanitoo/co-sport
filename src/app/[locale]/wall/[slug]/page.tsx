@@ -135,7 +135,7 @@ export default async function RoutePage(props: PageProps) {
                 </Link>
                 <ChevronRight className="size-4" />
                 <Link
-                  href={`/${params.locale}/products`}
+                  href={`/${params.locale}/annonces`}
                   className="hover:text-foreground"
                 >
                   Annonces
@@ -151,7 +151,7 @@ export default async function RoutePage(props: PageProps) {
                     Désolé, nous n'avons pas pu trouver l'annonce demandée.
                   </p>
                   <Button className="mt-4" asChild>
-                    <Link href={`/${params.locale}/products`}>
+                    <Link href={`/${params.locale}/annonces`}>
                       Voir toutes les annonces
                     </Link>
                   </Button>
@@ -198,14 +198,14 @@ export default async function RoutePage(props: PageProps) {
               </Link>
               <ChevronRight className="size-4" />
               <Link
-                href={`/${params.locale}/products`}
+                href={`/${params.locale}/annonces`}
                 className="hover:text-foreground"
               >
                 Annonces
               </Link>
               <ChevronRight className="size-4" />
               <Link
-                href={`/${params.locale}/products/${product.slug}`}
+                href={`/${params.locale}/annonces/${product.slug}`}
                 className="hover:text-foreground"
               >
                 {product.name}
@@ -268,11 +268,9 @@ export default async function RoutePage(props: PageProps) {
 }
 
 // Génération de métadonnées SEO pour la page de mur d'avis
-export async function generateMetadata(
-  props: {
-    params: Promise<{ locale: Locale; slug: string }>;
-  }
-): Promise<Metadata> {
+export async function generateMetadata(props: {
+  params: Promise<{ locale: Locale; slug: string }>;
+}): Promise<Metadata> {
   const params = await props.params;
   try {
     const product = await prisma.product.findUnique({

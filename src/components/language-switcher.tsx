@@ -45,7 +45,7 @@ export function LanguageSwitcher() {
 
     return (locale: Locale) => {
       // Si nous sommes sur la page d'accueil ou une route spéciale
-      if (cleanPath === "/" || cleanPath === "/products") {
+      if (cleanPath === "/" || cleanPath === "/annonces") {
         return locale === "fr" ? cleanPath : `/${locale}${cleanPath}`;
       }
 

@@ -105,7 +105,7 @@ const AppButton = () => {
   const session = useSession();
 
   if (session.data?.user) {
-    return <Link href="/products">App</Link>;
+    return <Link href="/annonces">App</Link>;
   } else {
     return <SignInButton />;
   }

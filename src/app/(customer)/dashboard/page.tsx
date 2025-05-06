@@ -46,7 +46,7 @@ import { ExternalLink, Globe, MapPin, Pencil } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ReviewItem } from "../../(user)/wall/[slug]/ReviewCard";
-import { LEVEL_CLASSES, SPORTS } from "../products/[slug]/edit/product.schema";
+import { LEVEL_CLASSES, SPORTS } from "../annonces/[slug]/edit/product.schema";
 import {
   updateBio,
   updateBirthDate,
@@ -617,13 +617,13 @@ export default async function RoutePage() {
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
               <Link
-                href="/products/new"
+                href="/annonces/new"
                 className={buttonVariants({ size: "lg" })}
               >
                 Créer une annonce
               </Link>
               <Link
-                href="/products"
+                href="/annonces"
                 className={buttonVariants({ size: "lg", variant: "outline" })}
               >
                 Liste des annonces
@@ -674,7 +674,7 @@ export default async function RoutePage() {
                 {productsWithPendingCount.map((product) => (
                   <Link
                     key={product.id}
-                    href={`/products/${product.slug}`}
+                    href={`/annonces/${product.slug}`}
                     className="block rounded-lg border p-4 transition-colors hover:bg-accent/50"
                   >
                     <div className="mb-2 flex items-center justify-between">
@@ -716,7 +716,7 @@ export default async function RoutePage() {
                 {joinedProducts.map((product) => (
                   <Link
                     key={product.id}
-                    href={`/products/${product.slug}`}
+                    href={`/annonces/${product.slug}`}
                     className="block rounded-lg border p-4 transition-colors hover:bg-accent/50"
                   >
                     <div className="mb-2">

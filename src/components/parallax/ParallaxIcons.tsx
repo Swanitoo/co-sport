@@ -1,6 +1,6 @@
 "use client";
 
-import { SPORTS } from "@/app/(customer)/products/[slug]/edit/product.schema";
+import { SPORTS } from "@/app/(customer)/annonces/[slug]/edit/product.schema";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";

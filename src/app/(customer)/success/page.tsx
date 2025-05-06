@@ -9,11 +9,11 @@ export default function RoutePage() {
       <div className="flex gap-4">
         <Link
           className={buttonVariants({ size: "lg", variant: "secondary" })}
-          href="/products"
+          href="/annonces"
         >
           Voir les annonces
         </Link>
-        <Link className={buttonVariants({ size: "lg" })} href="/products/new">
+        <Link className={buttonVariants({ size: "lg" })} href="/annonces/new">
           Créez ton prochain produit
         </Link>
       </div>

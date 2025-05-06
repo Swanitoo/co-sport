@@ -146,7 +146,7 @@ export default async function ProfilePage(props: PageProps) {
               </Link>
               <ChevronRight className="size-4" />
               <Link
-                href={`/${params.locale}/products`}
+                href={`/${params.locale}/annonces`}
                 className="hover:text-foreground"
               >
                 Annonces
@@ -256,7 +256,7 @@ export default async function ProfilePage(props: PageProps) {
                         >
                           <div className="mb-2">
                             <Link
-                              href={`/${params.locale}/products/${product.slug}`}
+                              href={`/${params.locale}/annonces/${product.slug}`}
                               className="text-sm font-medium hover:underline"
                             >
                               {product.name}
@@ -296,7 +296,7 @@ export default async function ProfilePage(props: PageProps) {
                     {user.products.map((product) => (
                       <Link
                         key={product.id}
-                        href={`/${params.locale}/products/${product.slug}`}
+                        href={`/${params.locale}/annonces/${product.slug}`}
                         className="block transition-transform hover:scale-105"
                       >
                         <Card className="transition-shadow hover:shadow-lg">

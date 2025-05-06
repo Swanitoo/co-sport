@@ -21,6 +21,8 @@ export default function robots(): MetadataRoute.Robots {
           "/success/",
           "/cancel/",
           "/r/",
+          "/profile/",
+          "/profil/",
         ],
       },
     ],

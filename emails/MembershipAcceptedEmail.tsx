@@ -45,7 +45,7 @@ export const MembershipAcceptedEmail = ({
       </Text>
 
       <Section className="my-8 text-center">
-        <Button href={`${baseUrl}/products/${urlPath}`}>Voir l'activité</Button>
+        <Button href={`${baseUrl}/annonces/${urlPath}`}>Voir l'activité</Button>
       </Section>
 
       <Text className="text-sm text-slate-600">

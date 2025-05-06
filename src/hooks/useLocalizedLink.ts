@@ -11,8 +11,8 @@ export function useLocalizedLink() {
 
   /**
    * Crée un lien localisé avec la langue actuelle
-   * @param path Chemin relatif sans la langue (ex: "/products")
-   * @returns Chemin complet avec la langue (ex: "/fr/products")
+   * @param path Chemin relatif sans la langue (ex: "/annonces")
+   * @returns Chemin complet avec la langue (ex: "/fr/annonces")
    */
   const getLocalizedPath = (path: string): string => {
     // Nettoyer le chemin des éventuels slashes en début

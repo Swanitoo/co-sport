@@ -2,7 +2,7 @@ import {
   SupportedLocale,
   translateLevel,
   translateSport,
-} from "@/app/(customer)/products/[slug]/edit/product.schema";
+} from "@/app/(customer)/annonces/[slug]/edit/product.schema";
 import { LatestProducts } from "@/app/(landing)/home/LatestProducts";
 import { currentUser } from "@/auth/current-user";
 import { ParallaxIcons } from "@/components/parallax/ParallaxIcons";
@@ -40,9 +40,7 @@ type Props = {
 export default async function LocalizedHomePage(props: Props) {
   const params = await props.params;
 
-  const {
-    locale
-  } = params;
+  const { locale } = params;
 
   // Active la locale pour cette requête
   unstable_setRequestLocale(locale);

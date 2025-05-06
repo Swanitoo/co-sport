@@ -76,7 +76,7 @@ export const ProcessReviewStep = ({ product }: { product: Product }) => {
   const step = getCurrentStep(reviewData.data);
 
   const handleBackToProduct = () => {
-    router.push(`/${locale}/products/${product.slug}`);
+    router.push(`/${locale}/annonces/${product.slug}`);
   };
 
   return (
