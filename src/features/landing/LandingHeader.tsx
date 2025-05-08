@@ -66,6 +66,7 @@ export function LandingHeader() {
               width={32}
               height={32}
               alt="co-sport.com logo"
+              priority
             />
           </Link>
         </motion.div>
@@ -85,8 +86,11 @@ export function LandingHeader() {
             rel="noopener noreferrer"
           >
             <Button variant="outline" size="sm" className="gap-1">
-              <Coffee className="size-3.5" />
-              <span className="hidden sm:inline-block">Soutenir</span>
+              <Coffee className="size-3.5" aria-hidden="true" />
+              <span className="hidden sm:inline">Soutenir</span>
+              <span className="sr-only sm:hidden">
+                Soutenir le développement de co-sport
+              </span>
             </Button>
           </a>
           <AppButton />

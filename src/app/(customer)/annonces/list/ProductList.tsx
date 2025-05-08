@@ -78,7 +78,10 @@ export function ProductList({
           >
             <div className="mb-4 flex items-center gap-3">
               <Avatar>
-                <AvatarImage src={product.user.image || undefined} />
+                <AvatarImage
+                  src={product.user.image || undefined}
+                  alt={`photo de profil de ${getFirstName(product.user.name)}`}
+                />
                 <AvatarFallback>
                   {product.user.name?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>

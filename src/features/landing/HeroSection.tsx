@@ -26,7 +26,10 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
         </span>{" "}
         <span className="text-sm font-medium">{translations.app_mobile}</span>
       </div>
-      <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-foreground  md:text-5xl lg:text-6xl">
+      <h1
+        className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-foreground md:text-5xl lg:text-6xl"
+        id="main-heading"
+      >
         {translations.hero_title}
       </h1>
       <h3 className="mb-8 text-lg font-normal text-muted-foreground sm:px-16 lg:text-xl xl:px-48">

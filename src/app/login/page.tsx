@@ -1,6 +1,17 @@
+import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
 import { PageParams } from "@/types/next";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { defaultLocale } from "../../../locales";
+
+// Empêcher l'indexation de la page de redirection
+export const generateMetadata = (): Metadata => {
+  return createSeoMetadata({
+    title: "Connexion",
+    description: "Connectez-vous à votre compte co-sport",
+    noindex: true,
+  });
+};
 
 export default async function LoginRedirect(props: PageParams) {
   // Récupérer et attendre les paramètres de recherche

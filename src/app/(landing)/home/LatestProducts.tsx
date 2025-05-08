@@ -5,7 +5,7 @@ import { ProductCardLink } from "@/components/ui/product-card-link";
 import { getCountryFlag } from "@/data/country";
 import { getFirstName } from "@/lib/string-utils";
 import { Globe } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   LEVEL_CLASSES,
   SPORTS,
@@ -41,6 +41,120 @@ type LatestProductsProps = {
   };
 };
 
+// Extraire le composant ProductCard pour éviter les re-rendus inutiles
+const ProductCard = memo(
+  ({
+    product,
+    isAuthenticated,
+    isHovered,
+  }: {
+    product: Product;
+    isAuthenticated: boolean;
+    isHovered: boolean;
+  }) => {
+    // Memoize computed values
+    const productUrl = useMemo(
+      () =>
+        isAuthenticated
+          ? `/annonces/${product.slug}`
+          : `/api/auth/signin?callbackUrl=${encodeURIComponent(
+              `/annonces/${product.slug}`
+            )}`,
+      [product.slug, isAuthenticated]
+    );
+
+    const sportIcon = useMemo(
+      () =>
+        SPORTS.find(
+          (s) => s.name === (product.originalSportName || product.sport)
+        )?.icon,
+      [product.originalSportName, product.sport]
+    );
+
+    const levelIcon = useMemo(
+      () =>
+        LEVEL_CLASSES.find(
+          (l) => l.name === (product.originalLevelName || product.level)
+        )?.icon,
+      [product.originalLevelName, product.level]
+    );
+
+    // Memoize the review text
+    const reviewsText = useMemo(
+      () =>
+        product._count.reviews > 0 ? ` (${product._count.reviews} avis)` : "",
+      [product._count.reviews]
+    );
+
+    const firstName = useMemo(
+      () => getFirstName(product.user.name),
+      [product.user.name]
+    );
+
+    const countryFlag = useMemo(
+      () =>
+        product.user.country ? getCountryFlag(product.user.country) : null,
+      [product.user.country]
+    );
+
+    return (
+      <ProductCardLink
+        href={productUrl}
+        className="block h-full"
+        cardClassName={`h-full p-4 ${isHovered ? "bg-accent/50" : ""}`}
+      >
+        <div className="mb-4 flex items-center gap-3">
+          <Avatar>
+            <AvatarImage
+              src={product.user.image || undefined}
+              alt={`photo de profil de ${firstName}`}
+              loading="lazy"
+            />
+            <AvatarFallback>
+              {product.user.name?.charAt(0).toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h3 className="line-clamp-1 truncate font-medium">
+              {product.name}
+            </h3>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>
+                {firstName}
+                {reviewsText}
+              </span>
+              {countryFlag && <span className="text-base">{countryFlag}</span>}
+            </div>
+          </div>
+        </div>
+        {(product.venueName || product.venueAddress) && (
+          <div className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">
+            <Globe className="size-4" />
+            <span className="truncate">
+              {product.venueName || product.venueAddress}
+            </span>
+          </div>
+        )}
+        <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
+          {product.description}
+        </p>
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <span className="text-lg">{sportIcon}</span>
+            <span className="truncate">{product.sport}</span>
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="text-lg">{levelIcon}</span>
+            <span>{product.level}</span>
+          </span>
+        </div>
+      </ProductCardLink>
+    );
+  }
+);
+
+ProductCard.displayName = "ProductCard";
+
 export function LatestProducts({
   products,
   isAuthenticated,
@@ -50,11 +164,10 @@ export function LatestProducts({
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
   const isMobileRef = useRef(false);
 
-  useEffect(() => {
-    // Vérifier si on est sur mobile
-    isMobileRef.current = window.innerWidth < 768;
-
-    if (!isMobileRef.current) return;
+  // Observer creation is memoized
+  const setupObserver = useCallback(() => {
+    // Ne pas créer l'observer si on n'est pas sur mobile
+    if (!isMobileRef.current) return () => {};
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -81,12 +194,17 @@ export function LatestProducts({
     return () => observer.disconnect();
   }, [hoveredCardIndex]);
 
-  // Texte pour les avis
-  const getReviewsText = (count: number) => {
-    // La vérification de la locale est enlevée car elle est inutile côté client
-    // et cause des erreurs d'hydratation
-    return count > 0 ? ` (${count} avis)` : "";
-  };
+  useEffect(() => {
+    // Vérifier si on est sur mobile et garder cette info
+    isMobileRef.current = window.innerWidth < 768;
+
+    // Cleanup function from setupObserver
+    const cleanup = setupObserver();
+    return cleanup;
+  }, [setupObserver]);
+
+  // Limite des produits affichés mémorisée
+  const displayedProducts = useMemo(() => products.slice(0, 6), [products]);
 
   return (
     <section className="w-full">
@@ -101,95 +219,21 @@ export function LatestProducts({
           </p>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {products.slice(0, 6).map((product, index) => {
-            const isHovered = index === hoveredCardIndex;
-
-            return (
-              <div
-                key={product.id}
-                ref={(el) => {
-                  cardsRef.current[index] = el;
-                }}
-                data-card-index={index}
-              >
-                <ProductCardLink
-                  href={
-                    isAuthenticated
-                      ? `/annonces/${product.slug}`
-                      : `/api/auth/signin?callbackUrl=${encodeURIComponent(
-                          `/annonces/${product.slug}`
-                        )}`
-                  }
-                  className="block h-full"
-                  cardClassName={`h-full p-4 ${
-                    isHovered ? "bg-accent/50" : ""
-                  }`}
-                >
-                  <div className="mb-4 flex items-center gap-3">
-                    <Avatar>
-                      <AvatarImage src={product.user.image || undefined} />
-                      <AvatarFallback>
-                        {product.user.name?.charAt(0).toUpperCase() || "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="line-clamp-1 truncate font-medium">
-                        {product.name}
-                      </h3>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>
-                          {getFirstName(product.user.name)}
-                          {getReviewsText(product._count.reviews)}
-                        </span>
-                        {product.user.country && (
-                          <span className="text-base">
-                            {getCountryFlag(product.user.country)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  {(product.venueName || product.venueAddress) && (
-                    <div className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">
-                      <Globe className="size-4" />
-                      <span className="truncate">
-                        {product.venueName || product.venueAddress}
-                      </span>
-                    </div>
-                  )}
-                  <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
-                    {product.description}
-                  </p>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <span className="text-lg">
-                        {
-                          SPORTS.find(
-                            (s) =>
-                              s.name ===
-                              (product.originalSportName || product.sport)
-                          )?.icon
-                        }
-                      </span>
-                      <span className="truncate">{product.sport}</span>
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="text-lg">
-                        {
-                          LEVEL_CLASSES.find(
-                            (l) =>
-                              l.name ===
-                              (product.originalLevelName || product.level)
-                          )?.icon
-                        }
-                      </span>
-                      <span>{product.level}</span>
-                    </span>
-                  </div>
-                </ProductCardLink>
-              </div>
-            );
-          })}
+          {displayedProducts.map((product, index) => (
+            <div
+              key={product.id}
+              ref={(el) => {
+                cardsRef.current[index] = el;
+              }}
+              data-card-index={index}
+            >
+              <ProductCard
+                product={product}
+                isAuthenticated={isAuthenticated}
+                isHovered={index === hoveredCardIndex}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </section>

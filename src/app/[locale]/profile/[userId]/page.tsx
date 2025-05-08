@@ -39,9 +39,26 @@ function ProfileAvatarSimple({
   name: string | null;
   className?: string;
 }) {
+  const firstName = name?.split(" ")[0] || "Utilisateur";
+
   return (
     <Avatar className={className}>
-      <AvatarImage src={image || undefined} />
+      <AvatarImage
+        src={image || undefined}
+        alt={`photo de profil de ${firstName}`}
+        onError={(e) => {
+          const img = e.currentTarget;
+          if (img.src.includes("vercel-storage.com")) {
+            const googleImage = image?.replace(
+              "vercel-storage.com",
+              "googleusercontent.com"
+            );
+            if (googleImage) {
+              img.src = googleImage;
+            }
+          }
+        }}
+      />
       <AvatarFallback>{name?.[0]}</AvatarFallback>
     </Avatar>
   );
@@ -350,11 +367,11 @@ export async function generateMetadata(props: {
       });
     }
 
+    const firstName = user.name?.split(" ")[0] || "Utilisateur";
+
     return createSeoMetadata({
-      title: `Profil de ${user.name || "Utilisateur"} | co-sport.com`,
-      description: `Découvrez le profil sportif de ${
-        user.name || "cet utilisateur"
-      } sur co-sport.com. Consultez ses activités et ses préférences sportives.`,
+      title: `Profil de ${firstName} | co-sport.com`,
+      description: `Découvrez le profil sportif de ${firstName} sur co-sport.com. Consultez ses activités et ses préférences sportives.`,
       path: `/${params.locale}/profile/${params.userId}`,
       noindex: true,
     });

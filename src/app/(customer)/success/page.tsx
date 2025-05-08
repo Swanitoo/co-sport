@@ -1,6 +1,17 @@
 import { Layout, LayoutTitle } from "@/components/layout";
 import { buttonVariants } from "@/components/ui/button";
+import { generateMetadata as createSeoMetadata } from "@/lib/seo-config";
+import { Metadata } from "next";
 import Link from "next/link";
+
+// Empêcher l'indexation de la page de paiement réussi
+export const generateMetadata = (): Metadata => {
+  return createSeoMetadata({
+    title: "Paiement réussi",
+    description: "Votre paiement a été traité avec succès",
+    noindex: true,
+  });
+};
 
 export default function RoutePage() {
   return (

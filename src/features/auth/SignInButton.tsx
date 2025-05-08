@@ -13,8 +13,11 @@ export const SignInButton = () => {
         signInAction();
       }}
     >
-      <User size={16} className="sm:mr-2" />
-      <span className="hidden sm:inline">Connexion</span>
+      <User size={16} className="sm:mr-2" aria-hidden="true" />
+      <span className="sm:inline">
+        <span className="hidden sm:inline">Connexion</span>
+        <span className="sr-only sm:hidden">Connexion à votre compte</span>
+      </span>
     </Button>
   );
 };

@@ -14,15 +14,51 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         disallow: [
+          // Routes système
           "/api/",
-          "/dashboard/",
+
+          // Routes d'authentification
           "/login/",
-          "/admin/",
+
+          // Routes de paiement
           "/success/",
           "/cancel/",
-          "/r/",
+
+          // Routes privées non localisées
           "/profile/",
           "/profil/",
+          "/dashboard/",
+          "/r/",
+          "/wall/",
+
+          // Routes privées localisées (fr, en, es)
+          "/fr/login/",
+          "/en/login/",
+          "/es/login/",
+
+          "/fr/profile/",
+          "/en/profile/",
+          "/es/profile/",
+
+          "/fr/profil/",
+          "/en/profil/",
+          "/es/profil/",
+
+          "/fr/dashboard/",
+          "/en/dashboard/",
+          "/es/dashboard/",
+
+          "/fr/r/",
+          "/en/r/",
+          "/es/r/",
+
+          "/fr/wall/",
+          "/en/wall/",
+          "/es/wall/",
+
+          "/fr/support/",
+          "/en/support/",
+          "/es/support/",
         ],
       },
     ],

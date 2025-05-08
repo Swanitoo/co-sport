@@ -70,10 +70,10 @@ export function generateMetadata({
     robots: noindex
       ? {
           index: false,
-          follow: true,
+          follow: false,
           googleBot: {
             index: false,
-            follow: true,
+            follow: false,
           },
         }
       : baseConfig.robots,

@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getFirstName } from "@/lib/string-utils";
 
 export const ProfileAvatar = ({
   image,
@@ -11,10 +12,13 @@ export const ProfileAvatar = ({
   name: string | null;
   className?: string;
 }) => {
+  const firstName = name ? getFirstName(name) : "Utilisateur";
+
   return (
     <Avatar className={className}>
       <AvatarImage
         src={image || undefined}
+        alt={`photo de profil de ${firstName}`}
         onError={(e) => {
           const img = e.currentTarget;
           if (img.src.includes("vercel-storage.com")) {
