@@ -310,11 +310,12 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
                   ? parseInt(account.expires_at.toString())
                   : undefined,
                 stravaId: stravaId, // Déjà converti en chaîne
-                // Mise à jour des informations du profil si nécessaire
+                // Mise à jour des informations du profil si nécessaires
                 sex: customUser.sex || stravaProfile?.sex,
                 city: customUser.city || stravaProfile?.city,
                 state: customUser.state || stravaProfile?.state,
-                country: customUser.country || stravaProfile?.country,
+                // S'assurer que le pays est enregistré en priorité s'il est disponible dans Strava
+                country: stravaProfile?.country || customUser.country,
                 stravaPremium: stravaProfile?.premium || stravaProfile?.summit,
                 stravaWeight:
                   typeof stravaProfile?.weight === "number" &&
@@ -374,6 +375,23 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         token.stravaId = account.providerAccountId;
       }
       return token;
+    },
+    // Assurer une redirection correcte vers le dashboard après l'authentification
+    async redirect({ url, baseUrl }) {
+      // Pour les callbacks d'authentification, rediriger vers notre page intermédiaire
+      if (url.includes("/api/auth/callback/")) {
+        return "/auth-redirect";
+      }
+
+      // Si l'URL est déjà le dashboard avec le paramètre, la respecter
+      if (url.includes("/dashboard") && url.includes("openProfileModal=true")) {
+        return url;
+      }
+
+      // Pour toute autre URL, utiliser le comportement par défaut
+      if (url.startsWith(baseUrl)) return url;
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      return baseUrl;
     },
   },
   pages: {

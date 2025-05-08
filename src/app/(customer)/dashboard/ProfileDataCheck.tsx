@@ -1,5 +1,6 @@
 "use client";
 
+import { SPORTS } from "@/app/(customer)/annonces/[slug]/edit/product.schema";
 import { Button } from "@/components/ui/button";
 import { Confetti } from "@/components/ui/confetti";
 import {
@@ -22,8 +23,9 @@ import {
 import { COUNTRIES } from "@/data/country";
 import { updateUserProfile } from "@/features/auth/auth.action";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, HelpCircle } from "lucide-react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface ProfileDataCheckProps {
@@ -44,6 +46,17 @@ interface ProfileDataCheckProps {
 }
 
 type Step = "sex" | "country" | "email" | "linkStrava";
+
+// Nouvelles étapes pour le guide
+type GuideStep =
+  | "userType"
+  | "sportPreference"
+  | "nationalityPreference"
+  | "girlsOnlyPreference"
+  | "complete";
+
+// Types d'utilisateurs pour le guide
+type UserType = "coach" | "sportif" | "debutant";
 
 export function ProfileDataCheck({
   needsSex,
@@ -173,6 +186,32 @@ export function ProfileDataCheck({
 
   const [currentStep, setCurrentStep] = useState<Step>(getFirstStep());
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showButtons, setShowButtons] = useState(false);
+
+  // États pour le guide
+  const [showGuide, setShowGuide] = useState(false);
+  const [guideStep, setGuideStep] = useState<GuideStep>("userType");
+  const [userType, setUserType] = useState<UserType | null>(null);
+  const [selectedSport, setSelectedSport] = useState<string | null>(null);
+  const [selectedNationality, setSelectedNationality] = useState<string | null>(
+    null
+  );
+  const [girlsOnly, setGirlsOnly] = useState<boolean>(false);
+
+  const router = useRouter();
+
+  // Effet pour afficher les boutons après un délai quand showSuccess est true
+  useEffect(() => {
+    if (showSuccess) {
+      // Ajouter un délai pour s'assurer que les boutons apparaissent après l'animation des confettis
+      const timer = setTimeout(() => {
+        setShowButtons(true);
+      }, 1000); // 1 seconde après l'affichage des confettis
+
+      // Nettoyer le timer à la destruction du composant
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccess]);
 
   // Mettre à jour currentStep quand les données changent
   useEffect(() => {
@@ -321,246 +360,594 @@ export function ProfileDataCheck({
     }
   };
 
+  // Navigation entre les étapes du guide
+  const goToNextGuideStep = () => {
+    if (guideStep === "userType") {
+      if (userType === "coach") {
+        // Pour les coaches, aller directement à l'étape du choix du sport
+        setGuideStep("sportPreference");
+      } else {
+        setGuideStep("sportPreference");
+      }
+    } else if (guideStep === "sportPreference") {
+      // Pour les coaches, passer directement à l'étape finale après le choix du sport
+      if (userType === "coach") {
+        setGuideStep("complete");
+      } else {
+        // Pour les sportifs/débutants, continuer vers les préférences culturelles
+        setGuideStep("nationalityPreference");
+      }
+    } else if (guideStep === "nationalityPreference") {
+      // Si l'utilisateur est une femme, montrer l'étape des préférences pour les annonces féminines
+      if (existingData.sex === "F" || formData.sex === "F") {
+        setGuideStep("girlsOnlyPreference");
+      } else {
+        setGuideStep("complete");
+      }
+    } else if (guideStep === "girlsOnlyPreference") {
+      setGuideStep("complete");
+    } else if (guideStep === "complete") {
+      finishGuide();
+    }
+  };
+
+  // Redirection finale après le guide
+  const finishGuide = () => {
+    // Fermer tous les dialogues
+    handleOpenChange(false);
+    setShowGuide(false);
+
+    // Rediriger l'utilisateur en fonction de ses choix
+    if (userType === "coach") {
+      // Pour les coaches/guides, rediriger vers la création d'annonce avec le sport et le niveau "Pro" présélectionnés
+      let url = "/annonces/new";
+
+      const searchParams = new URLSearchParams();
+
+      if (selectedSport) {
+        // Préselectionner le sport
+        searchParams.append("sport", selectedSport);
+        // Préselectionner le niveau "Pro" avec le nom exact du LEVEL_CLASSES
+        searchParams.append("level", "Pro (Coach, Entraîneur, Guide..)");
+      }
+
+      if (searchParams.toString()) {
+        url += `?${searchParams.toString()}`;
+      }
+
+      router.push(url);
+    } else {
+      // Pour les sportifs/débutants, rediriger vers la recherche d'annonces avec filtres
+      let url = "/annonces";
+
+      const searchParams = new URLSearchParams();
+
+      if (selectedSport) {
+        searchParams.append("sport", selectedSport);
+      }
+
+      if (selectedNationality) {
+        searchParams.append("countries", selectedNationality);
+      }
+
+      if (girlsOnly && (existingData.sex === "F" || formData.sex === "F")) {
+        searchParams.append("onlyGirls", "true");
+      }
+
+      if (searchParams.toString()) {
+        url += `?${searchParams.toString()}`;
+      }
+
+      router.push(url);
+    }
+  };
+
+  // Effet pour la redirection automatique à la fin du parcours
+  useEffect(() => {
+    if (guideStep === "complete") {
+      const timer = setTimeout(() => {
+        finishGuide();
+      }, 3000); // 3 secondes avant la redirection
+
+      return () => clearTimeout(timer);
+    }
+  }, [guideStep]);
+
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        {showSuccess ? (
-          <>
-            <Confetti trigger={showSuccess} type="success" />
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="flex flex-col items-center justify-center space-y-4 p-4"
-            >
+    <>
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+        <DialogContent className="sm:max-w-[425px]">
+          {showSuccess ? (
+            <>
+              <Confetti trigger={showSuccess} type="success" />
               <motion.div
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                className="flex size-16 items-center justify-center rounded-full bg-green-100"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="flex flex-col items-center justify-center space-y-4 p-4"
               >
-                <Check className="size-8 text-green-600" />
+                <motion.div
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+                  className="flex size-16 items-center justify-center rounded-full bg-green-100"
+                >
+                  <Check className="size-8 text-green-600" />
+                </motion.div>
+
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="text-xl font-medium"
+                >
+                  Profil complété !
+                </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                  className="mt-4 w-full space-y-4"
+                >
+                  <p className="text-center text-sm text-muted-foreground">
+                    Félicitations ! Vous êtes maintenant prêt à rejoindre la
+                    communauté sportive.
+                  </p>
+                  {showButtons && (
+                    <div className="flex flex-col gap-3">
+                      <motion.div
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Button
+                          className="flex w-full items-center justify-center gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                          onClick={() =>
+                            (window.location.href = "/annonces/new")
+                          }
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            width="18"
+                            height="18"
+                            className="mr-2"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="16" />
+                            <line x1="8" y1="12" x2="16" y2="12" />
+                          </svg>
+                          Créer une annonce
+                        </Button>
+                      </motion.div>
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Button
+                          variant="outline"
+                          onClick={() => (window.location.href = "/annonces")}
+                          className="w-full"
+                        >
+                          Voir les annonces
+                        </Button>
+                      </motion.div>
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setShowGuide(true);
+                            handleOpenChange(false);
+                          }}
+                          className="flex w-full items-center justify-center gap-2"
+                        >
+                          <HelpCircle className="size-4" />
+                          Guide de démarrage
+                        </Button>
+                      </motion.div>
+                    </div>
+                  )}
+                  <p className="text-center text-xs text-muted-foreground">
+                    En créant une annonce, vous pourrez trouver des partenaires
+                    sportifs selon vos critères et intérêts !
+                  </p>
+                </motion.div>
               </motion.div>
+            </>
+          ) : (
+            <>
+              <div className="mb-6 space-y-4">
+                <DialogHeader>
+                  <DialogTitle className="text-center text-xl">
+                    Complétez votre profil
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-2">
+                  <Progress value={progress} className="h-2 w-full" />
+                  <p className="text-center text-sm text-muted-foreground">
+                    {Math.round(progress)}% complété
+                  </p>
+                </div>
+              </div>
+              <AnimatePresence mode="wait">
+                {currentStep === "email" && (
+                  <motion.div
+                    key="email-step"
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    className="space-y-4"
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Entrez votre email</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleEmailSubmit} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          placeholder="votre@email.com"
+                          defaultValue={
+                            formData.email || existingData.email || ""
+                          }
+                          required
+                        />
+                      </div>
+                      <Button type="submit" className="w-full">
+                        Continuer
+                      </Button>
+                    </form>
+                  </motion.div>
+                )}
 
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="text-xl font-medium"
-              >
-                Profil complété !
-              </motion.p>
+                {currentStep === "sex" && (
+                  <motion.div
+                    key="sex-step"
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    className="space-y-4"
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Choisissez votre genre</DialogTitle>
+                    </DialogHeader>
+                    <RadioGroup
+                      onValueChange={(v: string) => handleSubmit("sex", v)}
+                      defaultValue={
+                        formData.sex || existingData.sex || undefined
+                      }
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="M" id="M" />
+                        <Label htmlFor="M">Homme</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="F" id="F" />
+                        <Label htmlFor="F">Femme</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="O" id="O" />
+                        <Label htmlFor="O">Autre</Label>
+                      </div>
+                    </RadioGroup>
+                  </motion.div>
+                )}
 
+                {currentStep === "country" && (
+                  <motion.div
+                    key="country-step"
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    className="space-y-4"
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Sélectionnez votre nationalité</DialogTitle>
+                    </DialogHeader>
+                    <Select
+                      onValueChange={(v: string) => handleSubmit("country", v)}
+                      defaultValue={
+                        formData.country || existingData.country || undefined
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choisissez un pays" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COUNTRIES.map((country) => (
+                          <SelectItem key={country.code} value={country.code}>
+                            {country.flag} {country.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </motion.div>
+                )}
+
+                {currentStep === "linkStrava" && (
+                  <motion.div
+                    key="strava-step"
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    className="space-y-4"
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Lier votre compte Strava</DialogTitle>
+                    </DialogHeader>
+                    <p className="text-sm text-muted-foreground">
+                      Liez votre compte Strava pour importer vos activités
+                      sportives et trouver des partenaires avec des niveaux
+                      similaires.
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        onClick={() => handleStravaLink(true)}
+                        className="flex w-full items-center justify-center gap-2 bg-[#FC4C02] hover:bg-[#E34000]"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                        >
+                          <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" />
+                        </svg>
+                        Connecter avec Strava
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => handleStravaLink(false)}
+                      >
+                        Non merci
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog pour le guide */}
+      <Dialog open={showGuide} onOpenChange={setShowGuide}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl">
+              {guideStep === "userType" && "Quel type de sportif êtes-vous ?"}
+              {guideStep === "sportPreference" &&
+                "Quel sport souhaitez-vous pratiquer ?"}
+              {guideStep === "nationalityPreference" &&
+                "Préférence linguistique ou culturelle ?"}
+              {guideStep === "girlsOnlyPreference" &&
+                "Préférence pour les activités féminines ?"}
+              {guideStep === "complete" && "C'est parti !"}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {guideStep === "userType" && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                className="mt-4 w-full space-y-4"
+                className="space-y-4"
               >
-                <p className="text-center text-sm text-muted-foreground">
-                  Félicitations ! Vous êtes maintenant prêt à rejoindre la
-                  communauté sportive.
+                <p className="text-sm text-muted-foreground">
+                  Pour mieux vous orienter, dites-nous quel est votre profil :
                 </p>
-                <div className="flex flex-col gap-3">
-                  <motion.div
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button
-                      className="flex w-full items-center justify-center gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-                      onClick={() => (window.location.href = "/annonces/new")}
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        width="18"
-                        height="18"
-                        className="mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="12" y1="8" x2="12" y2="16" />
-                        <line x1="8" y1="12" x2="16" y2="12" />
-                      </svg>
-                      Créer une annonce
-                    </Button>
-                  </motion.div>
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button
-                      variant="outline"
-                      onClick={() => (window.location.href = "/annonces")}
-                      className="w-full"
-                    >
-                      Voir les annonces
-                    </Button>
-                  </motion.div>
-                </div>
-                <p className="text-center text-xs text-muted-foreground">
-                  En créant une annonce, vous pourrez trouver des partenaires
-                  sportifs selon vos critères et intérêts !
-                </p>
-              </motion.div>
-            </motion.div>
-          </>
-        ) : (
-          <>
-            <div className="mb-6 space-y-4">
-              <DialogHeader>
-                <DialogTitle className="text-center text-xl">
-                  Complétez votre profil
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-2">
-                <Progress value={progress} className="h-2 w-full" />
-                <p className="text-center text-sm text-muted-foreground">
-                  {Math.round(progress)}% complété
-                </p>
-              </div>
-            </div>
-            <AnimatePresence mode="wait">
-              {currentStep === "email" && (
-                <motion.div
-                  key="email-step"
-                  initial={{ opacity: 0, x: 100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -100 }}
-                  className="space-y-4"
+                <RadioGroup
+                  value={userType || ""}
+                  onValueChange={(value) => setUserType(value as UserType)}
                 >
-                  <DialogHeader>
-                    <DialogTitle>Entrez votre email</DialogTitle>
-                  </DialogHeader>
-                  <form onSubmit={handleEmailSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="votre@email.com"
-                        defaultValue={
-                          formData.email || existingData.email || ""
-                        }
-                        required
-                      />
-                    </div>
-                    <Button type="submit" className="w-full">
-                      Continuer
-                    </Button>
-                  </form>
-                </motion.div>
-              )}
-
-              {currentStep === "sex" && (
-                <motion.div
-                  key="sex-step"
-                  initial={{ opacity: 0, x: 100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -100 }}
-                  className="space-y-4"
-                >
-                  <DialogHeader>
-                    <DialogTitle>Choisissez votre genre</DialogTitle>
-                  </DialogHeader>
-                  <RadioGroup
-                    onValueChange={(v: string) => handleSubmit("sex", v)}
-                    defaultValue={formData.sex || existingData.sex || undefined}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="M" id="M" />
-                      <Label htmlFor="M">Homme</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="F" id="F" />
-                      <Label htmlFor="F">Femme</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="O" id="O" />
-                      <Label htmlFor="O">Autre</Label>
-                    </div>
-                  </RadioGroup>
-                </motion.div>
-              )}
-
-              {currentStep === "country" && (
-                <motion.div
-                  key="country-step"
-                  initial={{ opacity: 0, x: 100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -100 }}
-                  className="space-y-4"
-                >
-                  <DialogHeader>
-                    <DialogTitle>Sélectionnez votre nationalité</DialogTitle>
-                  </DialogHeader>
-                  <Select
-                    onValueChange={(v: string) => handleSubmit("country", v)}
-                    defaultValue={
-                      formData.country || existingData.country || undefined
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choisissez un pays" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {COUNTRIES.map((country) => (
-                        <SelectItem key={country.code} value={country.code}>
-                          {country.flag} {country.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </motion.div>
-              )}
-
-              {currentStep === "linkStrava" && (
-                <motion.div
-                  key="strava-step"
-                  initial={{ opacity: 0, x: 100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -100 }}
-                  className="space-y-4"
-                >
-                  <DialogHeader>
-                    <DialogTitle>Lier votre compte Strava</DialogTitle>
-                  </DialogHeader>
-                  <p className="text-sm text-muted-foreground">
-                    Liez votre compte Strava pour importer vos activités
-                    sportives et trouver des partenaires avec des niveaux
-                    similaires.
-                  </p>
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      onClick={() => handleStravaLink(true)}
-                      className="flex w-full items-center justify-center gap-2 bg-[#FC4C02] hover:bg-[#E34000]"
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        width="20"
-                        height="20"
-                        fill="currentColor"
-                      >
-                        <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169" />
-                      </svg>
-                      Connecter avec Strava
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleStravaLink(false)}
-                    >
-                      Non merci
-                    </Button>
+                  <div className="flex items-center space-x-2 rounded-lg border p-2 hover:bg-accent">
+                    <RadioGroupItem value="coach" id="coach" />
+                    <Label htmlFor="coach" className="flex-1 cursor-pointer">
+                      <div className="font-medium">Coach / Guide</div>
+                      <p className="text-sm text-muted-foreground">
+                        Vous souhaitez proposer des activités et encadrer des
+                        sportifs
+                      </p>
+                    </Label>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </>
-        )}
-      </DialogContent>
-    </Dialog>
+                  <div className="flex items-center space-x-2 rounded-lg border p-2 hover:bg-accent">
+                    <RadioGroupItem value="sportif" id="sportif" />
+                    <Label htmlFor="sportif" className="flex-1 cursor-pointer">
+                      <div className="font-medium">Sportif</div>
+                      <p className="text-sm text-muted-foreground">
+                        Vous pratiquez régulièrement et cherchez des partenaires
+                      </p>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 rounded-lg border p-2 hover:bg-accent">
+                    <RadioGroupItem value="debutant" id="debutant" />
+                    <Label htmlFor="debutant" className="flex-1 cursor-pointer">
+                      <div className="font-medium">Débutant</div>
+                      <p className="text-sm text-muted-foreground">
+                        Vous débutez et souhaitez être accompagné
+                      </p>
+                    </Label>
+                  </div>
+                </RadioGroup>
+                <Button
+                  onClick={goToNextGuideStep}
+                  disabled={!userType}
+                  className="w-full"
+                >
+                  Continuer
+                </Button>
+              </motion.div>
+            )}
+
+            {guideStep === "sportPreference" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                <p className="text-sm text-muted-foreground">
+                  Quel sport souhaitez-vous pratiquer principalement ?
+                </p>
+                <Select
+                  value={selectedSport || ""}
+                  onValueChange={setSelectedSport}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choisissez un sport" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SPORTS.map((sport) => (
+                      <SelectItem key={sport.name} value={sport.name}>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{sport.icon}</span>
+                          <span>{sport.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button onClick={goToNextGuideStep} className="w-full">
+                  Continuer
+                </Button>
+              </motion.div>
+            )}
+
+            {guideStep === "girlsOnlyPreference" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                <div className="mb-2 flex justify-center">
+                  <div className="rounded-full bg-purple-100 p-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-purple-600"
+                    >
+                      <circle cx="12" cy="8" r="5" />
+                      <path d="M12 13v8" />
+                      <path d="M9 16h6" />
+                    </svg>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Souhaitez-vous voir uniquement des annonces créées par des
+                  femmes ?
+                </p>
+                <RadioGroup
+                  onValueChange={(value) => setGirlsOnly(value === "yes")}
+                >
+                  <div className="flex items-center space-x-2 rounded-lg border border-purple-200 p-2 hover:bg-purple-50">
+                    <RadioGroupItem
+                      value="yes"
+                      id="girls-only-yes"
+                      className="border-purple-400 text-purple-600"
+                    />
+                    <Label
+                      htmlFor="girls-only-yes"
+                      className="flex-1 cursor-pointer"
+                    >
+                      <div className="font-medium text-purple-800">Oui</div>
+                      <p className="text-sm text-purple-600">
+                        Je souhaite voir uniquement des annonces de femmes
+                      </p>
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2 rounded-lg border p-2 hover:bg-accent">
+                    <RadioGroupItem value="no" id="girls-only-no" />
+                    <Label
+                      htmlFor="girls-only-no"
+                      className="flex-1 cursor-pointer"
+                    >
+                      <div className="font-medium">Non</div>
+                      <p className="text-sm text-muted-foreground">
+                        Je souhaite voir toutes les annonces
+                      </p>
+                    </Label>
+                  </div>
+                </RadioGroup>
+                <Button onClick={goToNextGuideStep} className="w-full">
+                  Continuer
+                </Button>
+              </motion.div>
+            )}
+
+            {guideStep === "nationalityPreference" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                <p className="text-sm text-muted-foreground">
+                  Souhaitez-vous pratiquer avec des personnes d'une nationalité
+                  spécifique pour partager une langue ou une culture ?
+                </p>
+                <Select
+                  value={selectedNationality || ""}
+                  onValueChange={setSelectedNationality}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choisissez une nationalité (optionnel)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COUNTRIES.map((country) => (
+                      <SelectItem key={country.code} value={country.code}>
+                        {country.flag} {country.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button onClick={goToNextGuideStep} className="w-full">
+                  Continuer
+                </Button>
+              </motion.div>
+            )}
+
+            {guideStep === "complete" && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                <div className="flex items-center justify-center p-4">
+                  <div className="rounded-full bg-green-100 p-3">
+                    <Check className="size-6 text-green-600" />
+                  </div>
+                </div>
+                <p className="text-center">
+                  {userType === "coach"
+                    ? "Parfait ! Vous allez être redirigé vers la création d'annonce pour proposer vos services de coach/guide."
+                    : "Parfait ! Vous allez être redirigé vers les annonces correspondant à vos préférences."}
+                </p>
+                <p className="text-center text-sm text-muted-foreground">
+                  Redirection automatique dans quelques secondes...
+                </p>
+                <Button onClick={finishGuide} className="w-full">
+                  {userType === "coach"
+                    ? "Créer mon annonce"
+                    : "Voir les annonces"}
+                </Button>
+              </motion.div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

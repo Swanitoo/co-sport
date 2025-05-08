@@ -40,6 +40,32 @@ export const SupportSection = () => {
             </div>
           </div>
 
+          {/* Ajout de la carte Partenariat pour mobile */}
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-primary/50 dark:bg-black">
+            <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+              Devenir partenaire
+            </h3>
+            <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+              <p>
+                Vous êtes une entreprise ou une organisation dans le domaine du
+                sport ? Rejoignez notre aventure en devenant partenaire de
+                Co-Sport.
+              </p>
+              <p>
+                Ensemble, nous pouvons créer des synergies et développer des
+                collaborations bénéfiques pour votre marque et notre communauté
+                grandissante.
+              </p>
+              <div className="mt-4">
+                <Link href="/partnership">
+                  <Button className="w-full" variant="default">
+                    Découvrir notre offre partenaires
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-primary/50 dark:bg-black">
             <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
               Comment nous soutenir
@@ -64,7 +90,7 @@ export const SupportSection = () => {
                 </a>
               </div>
 
-              <Link href="/support" className="inline-block w-full">
+              <Link href="/partnership" className="inline-block w-full">
                 <Button
                   className="w-full justify-between py-4 text-base"
                   variant="outline"
@@ -84,8 +110,8 @@ export const SupportSection = () => {
           </div>
         </div>
 
-        {/* Version desktop : deux colonnes */}
-        <div className="hidden lg:grid lg:grid-cols-2 lg:gap-8">
+        {/* Version desktop : trois colonnes */}
+        <div className="hidden lg:grid lg:grid-cols-3 lg:gap-8">
           {/* Histoire et mission */}
           <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm dark:border-primary/50 dark:bg-black">
             <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
@@ -109,6 +135,39 @@ export const SupportSection = () => {
                 tous les utilisateurs. Notre priorité est de construire une
                 communauté solide avant tout.
               </p>
+            </div>
+          </div>
+
+          {/* Partenariats */}
+          <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm dark:border-primary/50 dark:bg-black">
+            <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
+              Devenir partenaire
+            </h3>
+            <div className="space-y-4 text-gray-600 dark:text-gray-400">
+              <p>
+                Vous êtes une entreprise ou une organisation dans le domaine du
+                sport ? Rejoignez notre aventure en devenant partenaire de
+                Co-Sport.
+              </p>
+              <p>
+                Nous proposons différentes possibilités de collaboration
+                adaptées à vos objectifs et votre budget. Ensemble, nous pouvons
+                créer des synergies bénéfiques pour votre marque et notre
+                communauté sportive en pleine croissance.
+              </p>
+              <p>
+                Visibilité, évènements, contenus exclusifs... Discutons ensemble
+                de vos besoins et de la manière dont nous pouvons vous
+                accompagner.
+              </p>
+              <div className="mt-6">
+                <Link href="/partnership">
+                  <Button className="w-full" size="lg" variant="default">
+                    <Handshake className="mr-3 size-5" />
+                    Devenir partenaire
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -140,18 +199,6 @@ export const SupportSection = () => {
                     />
                   </a>
                 </div>
-
-                <Link href="/support" className="inline-block w-full">
-                  <Button
-                    className="w-full justify-between p-5 text-lg"
-                    variant="outline"
-                  >
-                    <div className="flex items-center">
-                      <Handshake className="mr-3 size-5" />
-                      <span>Devenir partenaire</span>
-                    </div>
-                  </Button>
-                </Link>
               </div>
 
               <p className="mt-4 text-sm italic text-gray-500 dark:text-gray-400">

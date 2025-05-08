@@ -1,6 +1,13 @@
 "use client";
 
 import { BADGES } from "@/components/ui/badges/badge.config";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { StravaConnectDialog } from "@/features/strava/components/StravaConnectDialog";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -90,54 +97,57 @@ export const SportPerformanceFilters = ({
     });
   };
 
+  // Fonction pour gérer la sélection d'un badge dans le Select
+  const handleBadgeSelect = (badgeId: string) => {
+    setFilterValues((prev) => ({
+      ...prev,
+      requiredBadges: [badgeId], // Un seul badge actif à la fois
+    }));
+  };
+
   // Calculer si des filtres sont actifs - important pour l'interface parent
   const hasActiveFilters =
     filterValues.requiredBadges && filterValues.requiredBadges.length > 0;
+
+  // Sélectionner le badge actif (le premier s'il y en a plusieurs)
+  const activeBadgeId =
+    filterValues.requiredBadges && filterValues.requiredBadges.length > 0
+      ? filterValues.requiredBadges[0]
+      : "";
 
   return (
     <div
       className="w-full rounded-lg shadow-sm"
       data-has-active-filters={hasActiveFilters ? "true" : "false"}
     >
-      {/* Filtre pour les badges */}
+      {/* Filtre pour les badges - Version Select */}
       <div>
         <div className="mb-3">
           <label className="block text-sm font-medium">
             Badges du créateur
           </label>
         </div>
-        <div className="flex flex-col gap-2">
-          {BADGES.map((badge) => (
-            <div
-              key={badge.id}
-              onClick={() => handleBadgeToggle(badge.id)}
-              className={`flex cursor-pointer items-center rounded border p-2 transition-colors ${
-                filterValues.requiredBadges?.includes(badge.id)
-                  ? "border-amber-500 bg-amber-100 dark:border-amber-600 dark:bg-amber-900/30"
-                  : "border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800/50"
-              }`}
-              role="checkbox"
-              aria-checked={filterValues.requiredBadges?.includes(badge.id)}
-              data-filter-active={
-                filterValues.requiredBadges?.includes(badge.id)
-                  ? "true"
-                  : "false"
-              }
-              data-filter-type="badge"
-              data-filter-id={badge.id}
-            >
-              <div className="relative mr-2 size-6 shrink-0">
-                <Image
-                  src={badge.icon}
-                  alt={badge.name}
-                  width={24}
-                  height={24}
-                />
-              </div>
-              <span className="truncate text-sm">{badge.name}</span>
-            </div>
-          ))}
-        </div>
+
+        <Select value={activeBadgeId} onValueChange={handleBadgeSelect}>
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionner un badge" />
+          </SelectTrigger>
+          <SelectContent>
+            {BADGES.map((badge) => (
+              <SelectItem key={badge.id} value={badge.id}>
+                <div className="flex items-center gap-2">
+                  <Image
+                    src={badge.icon}
+                    alt={badge.name}
+                    width={20}
+                    height={20}
+                  />
+                  <span>{badge.name}</span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Modale pour inciter à la connexion Strava */}

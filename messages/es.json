@@ -120,36 +120,36 @@
     }
   },
   "Home": {
-    "latest_products": "Últimas actividades",
+    "latest_products": "Últimos anuncios",
     "latest_products_subtitle": "Descubre las últimas actividades deportivas añadidas por nuestros miembros",
     "hero_title": "Encuentra tu compañero deportivo",
-    "hero_subtitle": "Elige tu deporte, encuentra tu compañero ideal y progresen juntos.",
+    "hero_subtitle": "Elige tu deporte, encuentra tu compañero ideal y progresa juntos.",
     "cta_button": "Comenzar",
-    "cta_secondary": "Ver video",
+    "cta_secondary": "Ver el vídeo",
     "features_title": "Características",
     "features_subtitle": "Descubre todo lo que CoSport puede ofrecerte",
     "soon": "Próximamente",
-    "app_mobile": "La aplicación móvil",
-    "LatestProducts": "Últimas actividades",
+    "app_mobile": "Aplicación móvil",
+    "LatestProducts": "Últimos anuncios",
     "Badges": {
       "title": "Insignias Deportivas",
       "subtitle": "Destaca con nuestras insignias deportivas que reconocen tus logros en Strava",
-      "how_to_get": "Cómo obtenerla:",
+      "how_to_get": "Cómo conseguirla:",
       "profile": {
         "title": "Perfil Deportivo",
         "description": "Práctica regular de actividades deportivas"
       },
       "mountain": {
         "title": "Montañero",
-        "description": "Acumulación significativa de elevación positiva"
+        "description": "Acumulación importante de desnivel positivo"
       },
       "endurance": {
-        "title": "Resistencia",
+        "title": "Resistente",
         "description": "Buena velocidad de carrera mantenida"
       },
       "long_distance": {
         "title": "Larga Distancia",
-        "description": "Finalización de carreras de larga distancia"
+        "description": "Realización de carreras de larga distancia"
       },
       "multi_sport": {
         "title": "Multi-Deporte",
@@ -157,30 +157,35 @@
       },
       "trail": {
         "title": "Corredor de Trail",
-        "description": "Participación regular en trails o caminatas"
+        "description": "Participación regular en trails o senderismo"
       },
-      "profile_req": "Práctica regular (al menos 10 actividades)",
-      "mountain_req": "Acumular más de 1000m de elevación positiva",
-      "endurance1_req": "Correr a menos de 6 min/km en terreno plano",
-      "endurance2_req": "O menos de 7min30/km con elevación",
-      "long_distance_req": "Completar al menos una carrera de más de 15 km",
-      "multi_sport_req": "Practicar al menos 3 deportes diferentes",
+      "profile_req": "Practicar regularmente (al menos 10 actividades)",
+      "mountain_req": "Acumular más de 1000m de desnivel positivo",
+      "endurance1_req": "Correr a menos de 6 min/km en terreno llano",
+      "endurance2_req": "O menos de 7min30/km con desnivel",
+      "long_distance_req": "Realizar al menos una carrera de más de 15 km",
+      "multi_sport_req": "Practicar al menos 3 disciplinas deportivas distintas",
       "trail_req": "Participar en al menos 5 actividades de trail o senderismo"
     },
     "Support": {
-      "title": "Apoya co-sport.com",
+      "title": "Apoya a co-sport.com",
       "subtitle": "Un proyecto independiente al servicio de la comunidad deportiva",
       "story": "Nuestra historia",
-      "story_p1": "co-sport.com nació de una pasión por el deporte y una visión: crear una comunidad inclusiva donde todos puedan encontrar su compañero deportivo ideal.",
-      "story_p2": "Desarrollado por un único desarrollador apasionado, este proyecto se construye con la ambición de hacer el deporte más accesible y seguro para todos, especialmente para las mujeres que quieren practicar con seguridad.",
-      "story_p3": "Hasta la fecha, co-sport.com sigue siendo completamente gratuito para todos los usuarios. Nuestra prioridad es construir una comunidad sólida ante todo.",
+      "story_p1": "co-sport.com nació de una pasión por el deporte y una visión: crear una comunidad inclusiva donde cada uno pueda encontrar su compañero deportivo ideal.",
+      "story_p2": "Desarrollado por un único desarrollador apasionado, este proyecto está construido con la ambición de hacer el deporte más accesible y seguro para todos, especialmente para las mujeres que desean practicar con total seguridad.",
+      "story_p3": "Hasta la fecha, co-sport.com sigue siendo totalmente gratuito para todos los usuarios. Nuestra prioridad es construir una comunidad sólida ante todo.",
       "how_to_support": "Cómo apoyarnos",
-      "support_p1": "Para mantener este servicio gratuito y seguir desarrollando nuevas funcionalidades, contamos con el apoyo de nuestra comunidad. Así es cómo puedes contribuir:",
+      "support_p1": "Para mantener este servicio gratuito y seguir desarrollando nuevas funcionalidades, contamos con el apoyo de nuestra comunidad. Aquí tienes cómo puedes contribuir:",
       "buy_coffee": "Invítame a un café",
-      "become_partner": "Conviértete en socio",
+      "become_partner": "Convertirse en socio",
       "support": "Apoyar",
       "collaborate": "Colaborar",
-      "future_p1": "En el futuro, co-sport.com podría integrar anuncios dirigidos y no intrusivos o asociaciones para mantener el servicio, pero nos comprometemos a ofrecer siempre una experiencia de calidad."
+      "future_p1": "En el futuro, co-sport.com podría integrar anuncios dirigidos y no intrusivos o asociaciones para mantener el servicio, pero nos comprometemos a ofrecer siempre una experiencia de calidad.",
+      "partnership_title": "Convertirse en socio",
+      "partnership_p1": "¿Eres una empresa u organización en el ámbito deportivo? Únete a nuestra aventura convirtiéndote en socio de Co-Sport.",
+      "partnership_p2": "Juntos podemos crear sinergias y desarrollar colaboraciones que beneficien a tu marca y a nuestra creciente comunidad.",
+      "partnership_p3": "Visibilidad, eventos, contenido exclusivo... Hablemos de tus necesidades y de cómo podemos apoyarte.",
+      "discover_partnership": "Descubre nuestra oferta de asociación"
     }
   },
   "Language": {

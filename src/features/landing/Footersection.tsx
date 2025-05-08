@@ -20,6 +20,11 @@ export const FooterSection = () => {
               App
             </a>
           </li>
+          <li>
+            <a href="/partnership" className="hover:underline">
+              Devenir partenaire
+            </a>
+          </li>
         </ul>
       </div>
     </footer>

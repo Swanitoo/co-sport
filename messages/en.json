@@ -120,36 +120,36 @@
     }
   },
   "Home": {
-    "latest_products": "Latest activities",
-    "latest_products_subtitle": "Discover the latest sports activities added by our members",
-    "hero_title": "Find your sports partner",
+    "latest_products": "Latest listings",
+    "latest_products_subtitle": "Discover the latest sporting activities added by our members",
+    "hero_title": "Find your sport partner",
     "hero_subtitle": "Choose your sport, find your ideal partner and progress together.",
     "cta_button": "Get started",
-    "cta_secondary": "Watch video",
+    "cta_secondary": "Watch the video",
     "features_title": "Features",
-    "features_subtitle": "Discover everything CoSport has to offer",
+    "features_subtitle": "Discover all that CoSport can offer you",
     "soon": "Coming soon",
     "app_mobile": "Mobile app",
-    "LatestProducts": "Latest activities",
+    "LatestProducts": "Latest listings",
     "Badges": {
-      "title": "Sports Badges",
-      "subtitle": "Stand out with our sports badges that recognize your achievements on Strava",
+      "title": "Sport Badges",
+      "subtitle": "Stand out with our sport badges that recognize your achievements on Strava",
       "how_to_get": "How to get it:",
       "profile": {
-        "title": "Sports Profile",
+        "title": "Sport Profile",
         "description": "Regular practice of sports activities"
       },
       "mountain": {
         "title": "Mountaineer",
-        "description": "Significant accumulation of positive elevation"
+        "description": "Significant cumulative positive elevation"
       },
       "endurance": {
         "title": "Endurance",
-        "description": "Good running speed maintained"
+        "description": "Good maintained running speed"
       },
       "long_distance": {
         "title": "Long Distance",
-        "description": "Completion of long distance runs"
+        "description": "Completion of long distance races"
       },
       "multi_sport": {
         "title": "Multi-Sport",
@@ -159,28 +159,33 @@
         "title": "Trail Runner",
         "description": "Regular participation in trails or hikes"
       },
-      "profile_req": "Regular practice (at least 10 activities)",
+      "profile_req": "Practice regularly (at least 10 activities)",
       "mountain_req": "Accumulate more than 1000m of positive elevation",
       "endurance1_req": "Run at less than 6 min/km on flat terrain",
       "endurance2_req": "Or less than 7min30/km with elevation",
-      "long_distance_req": "Complete at least one run of more than 15 km",
-      "multi_sport_req": "Practice at least 3 different sports",
+      "long_distance_req": "Complete at least one race of more than 15 km",
+      "multi_sport_req": "Practice at least 3 different sports disciplines",
       "trail_req": "Participate in at least 5 trail or hiking activities"
     },
     "Support": {
       "title": "Support co-sport.com",
       "subtitle": "An independent project serving the sports community",
       "story": "Our story",
-      "story_p1": "co-sport.com was born from a passion for sport and a vision: to create an inclusive community where everyone can find their ideal sports partner.",
-      "story_p2": "Developed by a single passionate developer, this project is built with the ambition to make sport more accessible and safer for everyone, especially for women who want to practice safely.",
+      "story_p1": "co-sport.com was born from a passion for sports and a vision: to create an inclusive community where everyone can find their ideal sports partner.",
+      "story_p2": "Developed by a single passionate developer, this project is built with the ambition to make sports more accessible and safer for everyone, especially for women who want to practice in complete safety.",
       "story_p3": "To date, co-sport.com remains entirely free for all users. Our priority is to build a solid community above all.",
       "how_to_support": "How to support us",
-      "support_p1": "To maintain this free service and continue developing new features, we rely on the support of our community. Here's how you can contribute:",
+      "support_p1": "To maintain this free service and continue to develop new features, we rely on the support of our community. Here's how you can contribute:",
       "buy_coffee": "Buy me a coffee",
       "become_partner": "Become a partner",
       "support": "Support",
       "collaborate": "Collaborate",
-      "future_p1": "In the future, co-sport.com may integrate targeted and non-intrusive ads or partnerships to maintain the service, but we are committed to always offering a quality experience."
+      "future_p1": "In the future, co-sport.com may incorporate targeted, non-intrusive ads or partnerships to maintain the service, but we are committed to always providing a quality experience.",
+      "partnership_title": "Become a partner",
+      "partnership_p1": "Are you a company or organization in the sports field? Join our adventure by becoming a Co-Sport partner.",
+      "partnership_p2": "Together, we can create synergies and develop collaborations that benefit your brand and our growing community.",
+      "partnership_p3": "Visibility, events, exclusive content... Let's discuss your needs and how we can support you.",
+      "discover_partnership": "Discover our partnership offer"
     }
   },
   "Language": {

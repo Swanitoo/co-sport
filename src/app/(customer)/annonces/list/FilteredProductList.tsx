@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollToTop } from "@/components/ui/scrollTotop";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Filter, X } from "lucide-react";
+import { Filter, PlusCircle, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { ProductFilters } from "./ProductFilters";
@@ -59,6 +59,7 @@ export function FilteredProductList({
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filterChangeCount, setFilterChangeCount] = useState(0);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [showCreateSuggestion, setShowCreateSuggestion] = useState(false);
 
   // Extraire les valeurs des paramètres d'URL pour les filtres de performance
   const getNumberParam = (param: string): number | undefined => {
@@ -172,6 +173,69 @@ export function FilteredProductList({
     }
   }, [isInitialLoad]);
 
+  // Vérifier si des filtres sont actifs
+  const hasActiveFilters = useCallback(() => {
+    return (
+      !!filters.sport ||
+      !!filters.level ||
+      filters.onlyGirls ||
+      (filters.countries?.length || 0) > 0 ||
+      (filters.requiredBadges?.length || 0) > 0
+    );
+  }, [filters]);
+
+  // Vérifier si des filtres sont actifs au chargement initial et avec peu d'annonces
+  useEffect(() => {
+    // Vérifier si la modale a déjà été affichée dans cette session
+    const hasShownModal = sessionStorage.getItem("hasShownFilterModal");
+
+    // Vérifier si des filtres sont actifs dès le chargement
+    const hasFilters =
+      !!filters.sport ||
+      !!filters.level ||
+      filters.onlyGirls ||
+      (filters.countries?.length || 0) > 0 ||
+      (filters.requiredBadges?.length || 0) > 0;
+
+    // N'afficher la modale qu'une seule fois par session si les conditions sont remplies
+    if (hasFilters && initialProducts.length < 5 && !hasShownModal) {
+      // Attendre un court délai pour que l'interface soit bien chargée
+      const timer = setTimeout(() => {
+        setShowCreateSuggestion(true);
+        // Marquer la modale comme déjà affichée
+        sessionStorage.setItem("hasShownFilterModal", "true");
+      }, 800);
+
+      return () => clearTimeout(timer);
+    }
+  }, []); // Exécuter uniquement au montage du composant
+
+  // Gérer la fermeture de la modale de suggestion
+  const handleCloseSuggestion = useCallback(() => {
+    setShowCreateSuggestion(false);
+    // Ne plus utiliser le sessionStorage
+  }, []);
+
+  // Fonction pour rediriger vers la création d'annonce avec les filtres présélectionnés
+  const handleCreateWithFilters = useCallback(() => {
+    const urlParams = new URLSearchParams();
+
+    if (filters.sport) {
+      urlParams.append("sport", filters.sport);
+    }
+
+    if (filters.level) {
+      urlParams.append("level", filters.level);
+    }
+
+    let url = "/annonces/new";
+    if (urlParams.toString()) {
+      url += `?${urlParams.toString()}`;
+    }
+
+    router.push(url);
+  }, [router, filters]);
+
   // Fonction de mise à jour des filtres y compris les filtres de performance
   const handleFilterChange = (newFilters: FilterType) => {
     const params = new URLSearchParams(searchParams?.toString());
@@ -202,6 +266,25 @@ export function FilteredProductList({
     router.push(`?${params.toString()}`);
     setFilters(newFilters);
     setFilterChangeCount((prev) => prev + 1); // Incrémente le compteur pour déclencher l'effet
+
+    // Créer un nouvel identifiant unique pour ce changement de filtre
+    const filterChangeId = Date.now().toString();
+    sessionStorage.setItem("lastFilterChangeId", filterChangeId);
+
+    // Vérifier les résultats après ce changement de filtre
+    setTimeout(() => {
+      // Ne procéder que si c'est toujours le changement le plus récent
+      const currentChangeId = sessionStorage.getItem("lastFilterChangeId");
+      if (
+        currentChangeId === filterChangeId &&
+        products.length < 5 &&
+        hasActiveFilters()
+      ) {
+        // Réinitialiser le flag pour permettre à la modale de s'afficher à nouveau
+        sessionStorage.removeItem("hasShownFilterModal");
+        setShowCreateSuggestion(true);
+      }
+    }, 500);
   };
 
   // Fonction de réinitialisation des filtres
@@ -219,17 +302,6 @@ export function FilteredProductList({
     setFilters(emptyFilters);
     setFilterChangeCount((prev) => prev + 1); // Incrémente le compteur pour déclencher l'effet
   };
-
-  // Vérifier si des filtres sont actifs
-  const hasActiveFilters = useCallback(() => {
-    return (
-      !!filters.sport ||
-      !!filters.level ||
-      filters.onlyGirls ||
-      (filters.countries?.length || 0) > 0 ||
-      (filters.requiredBadges?.length || 0) > 0
-    );
-  }, [filters]);
 
   return (
     <>
@@ -358,6 +430,47 @@ export function FilteredProductList({
           <div ref={loadMoreRef} className="h-10" />
         </div>
       </div>
+
+      {/* Modale de suggestion de création d'annonce */}
+      <Dialog
+        open={showCreateSuggestion}
+        onOpenChange={(open) => {
+          if (!open) handleCloseSuggestion();
+        }}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl">
+              Peu d'annonces correspondent à votre recherche
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center space-y-4 p-4">
+            <div className="flex size-16 items-center justify-center rounded-full bg-yellow-100">
+              <PlusCircle className="size-8 text-yellow-600" />
+            </div>
+            <p className="text-center text-base">
+              Pourquoi ne pas créer votre propre annonce avec ces critères et
+              attirer d'autres sportifs ?
+            </p>
+            <div className="mt-2 w-full space-y-3">
+              <Button
+                onClick={handleCreateWithFilters}
+                className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700"
+              >
+                Créer une annonce avec mes filtres
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleCloseSuggestion}
+                className="w-full"
+              >
+                Continuer ma recherche
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <ScrollToTop />
     </>
   );

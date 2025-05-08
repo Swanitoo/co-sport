@@ -51,7 +51,11 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
-      await signIn("google", { callbackUrl });
+      // Utiliser notre page de redirection intermédiaire
+      await signIn("google", {
+        callbackUrl: "/auth-redirect",
+        redirect: true,
+      });
     } catch (error) {
       console.error("Erreur de connexion:", error);
       setErrorDetails(t("errors.googleLogin"));
@@ -60,12 +64,16 @@ export default function LoginPage() {
 
   const handleStravaLogin = useCallback(async () => {
     try {
-      await signIn("strava", { callbackUrl });
+      // Utiliser notre page de redirection intermédiaire
+      await signIn("strava", {
+        callbackUrl: "/auth-redirect",
+        redirect: true,
+      });
     } catch (error) {
       console.error("Erreur de connexion:", error);
       setErrorDetails(t("errors.stravaLogin"));
     }
-  }, [callbackUrl, t]);
+  }, [t]);
 
   useEffect(() => {
     if (error) {

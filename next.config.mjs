@@ -55,7 +55,7 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://maps.googleapis.com https://pagead2.googlesyndication.com https://www.google-analytics.com https://connect.facebook.net https://www.google.com https://www.gstatic.com; connect-src 'self' https://www.google-analytics.com https://maps.googleapis.com https://api.strava.com; img-src 'self' data: https: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://www.google.com https://www.youtube.com; object-src 'none'; base-uri 'none';",
+              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://maps.googleapis.com https://pagead2.googlesyndication.com https://www.google-analytics.com https://connect.facebook.net https://www.google.com https://www.gstatic.com https://vercel.live; connect-src 'self' https://www.google-analytics.com https://maps.googleapis.com https://api.strava.com; img-src 'self' data: https: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://www.google.com https://www.youtube.com; object-src 'none'; base-uri 'none';",
           },
         ],
       },

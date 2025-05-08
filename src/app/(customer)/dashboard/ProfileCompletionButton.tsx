@@ -44,13 +44,21 @@ export function ProfileCompletionButton({
   // Vérifier si l'utilisateur arrive de la page d'annonce réservée aux femmes
   const fromOnlyGirls = searchParams.get("fromOnlyGirls") === "true";
 
+  // Vérifier si l'utilisateur vient de se connecter via OAuth (Google ou Strava)
+  const openProfileModal = searchParams.get("openProfileModal") === "true";
+
   // Ouvrir automatiquement la modale si le profil est incomplet et que l'utilisateur arrive d'une annonce réservée aux femmes,
   // ou si le sexe n'est pas spécifié quelle que soit la provenance
+  // ou si l'utilisateur vient juste de se connecter via OAuth
   useEffect(() => {
-    if ((isProfileIncomplete && fromOnlyGirls) || needsSex) {
+    if (
+      (isProfileIncomplete && fromOnlyGirls) ||
+      needsSex ||
+      openProfileModal
+    ) {
       setIsModalOpen(true);
     }
-  }, [isProfileIncomplete, fromOnlyGirls, needsSex]);
+  }, [isProfileIncomplete, fromOnlyGirls, needsSex, openProfileModal]);
 
   // Fonction pour mettre à jour le pourcentage de complétion
   const handleProgressUpdate = (newProgress: number) => {

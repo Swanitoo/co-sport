@@ -37,6 +37,24 @@ export const LocalizedSupportSection = () => {
             </div>
           </div>
 
+          {/* Ajout de la carte Partenariat pour mobile */}
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-primary/50 dark:bg-black">
+            <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+              {t("partnership_title")}
+            </h3>
+            <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+              <p>{t("partnership_p1")}</p>
+              <p>{t("partnership_p2")}</p>
+              <div className="mt-4">
+                <Link href="/partnership">
+                  <Button className="w-full" variant="default">
+                    {t("discover_partnership")}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+
           <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-primary/50 dark:bg-black">
             <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
               {t("how_to_support")}
@@ -60,7 +78,7 @@ export const LocalizedSupportSection = () => {
                 </a>
               </div>
 
-              <Link href="/support" className="inline-block w-full">
+              <Link href="/partnership" className="inline-block w-full">
                 <Button
                   className="w-full justify-between py-4 text-base"
                   variant="outline"
@@ -79,8 +97,8 @@ export const LocalizedSupportSection = () => {
           </div>
         </div>
 
-        {/* Version desktop : deux colonnes */}
-        <div className="hidden lg:grid lg:grid-cols-2 lg:gap-8">
+        {/* Version desktop : trois colonnes */}
+        <div className="hidden lg:grid lg:grid-cols-3 lg:gap-8">
           {/* Histoire et mission */}
           <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm dark:border-primary/50 dark:bg-black">
             <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
@@ -94,6 +112,25 @@ export const LocalizedSupportSection = () => {
                 <span className="font-semibold text-primary">gratuit</span>
                 {t("story_p3").split("gratuit")[1] || "."}
               </p>
+            </div>
+          </div>
+
+          {/* Partenariats */}
+          <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm dark:border-primary/50 dark:bg-black">
+            <h3 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
+              {t("partnership_title")}
+            </h3>
+            <div className="space-y-4 text-gray-600 dark:text-gray-400">
+              <p>{t("partnership_p1")}</p>
+              <p>{t("partnership_p2")}</p>
+              <p>{t("partnership_p3")}</p>
+              <div className="mt-6">
+                <Link href="/partnership">
+                  <Button className="w-full" size="lg" variant="default">
+                    {t("discover_partnership")}
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -123,18 +160,6 @@ export const LocalizedSupportSection = () => {
                     />
                   </a>
                 </div>
-
-                <Link href="/support" className="inline-block w-full">
-                  <Button
-                    className="w-full justify-between p-5 text-lg"
-                    variant="outline"
-                  >
-                    <div className="flex items-center">
-                      <Handshake className="mr-3 size-5" />
-                      <span>{t("become_partner")}</span>
-                    </div>
-                  </Button>
-                </Link>
               </div>
 
               <p className="mt-4 text-sm italic text-gray-500 dark:text-gray-400">

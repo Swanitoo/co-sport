@@ -3,9 +3,29 @@ import { Layout, LayoutTitle } from "@/components/layout";
 import { ChevronRight, Home } from "lucide-react";
 import Link from "next/link";
 import { ProductForm } from "../[slug]/edit/ProductForm";
+import { ProductType } from "../[slug]/edit/product.schema";
 
-export default async function RoutePage() {
+export default async function RoutePage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const user = await requiredCurrentUser();
+  const searchParams = await props.searchParams;
+
+  // Récupération des paramètres d'URL pour pré-remplir le formulaire
+  const sportParam = searchParams.sport as string | undefined;
+  const levelParam = searchParams.level as string | undefined;
+
+  // Création d'un objet defaultValues pour le formulaire
+  const defaultValues: Partial<ProductType> = {};
+
+  // Ajouter les valeurs si elles sont définies
+  if (sportParam) {
+    defaultValues.sport = sportParam;
+  }
+
+  if (levelParam) {
+    defaultValues.level = levelParam;
+  }
 
   return (
     <Layout>
@@ -21,7 +41,14 @@ export default async function RoutePage() {
         <span className="text-foreground">Créer une annonce</span>
       </div>
       <LayoutTitle>Créer une annonce</LayoutTitle>
-      <ProductForm userSex={user.sex ?? undefined} />
+      <ProductForm
+        userSex={user.sex ?? undefined}
+        defaultValues={
+          Object.keys(defaultValues).length > 0
+            ? (defaultValues as ProductType)
+            : undefined
+        }
+      />
     </Layout>
   );
 }
