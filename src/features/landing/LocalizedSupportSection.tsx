@@ -48,6 +48,7 @@ export const LocalizedSupportSection = () => {
               <div className="mt-4">
                 <Link href="/partnership">
                   <Button className="w-full" variant="default">
+                    <Handshake className="mr-2 size-4" />
                     {t("discover_partnership")}
                   </Button>
                 </Link>
@@ -127,6 +128,7 @@ export const LocalizedSupportSection = () => {
               <div className="mt-6">
                 <Link href="/partnership">
                   <Button className="w-full" size="lg" variant="default">
+                    <Handshake className="mr-2 size-4" />
                     {t("discover_partnership")}
                   </Button>
                 </Link>
