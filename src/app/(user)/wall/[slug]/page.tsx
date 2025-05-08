@@ -13,11 +13,9 @@ export const maxDuration = 10;
 export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
-export default async function RoutePage(
-  props: {
-    params: Promise<{ slug: string }>;
-  }
-) {
+export default async function RoutePage(props: {
+  params: Promise<{ slug: string }>;
+}) {
   const params = await props.params;
   const user = await currentUser();
 

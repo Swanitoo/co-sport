@@ -1,7 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useEffect } from "react";
 
 export default function GlobalError({
@@ -12,34 +19,38 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Journalisation de l'erreur côté client
+    // Enregistrer l'erreur dans un service de monitoring
     console.error("Erreur globale:", error);
   }, [error]);
 
   return (
-    <html>
+    <html lang="fr">
       <body>
-        <div className="flex h-screen flex-col items-center justify-center bg-background p-4">
-          <div className="w-full max-w-md rounded-lg border bg-card p-8 shadow-xl">
-            <h2 className="mb-4 text-2xl font-bold text-destructive">
-              Erreur système
-            </h2>
-            <p className="mb-6 text-card-foreground">
-              Une erreur critique est survenue. Veuillez rafraîchir la page.
-            </p>
-            {error.digest && (
-              <p className="mb-6 text-sm text-muted-foreground">
-                Référence d'erreur: {error.digest}
+        <div className="flex min-h-screen items-center justify-center bg-gray-50">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>Erreur Critique</CardTitle>
+              <CardDescription>
+                Nous rencontrons un problème technique au niveau du serveur.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-500">
+                {process.env.NODE_ENV !== "production"
+                  ? `Erreur: ${error.message}`
+                  : "Nos équipes ont été informées et travaillent à résoudre ce problème."}
               </p>
-            )}
-            <Button
-              onClick={() => reset()}
-              className="flex w-full items-center justify-center gap-2"
-            >
-              <RefreshCw className="size-4" />
-              <span>Réessayer</span>
-            </Button>
-          </div>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <Button
+                variant="outline"
+                onClick={() => (window.location.href = "/")}
+              >
+                Retour à l'accueil
+              </Button>
+              <Button onClick={() => reset()}>Réessayer</Button>
+            </CardFooter>
+          </Card>
         </div>
       </body>
     </html>

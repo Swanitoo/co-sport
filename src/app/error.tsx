@@ -9,12 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AlertTriangle, Home, RefreshCw } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 import { useEffect } from "react";
 
-export default function Error({
+export default function GlobalError({
   error,
   reset,
 }: {
@@ -22,61 +19,37 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Journalisation de l'erreur côté client
-    console.error("Erreur applicative:", error);
+    // Log l'erreur sur un service de monitoring (optionnel)
+    console.error("Erreur globale:", error);
   }, [error]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      <div className="w-full max-w-md">
-        <Card className="border-2 shadow-lg">
-          <CardHeader className="space-y-1 text-center">
-            <div className="mx-auto mb-4">
-              <Image
-                src="/icon.png"
-                width={64}
-                height={64}
-                alt="co-sport.com logo"
-                className="mx-auto"
-              />
-            </div>
-            <CardTitle className="text-2xl font-bold">
-              Une erreur est survenue
-            </CardTitle>
-            <CardDescription>
-              Nous rencontrons un problème technique. Veuillez réessayer
-              ultérieurement.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="my-4 flex flex-col items-center justify-center gap-2 text-center text-muted-foreground">
-              <AlertTriangle className="size-8 text-amber-500" />
-              <p>Erreur 500</p>
-              {process.env.NODE_ENV === "development" && (
-                <p className="mt-2 text-xs text-red-500">
-                  {error.message || "Une erreur inconnue s'est produite"}
-                </p>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => reset()}
-              className="flex-1 gap-2"
-            >
-              <RefreshCw size={16} />
-              <span>Réessayer</span>
-            </Button>
-            <Link href="/" className="flex-1">
-              <Button className="w-full gap-2">
-                <Home size={16} />
-                <span>Accueil</span>
-              </Button>
-            </Link>
-          </CardFooter>
-        </Card>
-      </div>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Une erreur inattendue s'est produite</CardTitle>
+          <CardDescription>
+            Nous sommes désolés pour ce désagrément. Notre équipe a été informée
+            de ce problème.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-gray-500">
+            {process.env.NODE_ENV !== "production"
+              ? `Erreur: ${error.message}`
+              : "Veuillez réessayer ultérieurement ou contacter notre support si le problème persiste."}
+          </p>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <Button
+            variant="outline"
+            onClick={() => (window.location.href = "/")}
+          >
+            Retour à l'accueil
+          </Button>
+          <Button onClick={() => reset()}>Réessayer</Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
