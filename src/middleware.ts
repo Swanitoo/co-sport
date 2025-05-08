@@ -15,7 +15,10 @@ const middleware = async (req: NextRequest) => {
 
   // Ajout d'en-têtes de sécurité pour toutes les réponses
   response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set("X-Frame-Options", "DENY");
+
+  // Permettre les frames depuis vercel.live en plus de l'origine
+  response.headers.set("X-Frame-Options", "SAMEORIGIN");
+
   response.headers.set("X-XSS-Protection", "1; mode=block");
 
   // Pour les routes d'API, ajout de l'entête Cache-Control pour éviter la mise en cache
