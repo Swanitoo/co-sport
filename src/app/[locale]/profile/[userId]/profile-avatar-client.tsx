@@ -1,9 +1,8 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getFirstName } from "@/lib/string-utils";
 
-export const ProfileAvatar = ({
+export function ProfileAvatarClient({
   image,
   name,
   className = "",
@@ -11,8 +10,8 @@ export const ProfileAvatar = ({
   image: string | null;
   name: string | null;
   className?: string;
-}) => {
-  const firstName = name ? getFirstName(name) : "Utilisateur";
+}) {
+  const firstName = name?.split(" ")[0] || "Utilisateur";
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -37,4 +36,4 @@ export const ProfileAvatar = ({
       <AvatarFallback>{name?.[0]}</AvatarFallback>
     </Avatar>
   );
-};
+}

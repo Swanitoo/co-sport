@@ -1,6 +1,5 @@
 import { currentUser } from "@/auth/current-user";
 import { Layout, LayoutTitle } from "@/components/layout";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProfileBadges } from "@/components/ui/badges/profile-badges";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCountryFlag } from "@/data/country";
@@ -16,6 +15,7 @@ import { unstable_setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Locale, locales } from "../../../../../locales";
+import { ProfileAvatarClient } from "./profile-avatar-client";
 
 // Activer le mode dynamique pour permettre une détection correcte de l'authentification
 export const dynamic = "force-dynamic"; // Changé de force-static à force-dynamic
@@ -27,42 +27,6 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
 };
-
-// Définition du ProfileAvatar séparée pour éviter l'erreur d'event handlers
-// Il est important de ne pas définir de gestionnaires d'événements ici
-function ProfileAvatarSimple({
-  image,
-  name,
-  className = "",
-}: {
-  image: string | null;
-  name: string | null;
-  className?: string;
-}) {
-  const firstName = name?.split(" ")[0] || "Utilisateur";
-
-  return (
-    <Avatar className={className}>
-      <AvatarImage
-        src={image || undefined}
-        alt={`photo de profil de ${firstName}`}
-        onError={(e) => {
-          const img = e.currentTarget;
-          if (img.src.includes("vercel-storage.com")) {
-            const googleImage = image?.replace(
-              "vercel-storage.com",
-              "googleusercontent.com"
-            );
-            if (googleImage) {
-              img.src = googleImage;
-            }
-          }
-        }}
-      />
-      <AvatarFallback>{name?.[0]}</AvatarFallback>
-    </Avatar>
-  );
-}
 
 // Définir les paramètres statiques pour l'internationalisation
 export function generateStaticParams() {
@@ -184,7 +148,7 @@ export default async function ProfilePage(props: PageProps) {
                 </p>
               </div>
               <div className="relative order-1 sm:order-2">
-                <ProfileAvatarSimple
+                <ProfileAvatarClient
                   image={user.image}
                   name={user.name}
                   className="size-24 sm:size-32"
