@@ -1,6 +1,7 @@
 "use client";
 
 import { SPORTS } from "@/app/(customer)/annonces/[slug]/edit/product.schema";
+import { getFilteredProducts } from "@/app/(customer)/annonces/list/productList.actions";
 import { Button } from "@/components/ui/button";
 import { Confetti } from "@/components/ui/confetti";
 import {
@@ -187,6 +188,7 @@ export function ProfileDataCheck({
   const [currentStep, setCurrentStep] = useState<Step>(getFirstStep());
   const [showSuccess, setShowSuccess] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
+  const [showCreateAnnonceModal, setShowCreateAnnonceModal] = useState(false);
 
   // États pour le guide
   const [showGuide, setShowGuide] = useState(false);
@@ -197,6 +199,7 @@ export function ProfileDataCheck({
     null
   );
   const [girlsOnly, setGirlsOnly] = useState<boolean>(false);
+  const [annoncesCount, setAnnoncesCount] = useState<number>(0);
 
   const router = useRouter();
 
@@ -392,22 +395,21 @@ export function ProfileDataCheck({
   };
 
   // Redirection finale après le guide
-  const finishGuide = () => {
+  const finishGuide = async () => {
+    // Vérifier le nombre d'annonces disponibles
+    const count = await checkAnnoncesCount();
+
     // Fermer tous les dialogues
     handleOpenChange(false);
     setShowGuide(false);
 
-    // Rediriger l'utilisateur en fonction de ses choix
     if (userType === "coach") {
-      // Pour les coaches/guides, rediriger vers la création d'annonce avec le sport et le niveau "Pro" présélectionnés
+      // Pour les coaches, toujours rediriger vers la création d'annonce
       let url = "/annonces/new";
-
       const searchParams = new URLSearchParams();
 
       if (selectedSport) {
-        // Préselectionner le sport
         searchParams.append("sport", selectedSport);
-        // Préselectionner le niveau "Pro" avec le nom exact du LEVEL_CLASSES
         searchParams.append("level", "Pro (Coach, Entraîneur, Guide..)");
       }
 
@@ -417,28 +419,33 @@ export function ProfileDataCheck({
 
       router.push(url);
     } else {
-      // Pour les sportifs/débutants, rediriger vers la recherche d'annonces avec filtres
-      let url = "/annonces";
+      // Pour les sportifs/débutants
+      if (count < 5) {
+        // S'il y a moins de 5 annonces, ouvrir la modale de création d'annonce
+        setShowCreateAnnonceModal(true);
+      } else {
+        // Sinon, rediriger vers la liste d'annonces avec les filtres
+        let url = "/annonces";
+        const searchParams = new URLSearchParams();
 
-      const searchParams = new URLSearchParams();
+        if (selectedSport) {
+          searchParams.append("sport", selectedSport);
+        }
 
-      if (selectedSport) {
-        searchParams.append("sport", selectedSport);
+        if (selectedNationality) {
+          searchParams.append("countries", selectedNationality);
+        }
+
+        if (girlsOnly && (existingData.sex === "F" || formData.sex === "F")) {
+          searchParams.append("onlyGirls", "true");
+        }
+
+        if (searchParams.toString()) {
+          url += `?${searchParams.toString()}`;
+        }
+
+        router.push(url);
       }
-
-      if (selectedNationality) {
-        searchParams.append("countries", selectedNationality);
-      }
-
-      if (girlsOnly && (existingData.sex === "F" || formData.sex === "F")) {
-        searchParams.append("onlyGirls", "true");
-      }
-
-      if (searchParams.toString()) {
-        url += `?${searchParams.toString()}`;
-      }
-
-      router.push(url);
     }
   };
 
@@ -452,6 +459,30 @@ export function ProfileDataCheck({
       return () => clearTimeout(timer);
     }
   }, [guideStep]);
+
+  const checkAnnoncesCount = async () => {
+    try {
+      // Construire les filtres basés sur les préférences utilisateur
+      const filters = {
+        sport: selectedSport || undefined,
+        countries: selectedNationality ? [selectedNationality] : [],
+        onlyGirls:
+          girlsOnly && (existingData.sex === "F" || formData.sex === "F"),
+      };
+
+      // Récupérer les annonces filtrées
+      const annonces = await getFilteredProducts(
+        filters,
+        existingData.sex || formData.sex || null
+      );
+      setAnnoncesCount(annonces.length);
+
+      return annonces.length;
+    } catch (error) {
+      console.error("Erreur lors de la vérification des annonces:", error);
+      return 10; // Valeur par défaut pour éviter d'afficher la modale de création en cas d'erreur
+    }
+  };
 
   return (
     <>
@@ -945,6 +976,86 @@ export function ProfileDataCheck({
                 </Button>
               </motion.div>
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modale de création d'annonce si moins de 5 annonces disponibles */}
+      <Dialog
+        open={showCreateAnnonceModal}
+        onOpenChange={setShowCreateAnnonceModal}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl">
+              Peu d'annonces disponibles
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-center text-sm">
+              Il n'y a actuellement que{" "}
+              <span className="font-bold">{annoncesCount}</span> annonces
+              correspondant à vos critères. Pourquoi ne pas créer votre propre
+              annonce pour trouver des partenaires sportifs ?
+            </p>
+            <div className="flex flex-col gap-3">
+              <Button
+                className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                onClick={() => {
+                  setShowCreateAnnonceModal(false);
+
+                  // Construire l'URL avec les paramètres pour la création d'annonce
+                  let url = "/annonces/new";
+                  const searchParams = new URLSearchParams();
+
+                  if (selectedSport) {
+                    searchParams.append("sport", selectedSport);
+                  }
+
+                  if (searchParams.toString()) {
+                    url += `?${searchParams.toString()}`;
+                  }
+
+                  router.push(url);
+                }}
+              >
+                Créer une annonce
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowCreateAnnonceModal(false);
+
+                  // Construire l'URL avec les filtres pour voir les annonces existantes
+                  let url = "/annonces";
+                  const searchParams = new URLSearchParams();
+
+                  if (selectedSport) {
+                    searchParams.append("sport", selectedSport);
+                  }
+
+                  if (selectedNationality) {
+                    searchParams.append("countries", selectedNationality);
+                  }
+
+                  if (
+                    girlsOnly &&
+                    (existingData.sex === "F" || formData.sex === "F")
+                  ) {
+                    searchParams.append("onlyGirls", "true");
+                  }
+
+                  if (searchParams.toString()) {
+                    url += `?${searchParams.toString()}`;
+                  }
+
+                  router.push(url);
+                }}
+              >
+                Voir les annonces disponibles
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
