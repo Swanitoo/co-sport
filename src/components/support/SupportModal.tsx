@@ -75,7 +75,7 @@ export const SupportModal = ({
             />
           </a>
 
-          <Link href="/support" className="inline-block w-full">
+          <Link href="/partnership" className="inline-block w-full">
             <Button
               className="w-full justify-between py-4 text-base"
               variant="outline"

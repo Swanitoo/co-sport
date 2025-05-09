@@ -40,6 +40,51 @@ const groupProductsByLocation = (products: ProductWithMemberships[]) => {
   return groups;
 };
 
+// Fonction pour grouper les produits par localisation et sport
+const groupProductsByLocationAndSport = (
+  products: ProductWithMemberships[]
+) => {
+  const groups: {
+    [key: string]: { [sport: string]: ProductWithMemberships[] };
+  } = {};
+
+  products.forEach((product) => {
+    if (product.venueLat && product.venueLng) {
+      const locationKey = `${product.venueLat.toFixed(
+        6
+      )},${product.venueLng.toFixed(6)}`;
+
+      if (!groups[locationKey]) {
+        groups[locationKey] = {};
+      }
+
+      if (!groups[locationKey][product.sport]) {
+        groups[locationKey][product.sport] = [];
+      }
+
+      groups[locationKey][product.sport].push(product);
+    }
+  });
+
+  return groups;
+};
+
+// Calculer un décalage pour espacer les marqueurs du même endroit
+const calculateOffset = (index: number, total: number): [number, number] => {
+  if (total <= 1) return [0, 0];
+
+  // Espacement encore plus important (environ 90-100 mètres)
+  const radius = 0.001;
+
+  // Distribution en cercle avec angle de départ ajusté pour éviter l'alignement vertical
+  const startAngle = Math.PI / 4; // 45 degrés
+  const angle = startAngle + (2 * Math.PI * index) / total;
+  const x = radius * Math.cos(angle);
+  const y = radius * Math.sin(angle);
+
+  return [x, y];
+};
+
 export const MapComponent = ({
   products,
   userId,
@@ -49,6 +94,7 @@ export const MapComponent = ({
   const { locale } = useAppTranslations();
   const { theme, systemTheme } = useTheme();
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [selectedSport, setSelectedSport] = useState<string | null>(null);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [hoverIndex, setHoverIndex] = useState<string | null>(null);
 
@@ -61,6 +107,10 @@ export const MapComponent = ({
 
   // Grouper les produits par localisation
   const productGroups = groupProductsByLocation(products);
+
+  // Grouper les produits par localisation et sport
+  const productGroupsByLocationAndSport =
+    groupProductsByLocationAndSport(products);
 
   // Si highlightSingleProduct est true et qu'il n'y a qu'un seul produit, le sélectionner automatiquement
   useEffect(() => {
@@ -113,16 +163,24 @@ export const MapComponent = ({
     }
   }, [miniVersion]);
 
-  // Produit actuellement sélectionné dans le groupe
-  const selectedProducts = selectedLocation
-    ? productGroups[selectedLocation]
-    : null;
+  // Réalisons une fonction pour obtenir les produits sélectionnés
+  const getSelectedProducts = () => {
+    if (!selectedLocation || !selectedSport) return [];
+
+    // Trouver tous les produits à cet emplacement et pour ce sport
+    return (
+      productGroupsByLocationAndSport[selectedLocation]?.[selectedSport] || []
+    );
+  };
+
+  // Produits actuellement sélectionnés dans le groupe
+  const selectedProducts = getSelectedProducts();
   const selectedProduct = selectedProducts?.[currentProductIndex] || null;
 
-  // Réinitialiser l'index du produit quand on change de localisation
+  // Réinitialiser l'index du produit quand on change de localisation ou de sport
   useEffect(() => {
     setCurrentProductIndex(0);
-  }, [selectedLocation]);
+  }, [selectedLocation, selectedSport]);
 
   // Détermine si le thème est sombre
   // Si theme est 'system', on utilise systemTheme
@@ -191,14 +249,16 @@ export const MapComponent = ({
   };
 
   // Ajustements pour le mode miniature
-  const markerSize = miniVersion ? 20 : 30;
-  const hoverMarkerSize = miniVersion ? 25 : 40;
+  const markerSize = miniVersion ? 30 : 40;
+  const hoverMarkerSize = miniVersion ? 35 : 50;
+  const sportMarkerSize = miniVersion ? 40 : 80; // Taille des marqueurs de sport
+  const userMarkerSize = miniVersion ? 50 : 100; // Taille du marqueur utilisateur
   const defaultZoom = miniVersion ? (highlightSingleProduct ? 13 : 9) : 12;
   const showUI = !miniVersion; // N'afficher les popups que dans la version complète
 
   // Style de transition pour les marqueurs
   const markerStyle = {
-    // Suppression de la transition pour une apparence plus stable
+    cursor: "pointer",
   };
 
   const mobileOptions = {
@@ -217,12 +277,40 @@ export const MapComponent = ({
       }
     : {};
 
+  // Créer un keyframe pour l'animation du radar
+  const pulseKeyframes = `
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 20px rgba(250, 204, 21, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(250, 204, 21, 0);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+  `;
+
   return (
     <div
       className={`size-full overflow-hidden ${
         miniVersion ? "" : "rounded-xl border"
       }`}
     >
+      <style>{pulseKeyframes}</style>
       <Map
         defaultCenter={getCenter()}
         center={mapCenter}
@@ -232,9 +320,11 @@ export const MapComponent = ({
         metaWheelZoomWarning=""
         animate={true}
         attribution={false}
-        onClick={() =>
-          showUI && !highlightSingleProduct && setSelectedLocation(null)
-        }
+        onClick={(evt) => {
+          console.log("CARTE CLIQUÉE");
+          showUI && !highlightSingleProduct && setSelectedLocation(null);
+          showUI && !highlightSingleProduct && setSelectedSport(null);
+        }}
         {...(miniVersion
           ? {
               touchZoom: false,
@@ -248,206 +338,321 @@ export const MapComponent = ({
         {/* Marqueur de localisation de l'utilisateur - visible uniquement sur la grande carte non détaillée */}
         {userLocation && !miniVersion && !highlightSingleProduct && (
           <Marker
-            width={20}
+            width={userMarkerSize}
             anchor={userLocation}
-            color="#eab308" // Jaune pour la cohérence
-          />
+            color="transparent"
+          >
+            <div className="relative size-full">
+              <div
+                className="absolute rounded-full"
+                style={{
+                  animation: "pulse 2s infinite",
+                  boxShadow: "0 0 0 0 rgba(250, 204, 21, 0.7)",
+                  background: "rgba(250, 204, 21, 0.3)",
+                  border: "2px solid rgba(250, 204, 21, 0.7)",
+                  width: "100%",
+                  height: "100%",
+                  zIndex: 999,
+                }}
+              />
+              <div
+                className="absolute inset-0 flex items-center justify-center rounded-full border-4 border-white bg-yellow-400 text-base font-bold text-white"
+                style={{
+                  width: "70%",
+                  height: "70%",
+                  top: "15%",
+                  left: "15%",
+                  zIndex: 1000,
+                }}
+              >
+                Moi
+              </div>
+            </div>
+          </Marker>
         )}
 
-        {/* Afficher un marqueur pour chaque groupe de localisation */}
-        {Object.entries(productGroups).map(
-          ([locationKey, locationProducts]) => {
+        {/* Afficher les marqueurs pour chaque sport à chaque emplacement */}
+        {Object.entries(productGroupsByLocationAndSport).map(
+          ([locationKey, sportsAtLocation], locationIndex) => {
             const [lat, lng] = locationKey.split(",").map(Number);
-            const isSelected = selectedLocation === locationKey;
-            const isHovered = hoverIndex === locationKey;
+            const sportsList = Object.keys(sportsAtLocation);
 
-            // Si c'est une carte pour un seul produit, on met toujours le marqueur en surbrillance
-            const forceHighlight =
-              highlightSingleProduct && products.length === 1;
+            return sportsList.map((sport, sportIndex) => {
+              const isSelected =
+                selectedLocation === locationKey && selectedSport === sport;
+              const productsForSport = sportsAtLocation[sport];
 
-            return (
-              <Marker
-                key={locationKey}
-                width={
-                  isSelected || isHovered || forceHighlight
-                    ? hoverMarkerSize
-                    : markerSize
-                }
-                anchor={[lat, lng]}
-                color="#eab308"
-                style={markerStyle}
-                onClick={() => {
-                  if (!miniVersion) {
-                    setSelectedLocation(locationKey);
-                  }
-                }}
-                onMouseOver={() =>
-                  showUI && !forceHighlight && setHoverIndex(locationKey)
-                }
-                onMouseOut={() =>
-                  showUI && !forceHighlight && setHoverIndex(null)
-                }
-              />
-            );
+              // Calculer le décalage pour ce sport à cet emplacement
+              const [offsetX, offsetY] = calculateOffset(
+                sportIndex,
+                sportsList.length
+              );
+
+              return (
+                <Marker
+                  key={`${locationKey}-${sport}`}
+                  width={sportMarkerSize}
+                  anchor={[lat + offsetX, lng + offsetY]}
+                  color="transparent"
+                  onClick={(evt) => {
+                    console.log("MARQUEUR CLIQUÉ:", locationKey, sport);
+                    if (!miniVersion) {
+                      setSelectedLocation(locationKey);
+                      setSelectedSport(sport);
+                      setCurrentProductIndex(0);
+                    }
+                  }}
+                >
+                  <div
+                    className="flex size-full cursor-pointer items-center justify-center"
+                    style={{ pointerEvents: "all" }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log(
+                        "DIV INTÉRIEURE CLIQUÉE:",
+                        locationKey,
+                        sport
+                      );
+                      if (!miniVersion) {
+                        setSelectedLocation(locationKey);
+                        setSelectedSport(sport);
+                        setCurrentProductIndex(0);
+                      }
+                    }}
+                  >
+                    <div
+                      className={`flex items-center justify-center rounded-full transition-transform ${
+                        isSelected
+                          ? "scale-110 bg-yellow-300"
+                          : "bg-amber-500 hover:scale-110"
+                      }`}
+                      style={{
+                        boxShadow: isSelected
+                          ? "0 0 0 4px white, 0 6px 10px rgba(0,0,0,0.5)"
+                          : "0 0 0 3px white, 0 4px 6px rgba(0,0,0,0.3)",
+                        width: "100%",
+                        height: "100%",
+                        cursor: "pointer",
+                        fontSize: "32px",
+                        zIndex: isSelected ? 900 : 500,
+                        pointerEvents: "all",
+                        animation: isSelected
+                          ? ""
+                          : "bounce 1.5s ease-in-out infinite",
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log(
+                          "ICÔNE INTÉRIEURE CLIQUÉE:",
+                          locationKey,
+                          sport
+                        );
+                        if (!miniVersion) {
+                          setSelectedLocation(locationKey);
+                          setSelectedSport(sport);
+                          setCurrentProductIndex(0);
+                        }
+                      }}
+                    >
+                      {/* Afficher l'icône du sport */}
+                      {getSportIcon(sport)}
+
+                      {/* Badge indiquant le nombre de produits pour ce sport */}
+                      {productsForSport.length > 1 && (
+                        <div
+                          className="absolute -right-2 -top-2 flex size-7 items-center justify-center rounded-full border-2 border-white bg-red-500 text-xs font-bold text-white"
+                          style={{ zIndex: 1000 }}
+                        >
+                          {productsForSport.length}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Marker>
+              );
+            });
           }
         )}
 
-        {selectedProduct && showUI && (
-          <Overlay
-            anchor={[
-              selectedProduct.venueLat as number,
-              selectedProduct.venueLng as number,
-            ]}
-            offset={[120, 240]}
-          >
-            <div
-              className={`max-h-[calc(100vh-4rem)] max-w-[280px] overflow-y-auto rounded-2xl border p-4 shadow-lg ${
-                isDarkTheme
-                  ? "border-gray-800 bg-black text-white"
-                  : "border-gray-200 bg-white text-black"
-              }`}
-              onClick={(e) => e.stopPropagation()}
+        {selectedLocation &&
+          selectedSport &&
+          showUI &&
+          selectedProducts &&
+          selectedProducts.length > 0 && (
+            <Overlay
+              anchor={[
+                selectedProducts[0].venueLat as number,
+                selectedProducts[0].venueLng as number,
+              ]}
+              offset={[120, 260]}
             >
-              {/* En-tête avec détails multiples et pagination */}
-              {selectedProducts && selectedProducts.length > 1 && (
-                <div className="mb-3 flex items-center justify-between text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <MapIcon className="size-3" />
-                    {currentProductIndex + 1} / {selectedProducts.length}
-                  </span>
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-6 rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCurrentProductIndex((prev) =>
-                          prev === 0 ? selectedProducts.length - 1 : prev - 1
-                        );
-                      }}
+              <div
+                className={`max-h-[calc(100vh-4rem)] max-w-[320px] overflow-y-auto rounded-2xl border-2 p-5 shadow-2xl ${
+                  isDarkTheme
+                    ? "border-gray-800 bg-black text-white"
+                    : "border-gray-200 bg-white text-black"
+                }`}
+                onClick={(e) => e.stopPropagation()}
+                style={{ zIndex: 2000 }}
+              >
+                {/* En-tête avec détails multiples et pagination */}
+                {selectedProducts.length > 1 && (
+                  <div className="mb-3 flex items-center justify-between text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <MapIcon className="size-3" />
+                      {currentProductIndex + 1} / {selectedProducts.length}
+                    </span>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-6 rounded-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentProductIndex((prev) =>
+                            prev === 0 ? selectedProducts.length - 1 : prev - 1
+                          );
+                        }}
+                      >
+                        <ChevronLeft className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-6 rounded-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentProductIndex((prev) =>
+                            prev === selectedProducts.length - 1 ? 0 : prev + 1
+                          );
+                        }}
+                      >
+                        <ChevronRight className="size-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Infos de l'utilisateur */}
+                <div className="mb-3 flex items-center gap-2">
+                  <Avatar className="size-8 ring-2 ring-background">
+                    <AvatarImage
+                      src={
+                        selectedProducts[currentProductIndex].user.image ||
+                        undefined
+                      }
+                    />
+                    <AvatarFallback>
+                      <User className="size-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p
+                      className={`text-sm font-medium ${
+                        isDarkTheme ? "text-white" : "text-black"
+                      }`}
                     >
-                      <ChevronLeft className="size-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-6 rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCurrentProductIndex((prev) =>
-                          prev === selectedProducts.length - 1 ? 0 : prev + 1
-                        );
-                      }}
-                    >
-                      <ChevronRight className="size-4" />
-                    </Button>
+                      {getFirstName(
+                        selectedProducts[currentProductIndex].user.name || ""
+                      )}
+                      {selectedProducts[currentProductIndex].user.sex && (
+                        <span className="ml-1">
+                          ({selectedProducts[currentProductIndex].user.sex})
+                        </span>
+                      )}
+                    </p>
                   </div>
                 </div>
-              )}
 
-              {/* Infos de l'utilisateur */}
-              <div className="mb-3 flex items-center gap-2">
-                <Avatar className="size-8 ring-2 ring-background">
-                  <AvatarImage src={selectedProduct.user.image || undefined} />
-                  <AvatarFallback>
-                    <User className="size-4" />
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p
-                    className={`text-sm font-medium ${
+                {/* Titre et contenu */}
+                <Link
+                  href={`/${locale}/annonces/${selectedProducts[currentProductIndex].slug}`}
+                  target="_blank"
+                >
+                  <h3
+                    className={`mb-2 font-medium hover:underline ${
                       isDarkTheme ? "text-white" : "text-black"
                     }`}
                   >
-                    {getFirstName(selectedProduct.user.name)}
-                    {selectedProduct.user.sex && (
-                      <span className="ml-1">({selectedProduct.user.sex})</span>
-                    )}
+                    {selectedProducts[currentProductIndex].name}
+                  </h3>
+                </Link>
+
+                <div className="mb-2 flex flex-wrap gap-1">
+                  <Badge
+                    variant="outline"
+                    className={`flex items-center gap-1 rounded-full ${
+                      !isDarkTheme && "border-gray-300 text-black"
+                    }`}
+                  >
+                    <span>
+                      {getSportIcon(
+                        selectedProducts[currentProductIndex].sport
+                      )}
+                    </span>
+                    {selectedProducts[currentProductIndex].sport}
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className={`flex items-center gap-1 rounded-full ${
+                      !isDarkTheme && "border-gray-300 text-black"
+                    }`}
+                  >
+                    <span>
+                      {getLevelIcon(
+                        selectedProducts[currentProductIndex].level
+                      )}
+                    </span>
+                    {selectedProducts[currentProductIndex].level}
+                  </Badge>
+                </div>
+
+                {selectedProducts[currentProductIndex].venueName && (
+                  <p
+                    className={`mb-1 text-sm ${
+                      isDarkTheme ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    <span className="font-medium">Lieu : </span>
+                    {selectedProducts[currentProductIndex].venueName}
                   </p>
+                )}
+
+                <p
+                  className={`line-clamp-2 text-xs ${
+                    isDarkTheme ? "text-gray-400" : "text-gray-600"
+                  }`}
+                >
+                  {selectedProducts[currentProductIndex].description}
+                </p>
+
+                <div className="mt-3 flex justify-between">
+                  {!highlightSingleProduct && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedLocation(null);
+                        setSelectedSport(null);
+                      }}
+                    >
+                      Fermer
+                    </Button>
+                  )}
+                  <Link
+                    href={`/${locale}/annonces/${selectedProducts[currentProductIndex].slug}`}
+                    target="_blank"
+                  >
+                    <Button size="sm" className="rounded-full text-xs">
+                      Voir l'annonce
+                    </Button>
+                  </Link>
                 </div>
               </div>
-
-              {/* Titre et contenu */}
-              <Link
-                href={`/${locale}/annonces/${selectedProduct.slug}`}
-                target="_blank"
-              >
-                <h3
-                  className={`mb-2 font-medium hover:underline ${
-                    isDarkTheme ? "text-white" : "text-black"
-                  }`}
-                >
-                  {selectedProduct.name}
-                </h3>
-              </Link>
-
-              <div className="mb-2 flex flex-wrap gap-1">
-                <Badge
-                  variant="outline"
-                  className={`flex items-center gap-1 rounded-full ${
-                    !isDarkTheme && "border-gray-300 text-black"
-                  }`}
-                >
-                  <span>{getSportIcon(selectedProduct.sport)}</span>
-                  {selectedProduct.sport}
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className={`flex items-center gap-1 rounded-full ${
-                    !isDarkTheme && "border-gray-300 text-black"
-                  }`}
-                >
-                  <span>{getLevelIcon(selectedProduct.level)}</span>
-                  {selectedProduct.level}
-                </Badge>
-              </div>
-
-              {selectedProduct.venueName && (
-                <p
-                  className={`mb-1 text-sm ${
-                    isDarkTheme ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
-                  <span className="font-medium">Lieu : </span>
-                  {selectedProduct.venueName}
-                </p>
-              )}
-
-              <p
-                className={`line-clamp-2 text-xs ${
-                  isDarkTheme ? "text-gray-400" : "text-gray-600"
-                }`}
-              >
-                {selectedProduct.description}
-              </p>
-
-              <div className="mt-3 flex justify-between">
-                {!highlightSingleProduct && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full text-xs"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedLocation(null);
-                    }}
-                  >
-                    Fermer
-                  </Button>
-                )}
-                <Link
-                  href={`/${locale}/annonces/${selectedProduct.slug}`}
-                  target="_blank"
-                >
-                  <Button size="sm" className="rounded-full text-xs">
-                    Voir l'annonce
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </Overlay>
-        )}
+            </Overlay>
+          )}
       </Map>
     </div>
   );

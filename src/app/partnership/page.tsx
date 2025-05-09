@@ -76,7 +76,7 @@ export default function PartnershipPage() {
 
           <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {/* Avantage 1 */}
-            <div className="rounded-lg bg-card p-8 shadow-sm transition-all hover:shadow-md">
+            <div className="flex flex-col items-center rounded-lg bg-card p-8 text-center shadow-sm transition-all hover:shadow-md sm:items-start sm:text-left">
               <div className="mb-4 inline-flex size-12 items-center justify-center rounded-full bg-yellow-100 text-yellow-600 dark:bg-yellow-950 dark:text-yellow-300">
                 <Users strokeWidth={1.5} size={24} />
               </div>
@@ -90,7 +90,7 @@ export default function PartnershipPage() {
             </div>
 
             {/* Avantage 2 */}
-            <div className="rounded-lg bg-card p-8 shadow-sm transition-all hover:shadow-md">
+            <div className="flex flex-col items-center rounded-lg bg-card p-8 text-center shadow-sm transition-all hover:shadow-md sm:items-start sm:text-left">
               <div className="mb-4 inline-flex size-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-300">
                 <TrendingUp strokeWidth={1.5} size={24} />
               </div>
@@ -104,7 +104,7 @@ export default function PartnershipPage() {
             </div>
 
             {/* Avantage 3 */}
-            <div className="rounded-lg bg-card p-8 shadow-sm transition-all hover:shadow-md">
+            <div className="flex flex-col items-center rounded-lg bg-card p-8 text-center shadow-sm transition-all hover:shadow-md sm:items-start sm:text-left">
               <div className="mb-4 inline-flex size-12 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-950 dark:text-green-300">
                 <Target strokeWidth={1.5} size={24} />
               </div>
@@ -118,7 +118,7 @@ export default function PartnershipPage() {
             </div>
 
             {/* Avantage 4 */}
-            <div className="rounded-lg bg-card p-8 shadow-sm transition-all hover:shadow-md">
+            <div className="flex flex-col items-center rounded-lg bg-card p-8 text-center shadow-sm transition-all hover:shadow-md sm:items-start sm:text-left">
               <div className="mb-4 inline-flex size-12 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-300">
                 <Globe strokeWidth={1.5} size={24} />
               </div>
@@ -132,7 +132,7 @@ export default function PartnershipPage() {
             </div>
 
             {/* Avantage 5 */}
-            <div className="rounded-lg bg-card p-8 shadow-sm transition-all hover:shadow-md">
+            <div className="flex flex-col items-center rounded-lg bg-card p-8 text-center shadow-sm transition-all hover:shadow-md sm:items-start sm:text-left">
               <div className="mb-4 inline-flex size-12 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-950 dark:text-red-300">
                 <Award strokeWidth={1.5} size={24} />
               </div>
@@ -146,7 +146,7 @@ export default function PartnershipPage() {
             </div>
 
             {/* Avantage 6 */}
-            <div className="rounded-lg bg-card p-8 shadow-sm transition-all hover:shadow-md">
+            <div className="flex flex-col items-center rounded-lg bg-card p-8 text-center shadow-sm transition-all hover:shadow-md sm:items-start sm:text-left">
               <div className="mb-4 inline-flex size-12 items-center justify-center rounded-full bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-300">
                 <Handshake strokeWidth={1.5} size={24} />
               </div>

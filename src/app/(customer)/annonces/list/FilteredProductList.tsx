@@ -60,6 +60,7 @@ export function FilteredProductList({
   const [filterChangeCount, setFilterChangeCount] = useState(0);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [showCreateSuggestion, setShowCreateSuggestion] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
 
   // Extraire les valeurs des paramètres d'URL pour les filtres de performance
   const getNumberParam = (param: string): number | undefined => {
@@ -236,6 +237,23 @@ export function FilteredProductList({
     router.push(url);
   }, [router, filters]);
 
+  // Détecter si l'affichage est en mode mobile
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobileView(window.innerWidth < 1024); // 1024px est le breakpoint pour lg dans Tailwind
+    };
+
+    // Vérifier au chargement
+    checkIsMobile();
+
+    // Mettre à jour lors du redimensionnement
+    window.addEventListener("resize", checkIsMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkIsMobile);
+    };
+  }, []);
+
   // Fonction de mise à jour des filtres y compris les filtres de performance
   const handleFilterChange = (newFilters: FilterType) => {
     const params = new URLSearchParams(searchParams?.toString());
@@ -272,19 +290,22 @@ export function FilteredProductList({
     sessionStorage.setItem("lastFilterChangeId", filterChangeId);
 
     // Vérifier les résultats après ce changement de filtre
-    setTimeout(() => {
-      // Ne procéder que si c'est toujours le changement le plus récent
-      const currentChangeId = sessionStorage.getItem("lastFilterChangeId");
-      if (
-        currentChangeId === filterChangeId &&
-        products.length < 5 &&
-        hasActiveFilters()
-      ) {
-        // Réinitialiser le flag pour permettre à la modale de s'afficher à nouveau
-        sessionStorage.removeItem("hasShownFilterModal");
-        setShowCreateSuggestion(true);
-      }
-    }, 500);
+    // Sur desktop uniquement - sur mobile, ce sera fait lors du clic sur "Appliquer les filtres"
+    if (!isMobileView) {
+      setTimeout(() => {
+        // Ne procéder que si c'est toujours le changement le plus récent
+        const currentChangeId = sessionStorage.getItem("lastFilterChangeId");
+        if (
+          currentChangeId === filterChangeId &&
+          products.length < 5 &&
+          hasActiveFilters()
+        ) {
+          // Réinitialiser le flag pour permettre à la modale de s'afficher à nouveau
+          sessionStorage.removeItem("hasShownFilterModal");
+          setShowCreateSuggestion(true);
+        }
+      }, 500);
+    }
   };
 
   // Fonction de réinitialisation des filtres
@@ -301,6 +322,15 @@ export function FilteredProductList({
     router.push(window.location.pathname);
     setFilters(emptyFilters);
     setFilterChangeCount((prev) => prev + 1); // Incrémente le compteur pour déclencher l'effet
+  };
+
+  // Fonction pour vérifier le nombre d'annonces après application des filtres sur mobile
+  const checkProductCountAfterFilters = () => {
+    if (isMobileView && products.length < 5 && hasActiveFilters()) {
+      // Réinitialiser le flag pour permettre à la modale de s'afficher
+      sessionStorage.removeItem("hasShownFilterModal");
+      setShowCreateSuggestion(true);
+    }
   };
 
   return (
@@ -371,6 +401,8 @@ export function FilteredProductList({
               className="mt-4 w-full"
               onClick={() => {
                 setFiltersOpen(false);
+                // Vérifier le nombre de produits après l'application des filtres sur mobile
+                checkProductCountAfterFilters();
               }}
             >
               {t("Products.Filters.Apply", "Appliquer les filtres")}

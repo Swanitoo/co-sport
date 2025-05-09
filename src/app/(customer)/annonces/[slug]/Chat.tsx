@@ -174,13 +174,19 @@ export function ChatComponent({
 
         const data = await response.json();
 
+        // Appliquer le regroupement des messages pour éliminer les doublons "a rejoint le groupe"
+        const processedMessages = groupSystemMessages(data.messages);
+
         // Mettre à jour les messages
         if (pageNum === 1) {
           // Première page, remplacer tous les messages
-          setMessages(data.messages);
+          setMessages(processedMessages);
         } else {
-          // Pages suivantes, ajouter au début
-          setMessages((prev) => [...data.messages, ...prev]);
+          // Pages suivantes, ajouter au début puis regrouper l'ensemble
+          setMessages((prev) => {
+            const combinedMessages = [...processedMessages, ...prev];
+            return groupSystemMessages(combinedMessages);
+          });
         }
 
         // Mettre à jour l'état de pagination
@@ -640,6 +646,57 @@ export function ChatComponent({
   const isSystemMessage = (text: string): boolean => {
     // Détection des messages système par le contenu ou le format
     return text.includes(" a rejoint le groupe") || text.startsWith("👋 ");
+  };
+
+  // Fonction pour regrouper les messages système similaires
+  const groupSystemMessages = (
+    messages: MessageWithUser[]
+  ): MessageWithUser[] => {
+    const result: MessageWithUser[] = [];
+    const joinMessages = new Map<string, MessageWithUser[]>();
+
+    messages.forEach((message) => {
+      // Si c'est un message de type "a rejoint le groupe", on le groupe par date (jour)
+      if (
+        isSystemMessage(message.text) &&
+        message.text.includes("a rejoint le groupe")
+      ) {
+        const date = new Date(message.createdAt).toDateString();
+        if (!joinMessages.has(date)) {
+          joinMessages.set(date, []);
+        }
+        joinMessages.get(date)?.push(message);
+      } else {
+        // Pour les autres messages, on les ajoute directement
+        result.push(message);
+      }
+    });
+
+    // Ajouter les messages groupés au résultat
+    joinMessages.forEach((messagesForDate) => {
+      // Prendre uniquement le premier message de chaque utilisateur pour cette date
+      const uniqueUserMessages = new Map<string, MessageWithUser>();
+
+      messagesForDate.forEach((msg) => {
+        const userName = msg.text.split(" a rejoint")[0].replace("👋 ", "");
+        if (!uniqueUserMessages.has(userName)) {
+          uniqueUserMessages.set(userName, msg);
+        }
+      });
+
+      // Ajouter les messages uniques au résultat
+      uniqueUserMessages.forEach((msg) => {
+        result.push(msg);
+      });
+    });
+
+    // Trier à nouveau les messages par date
+    result.sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+
+    return result;
   };
 
   return (
