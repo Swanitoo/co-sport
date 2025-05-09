@@ -78,18 +78,6 @@ export const LocalizedSupportSection = () => {
                   />
                 </a>
               </div>
-
-              <Link href="/partnership" className="inline-block w-full">
-                <Button
-                  className="w-full justify-between py-4 text-base"
-                  variant="outline"
-                >
-                  <div className="flex items-center">
-                    <Handshake className="mr-2 size-4" />
-                    <span>{t("become_partner")}</span>
-                  </div>
-                </Button>
-              </Link>
             </div>
 
             <p className="mt-3 text-xs italic text-gray-500 dark:text-gray-400">

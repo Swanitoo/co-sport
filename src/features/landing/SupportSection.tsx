@@ -59,7 +59,8 @@ export const SupportSection = () => {
               <div className="mt-4">
                 <Link href="/partnership">
                   <Button className="w-full" variant="default">
-                    Découvrir notre offre partenaires
+                    <Handshake className="mr-3 size-5" />
+                    Devenir partenaire
                   </Button>
                 </Link>
               </div>
