@@ -162,7 +162,22 @@ export function ProfileDataCheck({
     // Si toutes les étapes sont complétées, afficher uniquement l'écran de succès
     if (progress >= 100 && isOpen) {
       setShowSuccess(true);
+
+      // Effacer les données de session car tout est complété
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("profileCurrentStep");
+        sessionStorage.removeItem("profileCompletedSteps");
+      }
     }
+
+    // Nettoyer le stockage de session quand le composant est démonté
+    return () => {
+      // Ne nettoyer que si toutes les étapes sont complétées
+      if (newProgress >= 100 && typeof window !== "undefined") {
+        sessionStorage.removeItem("profileCurrentStep");
+        sessionStorage.removeItem("profileCompletedSteps");
+      }
+    };
   }, [
     formData,
     existingData,
@@ -176,16 +191,42 @@ export function ProfileDataCheck({
 
   // Déterminer la première étape en tenant compte des données existantes
   const getFirstStep = (): Step => {
-    if (needsEmail && !existingData.email && !formData.email) return "email";
-    if (needsSex && !existingData.sex && !formData.sex) return "sex";
-    if (needsCountry && !existingData.country && !formData.country)
+    // Stocker l'étape actuelle en session pour éviter les retours en arrière
+    const savedStep = sessionStorage.getItem("profileCurrentStep");
+    if (
+      savedStep &&
+      ["sex", "country", "email", "linkStrava"].includes(savedStep)
+    ) {
+      return savedStep as Step;
+    }
+
+    // Logique pour déterminer la première étape
+    if (needsEmail && !existingData.email && !formData.email) {
+      sessionStorage.setItem("profileCurrentStep", "email");
+      return "email";
+    }
+    if (needsSex && !existingData.sex && !formData.sex) {
+      sessionStorage.setItem("profileCurrentStep", "sex");
+      return "sex";
+    }
+    if (needsCountry && !existingData.country && !formData.country) {
+      sessionStorage.setItem("profileCurrentStep", "country");
       return "country";
-    if (shouldAskLinkStrava && !existingData.stravaConnected)
+    }
+    if (shouldAskLinkStrava && !existingData.stravaConnected) {
+      sessionStorage.setItem("profileCurrentStep", "linkStrava");
       return "linkStrava";
+    }
     return "sex"; // Fallback
   };
 
-  const [currentStep, setCurrentStep] = useState<Step>(getFirstStep());
+  const [currentStep, setCurrentStep] = useState<Step>(() => {
+    if (typeof window !== "undefined") {
+      return getFirstStep();
+    }
+    return "sex"; // Valeur par défaut pour SSR
+  });
+
   const [showSuccess, setShowSuccess] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
   const [showCreateAnnonceModal, setShowCreateAnnonceModal] = useState(false);
@@ -201,7 +242,31 @@ export function ProfileDataCheck({
   const [girlsOnly, setGirlsOnly] = useState<boolean>(false);
   const [annoncesCount, setAnnoncesCount] = useState<number>(0);
 
+  // Stocker l'étape complétée pour éviter de revenir en arrière
+  const [completedSteps, setCompletedSteps] = useState<Step[]>([]);
+
   const router = useRouter();
+
+  // Restaurer les étapes complétées depuis sessionStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Récupérer les étapes complétées stockées
+      const storedCompletedSteps = sessionStorage.getItem(
+        "profileCompletedSteps"
+      );
+      if (storedCompletedSteps) {
+        try {
+          const steps = JSON.parse(storedCompletedSteps) as Step[];
+          setCompletedSteps(steps);
+        } catch (error) {
+          console.error(
+            "Erreur lors de la restauration des étapes complétées:",
+            error
+          );
+        }
+      }
+    }
+  }, []);
 
   // Effet pour afficher les boutons après un délai quand showSuccess est true
   useEffect(() => {
@@ -225,9 +290,24 @@ export function ProfileDataCheck({
     // Vérifier d'abord si toutes les étapes sont complétées
     const newProgress = calculateProgress();
     if (newProgress >= 100) {
+      // Effacer les données de session quand tout est complété
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("profileCurrentStep");
+      }
       setShowSuccess(true);
       return;
     }
+
+    // Ajouter l'étape actuelle aux étapes complétées
+    setCompletedSteps((prev) => {
+      if (!prev.includes(currentStep)) {
+        return [...prev, currentStep];
+      }
+      return prev;
+    });
+
+    // Déterminer la prochaine étape
+    let nextStep: Step | null = null;
 
     if (
       currentStep === "email" &&
@@ -235,24 +315,42 @@ export function ProfileDataCheck({
       !formData.sex &&
       !existingData.sex
     ) {
-      setCurrentStep("sex");
+      nextStep = "sex";
     } else if (
       currentStep === "sex" &&
       needsCountry &&
       !formData.country &&
       !existingData.country
     ) {
-      setCurrentStep("country");
+      nextStep = "country";
     } else if (
       currentStep === "country" &&
       shouldAskLinkStrava &&
       !existingData.stravaConnected
     ) {
-      setCurrentStep("linkStrava");
+      nextStep = "linkStrava";
     } else if (shouldAskLinkStrava && !existingData.stravaConnected) {
-      setCurrentStep("linkStrava");
+      nextStep = "linkStrava";
     } else {
       // Si toutes les étapes nécessaires sont complétées, afficher le succès
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("profileCurrentStep");
+      }
+      setShowSuccess(true);
+      return;
+    }
+
+    if (nextStep) {
+      // Stocker la prochaine étape en session
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("profileCurrentStep", nextStep);
+      }
+      setCurrentStep(nextStep);
+    } else {
+      // Si pas de prochaine étape définie, afficher le succès
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("profileCurrentStep");
+      }
       setShowSuccess(true);
     }
   };
@@ -283,6 +381,14 @@ export function ProfileDataCheck({
       if (onProgressUpdate) {
         onProgressUpdate(updatedProgress);
       }
+
+      // Ajouter l'étape actuelle à la liste des étapes complétées
+      setCompletedSteps((prev) => {
+        if (!prev.includes(currentStep)) {
+          return [...prev, currentStep];
+        }
+        return prev;
+      });
 
       // Passer à l'étape suivante
       goToNextStep();
@@ -320,6 +426,23 @@ export function ProfileDataCheck({
 
   const handleStravaLink = async (link: boolean) => {
     if (link) {
+      // Ajouter l'étape actuelle à la liste des étapes complétées
+      setCompletedSteps((prev) => {
+        if (!prev.includes(currentStep)) {
+          return [...prev, currentStep];
+        }
+        return prev;
+      });
+
+      // Stocker l'étape dans la session pour la récupérer après redirection
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("profileCurrentStep", "linkStrava");
+        sessionStorage.setItem(
+          "profileCompletedSteps",
+          JSON.stringify([...completedSteps, "linkStrava"])
+        );
+      }
+
       // Utiliser next-auth/react signIn pour la redirection Strava
       signIn("strava", {
         callbackUrl: "/dashboard",
@@ -344,6 +467,20 @@ export function ProfileDataCheck({
           onProgressUpdate(updatedProgress);
         }
 
+        // Ajouter l'étape actuelle à la liste des étapes complétées
+        setCompletedSteps((prev) => {
+          if (!prev.includes(currentStep)) {
+            return [...prev, currentStep];
+          }
+          return prev;
+        });
+
+        // Effacer les données de session car tout est complété
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem("profileCurrentStep");
+          sessionStorage.removeItem("profileCompletedSteps");
+        }
+
         setShowSuccess(true);
       } catch (error) {
         console.error("Erreur lors de la mise à jour:", error);
@@ -359,6 +496,26 @@ export function ProfileDataCheck({
     ) as HTMLInputElement;
 
     if (emailInput && emailInput.value) {
+      // Ajouter l'étape email à la liste des étapes complétées
+      setCompletedSteps((prev) => {
+        if (!prev.includes("email")) {
+          return [...prev, "email"];
+        }
+        return prev;
+      });
+
+      // Si on est dans le navigateur, stocker l'étape dans sessionStorage
+      if (typeof window !== "undefined") {
+        // Sauvegarder les étapes complétées actuelles + email
+        const updatedSteps = completedSteps.includes("email")
+          ? completedSteps
+          : [...completedSteps, "email"];
+        sessionStorage.setItem(
+          "profileCompletedSteps",
+          JSON.stringify(updatedSteps)
+        );
+      }
+
       await handleSubmit("email", emailInput.value);
     }
   };
