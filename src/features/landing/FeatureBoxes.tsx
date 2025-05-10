@@ -1,5 +1,6 @@
 "use client";
 
+import { useNavigation } from "@/app/providers";
 import { useAppTranslations } from "@/components/i18n-provider";
 import {
   Card,
@@ -51,6 +52,13 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
   const isMobileRef = useRef(false);
+  const { startNavigation } = useNavigation();
+
+  // Précharger les pages cibles
+  useEffect(() => {
+    // Précharger la page d'annonces pour accélérer les transitions
+    router.prefetch("/annonces");
+  }, [router]);
 
   useEffect(() => {
     // Vérifier si on est sur mobile
@@ -86,8 +94,17 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
 
   // Fonction pour rediriger conditionnellement
   const handleRedirect = (path: string) => {
+    // Mettre à jour l'état pour le feature box cliqué
+    setHoveredCardIndex(null);
+
+    // Démarrer l'indicateur de navigation immédiatement
+    startNavigation();
+
     if (isAuthenticated) {
-      router.push(path);
+      // Ajouter un court délai pour montrer un feedback visuel
+      setTimeout(() => {
+        router.push(path);
+      }, 50);
     } else {
       router.push(`/api/auth/signin?callbackUrl=${encodeURIComponent(path)}`);
     }
@@ -294,6 +311,7 @@ export const FeatureBoxes = ({ isAuthenticated }: FeatureBoxesProps) => {
                       ? "scale-[1.02] border-primary/50 shadow-xl"
                       : "hover:scale-[1.02] hover:border-primary/50 hover:shadow-xl"
                   }`}
+                  data-navigation="true"
                 >
                   <div
                     className={`relative h-48 w-full shrink-0 bg-gradient-to-br ${

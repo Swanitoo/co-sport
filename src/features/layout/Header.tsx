@@ -2,6 +2,7 @@ import { currentUser } from "@/auth/current-user";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { LocalizedLink } from "@/components/ui/localized-link";
 import { LoggedInDropdown } from "@/features/auth/LoggedInDropdown";
 import { ModeToggle } from "@/features/theme/ModeToggle";
 import { getLocaleFromPathname, loadTranslations } from "@/lib/locale-utils";
@@ -9,7 +10,6 @@ import { prisma } from "@/prisma";
 import { Coffee } from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
-import Link from "next/link";
 
 // Type pour les traductions
 type TranslationsType = {
@@ -89,24 +89,17 @@ export async function Header() {
     return t[key] || fallback;
   };
 
-  // Créer le chemin avec le préfixe de locale
-  const getLocalizedPath = (path: string) => {
-    // Si le chemin commence déjà par /fr/, /en/ ou /es/, ne pas modifier
-    if (path.match(/^\/(fr|en|es)\//)) return path;
-    // Sinon, ajouter le préfixe de locale
-    return `/${locale}${path === "/" ? "" : path}`;
-  };
-
   return (
     <header className="w-full border-b border-border py-1">
       <div className="mx-auto flex w-full max-w-5xl flex-row items-center gap-4 px-4 py-0">
         <div className="flex-1">
-          <Link
-            href={getLocalizedPath("/")}
+          <LocalizedLink
+            href="/"
             className="mr-6 flex items-center space-x-2"
+            prefetch={true}
           >
             <Image src="/icon.png" alt="Logo" width={32} height={32} />
-          </Link>
+          </LocalizedLink>
         </div>
 
         <div className="flex items-center justify-end gap-3">
@@ -151,9 +144,9 @@ export async function Header() {
               </Button>
             </LoggedInDropdown>
           ) : (
-            <Link href="/login">
+            <LocalizedLink href="/login" prefetch={true}>
               <Button>{translate("SignIn", "Connexion")}</Button>
-            </Link>
+            </LocalizedLink>
           )}
         </div>
       </div>

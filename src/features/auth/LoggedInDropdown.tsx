@@ -17,7 +17,8 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 export type LoggedInDropdownProps = {
   userId: string;
@@ -44,6 +45,17 @@ export const LoggedInDropdown = ({
 }: LoggedInDropdownProps) => {
   const { t, locale } = useAppTranslations();
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  // Prefetch routes lorsque l'utilisateur ouvre le dropdown
+  useEffect(() => {
+    if (open) {
+      router.prefetch(`/${locale}/`);
+      router.prefetch(`/${locale}/dashboard`);
+      router.prefetch(`/${locale}/annonces`);
+      router.prefetch(`/${locale}/support`);
+    }
+  }, [open, locale, router]);
 
   const handleSignOut = async () => {
     setOpen(false);
@@ -91,6 +103,7 @@ export const LoggedInDropdown = ({
             href="/"
             className="flex items-center gap-2"
             onClick={() => setOpen(false)}
+            prefetch={true}
           >
             <Home className="size-4" />
             {t("Navigation.Home", "Accueil")}
@@ -101,6 +114,7 @@ export const LoggedInDropdown = ({
             href="/dashboard"
             className="flex items-center gap-2"
             onClick={() => setOpen(false)}
+            prefetch={true}
           >
             <div className="relative">
               <LayoutDashboard className="size-4" />
@@ -124,6 +138,7 @@ export const LoggedInDropdown = ({
             href="/annonces"
             className="flex items-center gap-2"
             onClick={() => setOpen(false)}
+            prefetch={true}
           >
             <MessageSquare className="size-4" />
             {t("Navigation.Products", "Annonces")}
@@ -134,6 +149,7 @@ export const LoggedInDropdown = ({
             href="/support"
             className="flex items-center gap-2"
             onClick={() => setOpen(false)}
+            prefetch={true}
           >
             <HelpCircle className="size-4" />
             {t("Navigation.Support", "Support")}

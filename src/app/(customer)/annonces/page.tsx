@@ -22,17 +22,21 @@ import { MiniMap } from "./MiniMap";
 export const dynamic = "force-dynamic"; // Valeur possible: 'auto' | 'force-dynamic' | 'error' | 'force-static'
 export const revalidate = 60; // Revalider toutes les 60 secondes
 
-export default async function RoutePage(props: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+// Composant pour le contenu principal qui charge les données
+async function AnnouncementsContent({
+  searchParams,
+  userSex,
+  userId,
+  isAdmin,
+  hasUser,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+  userSex: string | null;
+  userId: string;
+  isAdmin: boolean;
+  hasUser: boolean;
 }) {
-  const searchParams = await props.searchParams;
-  const user = await currentUser();
   const { t } = await getServerTranslations();
-
-  // Supprimer la redirection - permettre l'accès même sans être connecté
-  const isAdmin = user?.isAdmin ?? false;
-  const userSex = user?.sex ?? null;
-  const userId = user?.id ?? "";
 
   // Construire les filtres initiaux basés sur les paramètres de l'URL
   const initialFilters: FilterType = {
@@ -61,58 +65,100 @@ export default async function RoutePage(props: {
   ]);
 
   return (
-    <Layout>
-      <div className="space-y-6">
-        <div>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <LayoutTitle>{t("Products.Title", "Annonces")}</LayoutTitle>
-              <p className="text-muted-foreground">
-                {t(
-                  "Products.Description",
-                  "Trouve ton partenaire de sport et progressez ensemble !"
-                )}
-              </p>
-
-              {/* N'afficher le bouton de création que si l'utilisateur est connecté si non afficher le bouton de connexion */}
-              {user ? (
-                <CreateProductButton />
-              ) : (
-                <Link href="/login">
-                  <Button>
-                    {t("Auth.SignIn", "Connectez-vous pour créer une annonce")}
-                  </Button>
-                </Link>
+    <div className="space-y-6">
+      <div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <LayoutTitle>{t("Products.Title", "Annonces")}</LayoutTitle>
+            <p className="text-muted-foreground">
+              {t(
+                "Products.Description",
+                "Trouve ton partenaire de sport et progressez ensemble !"
               )}
-            </div>
+            </p>
 
-            <div className="mt-4 sm:mt-0">
-              <Suspense
-                fallback={
-                  <div className="h-[200px] w-full animate-pulse rounded-md bg-muted"></div>
-                }
-              >
-                <MiniMap
-                  initialProducts={initialProducts}
-                  userId={userId}
-                  searchParams={searchParams}
-                />
-              </Suspense>
-            </div>
+            {/* N'afficher le bouton de création que si l'utilisateur est connecté si non afficher le bouton de connexion */}
+            {hasUser ? (
+              <CreateProductButton />
+            ) : (
+              <Link href="/login" prefetch={true}>
+                <Button>
+                  {t("Auth.SignIn", "Connectez-vous pour créer une annonce")}
+                </Button>
+              </Link>
+            )}
+          </div>
+
+          <div className="mt-4 sm:mt-0">
+            <Suspense
+              fallback={
+                <div className="h-[200px] w-full animate-pulse rounded-md bg-muted"></div>
+              }
+            >
+              <MiniMap
+                initialProducts={initialProducts}
+                userId={userId}
+                searchParams={searchParams}
+              />
+            </Suspense>
           </div>
         </div>
-
-        <Suspense fallback={<ProductListFallback />}>
-          <FilteredProductList
-            initialProducts={initialProducts}
-            userSex={userSex}
-            userId={userId}
-            venues={venues}
-            isAdmin={isAdmin}
-            searchParams={searchParams}
-          />
-        </Suspense>
       </div>
+
+      <Suspense fallback={<ProductListFallback />}>
+        <FilteredProductList
+          initialProducts={initialProducts}
+          userSex={userSex}
+          userId={userId}
+          venues={venues}
+          isAdmin={isAdmin}
+          searchParams={searchParams}
+        />
+      </Suspense>
+    </div>
+  );
+}
+
+// Composant de page principal
+export default async function RoutePage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const searchParams = await props.searchParams;
+  const user = await currentUser();
+
+  // Supprimer la redirection - permettre l'accès même sans être connecté
+  const isAdmin = user?.isAdmin ?? false;
+  const userSex = user?.sex ?? null;
+  const userId = user?.id ?? "";
+  const hasUser = !!user;
+
+  return (
+    <Layout>
+      <Suspense
+        fallback={
+          <div className="space-y-6">
+            <div>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <div className="h-8 w-40 animate-pulse rounded-md bg-muted"></div>
+                  <div className="mt-2 h-4 w-72 animate-pulse rounded-md bg-muted"></div>
+                  <div className="mt-4 h-10 w-48 animate-pulse rounded-md bg-muted"></div>
+                </div>
+                <div className="mt-4 h-[200px] w-[300px] animate-pulse rounded-md bg-muted sm:mt-0"></div>
+              </div>
+            </div>
+            <ProductListFallback />
+          </div>
+        }
+      >
+        <AnnouncementsContent
+          searchParams={searchParams}
+          userSex={userSex}
+          userId={userId}
+          isAdmin={isAdmin}
+          hasUser={hasUser}
+        />
+      </Suspense>
     </Layout>
   );
 }

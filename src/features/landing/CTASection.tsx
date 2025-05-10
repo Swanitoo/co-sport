@@ -1,12 +1,13 @@
 "use client";
 
+import { useNavigation } from "@/app/providers";
 import { useAppTranslations } from "@/components/i18n-provider";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Loader2, Rocket } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Section } from "./Section";
 
 type CTASectionProps = {
@@ -18,14 +19,26 @@ type CTASectionProps = {
 export const CTASection = ({ translations }: CTASectionProps) => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { t } = useAppTranslations();
+  const { t, locale } = useAppTranslations();
   const [isLoading, setIsLoading] = useState(false);
+  const { startNavigation } = useNavigation();
+
+  // Précharger la page d'annonces au chargement du composant
+  useEffect(() => {
+    // Précharge immédiatement la page d'annonces pour accélérer la transition
+    router.prefetch(`/${locale}/annonces`);
+  }, [router, locale]);
 
   const handleButtonClick = () => {
     setIsLoading(true);
+    // Démarrer l'indicateur de navigation immédiatement
+    startNavigation();
 
     if (status === "authenticated") {
-      router.push("/annonces");
+      // Ajouter un court délai pour permettre l'affichage du loader
+      setTimeout(() => {
+        router.push("/annonces");
+      }, 50);
     } else {
       signIn();
     }
@@ -44,6 +57,7 @@ export const CTASection = ({ translations }: CTASectionProps) => {
           className={buttonVariants({ size: "lg" })}
           onClick={handleButtonClick}
           disabled={isLoading}
+          data-navigation="true"
         >
           {isLoading ? (
             <>
